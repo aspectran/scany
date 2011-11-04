@@ -16,7 +16,7 @@ import org.jhlabs.scany.analysis.syllabic.SyllabicAnalyzer;
 import org.jhlabs.scany.entity.Column;
 import org.jhlabs.scany.entity.Schema;
 import org.jhlabs.scany.util.MultipleXReader;
-import org.jhlabs.scany.util.Numberz;
+import org.jhlabs.scany.util.NumberUtils;
 import org.jhlabs.scany.util.StringUtils;
 
 import java.io.File;
@@ -254,8 +254,8 @@ public class ScanyConfig {
 					schema.setExpertQueryMode(EXPERT.equals(record.getColumnValue(columnNames[4])));
 					
 					// Perfomance
-					schema.setMergeFactor(Numberz.parseInt(record.getColumnValue(columnNames[5]), DEFAULT_MERGE_FACTOR));
-					schema.setMergeFactor(Numberz.parseInt(record.getColumnValue(columnNames[6]), DEFAULT_MAX_MERGE_DOCS));
+					schema.setMergeFactor(NumberUtils.parseInt(record.getColumnValue(columnNames[5]), DEFAULT_MERGE_FACTOR));
+					schema.setMergeFactor(NumberUtils.parseInt(record.getColumnValue(columnNames[6]), DEFAULT_MAX_MERGE_DOCS));
 					
 					// 컬럼
 					MultipleXReader.Column[] xcolumns = record.getColumns(columnNames[7]);
@@ -272,7 +272,7 @@ public class ScanyConfig {
 						columns[j].setQueryable(YES.equals(xcolumns[j].getAttributeValue("queryable")));
 						columns[j].setPrefixQueryable(PREFIX.equals(xcolumns[j].getAttributeValue("queryable")));
 						columns[j].setDescription(xcolumns[j].getValue());
-						columns[j].setBoost(Numberz.parseFloat(xcolumns[j].getAttributeValue("boost"), 1.0f));
+						columns[j].setBoost(NumberUtils.parseFloat(xcolumns[j].getAttributeValue("boost"), 1.0f));
 						
 						// 토큰이 가능한 컬럼은 색인도 가능
 						if(columns[j].isTokenizable())

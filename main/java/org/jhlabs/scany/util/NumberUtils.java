@@ -20,7 +20,7 @@ import java.text.NumberFormat;
  * 2008/02/09 Stringz에서 분리
  * 2003/04/26 초기 버전</pre>
  */
-public class Numberz {
+public class NumberUtils {
  
 	private static final String PLUS = "+";
 	
