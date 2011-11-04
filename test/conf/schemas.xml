@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ScanySchemas>
+
+<!--
+	Schema: 스키마 정의
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	+ KeyPattern: 레코드(도큐먼트)의 주키(Primary Key) 패턴 (키조합 문자: $)
+	+ Repository: 색인데이터 저장 경로 {RepositoryHome} - 전역설정정보에서 RepositoryHome의 값으로 대체
+	+ Description: 스키마에 대한 참고 설명
+	+ Analyzer: (bigram|cvs)기본 분석기, 분석기가 지정안된 컬럼은 기본 분석기를 사용
+			bigram: Bigram Analyzer
+			cvs: Comma Separated Value Analyzer
+	+ DefaultQueryMode: (smart|expert) Query Parser Syntax 문법의 종류
+			smart: 질의문에 기본 연산자(AND, OR, NOT)만 사용이 가능
+			expert: 루씬에서 제공하는 Query Parser Syntax 문법을 사용
+	+ Columns: 컬럼 정의
+		+ Column: 컬럼 속성
+			- name: 컬럼명
+			- storable: (yes|compress|no) 원본 컬럼값의 저장 여부 또는 압축여부
+					긴 문서 내용이나 바이너리 데이터는 압축(compress)해서 저장하면 전체 색인데이터의 크기를 줄일 수 있다.            
+			- indexable: (yes|tokenize|no) 컬럼의 색인 가능 여부, 토큰분리 여부
+			- queryable: (yes|prefix|no) 특정 컬럼 지정없이 질의할때 기본 질의 대상 컬럼으로 포함할지 여부
+					yes: 기본 질의 대상 컬럼에 포함
+					prefix: (한글 1자 이하) 또는 (영문 4자 이상) 일 경우 PrefixQuery를 수행한다.
+					no: 기본 질의 대상 컬럼에서 제외(기본값)  
+			- boost: 검색 우선 정렬 기준 값(질의가능 컬럼에만 유효한 속성값)
+			- analyzer: 해당 컬럼의 분석기 (bigram|scany|csv[?]|{custom})
+					bigram: 바이그램 분석기
+					scany: 사전 기반 바이그램 분석기
+					csv: Character separated value Analyzer (?에 분리 문자 지정)
+					syllabic: 한글 자모 분석기, 한글의 초성, 중성, 종성을 분리하여 나열한 결과를 토큰화
+					{custom}: 외부 분석기의 클래스를 지정 (ex. "com.hello.OtherAnalyzer")
+	+ Performance: 성능 튜닝 조정값
+		+ MergeFactor: Disk에 쓰기 전 메모리에 저장할 Document의 개수, Segment가 merge 되는 빈도수 제어한다.
+				(기본값: 10, 최소값: 2)
+		+ MaxMergeDocs: 하나의 Segment에 담을 수 있는 Document의 개수
+				(기본값: Integer.MAX_VALUE)
+-->
+
+<Schema name="notice">
+	<KeyPattern>boardId$articleNo</KeyPattern>
+	<Repository>{RepositoryHome}\notice\</Repository>
+	<Description>공지사항</Description>
+	<Analyzer>bigram</Analyzer>
+	<DefaultQueryMode>smart</DefaultQueryMode>
+	<Columns>
+		<Column name="group"
+				storable="yes" indexable="yes" queryable="no"
+				>게시판그룹</Column>
+		<Column name="category"
+				storable="yes" indexable="yes" queryable="no"
+				>분류</Column>
+		<Column name="title"
+				storable="yes" indexable="tokenize" queryable="prefix"
+				boost="1.1"
+				>제목</Column>
+		<Column name="content"
+				storable="compress" indexable="tokenize" queryable="prefix"
+				boost="1.0"
+				>내용</Column>
+		<Column name="tag"
+				storable="yes" indexable="tokenize" queryable="yes"
+				boost="1.2"
+				analyzer="csv"
+				>태그</Column>
+		<Column name="writer"
+				storable="yes" indexable="yes" queryable="no"
+				>작성자</Column>
+		<Column name="date"
+				storable="yes" indexable="yes" queryable="no"
+				>등록일자</Column>
+		<Column name="url"
+				storable="yes" indexable="no" queryable="no"
+				>URL</Column>
+	</Columns>
+</Schema>
+
+<Schema name="general">
+	<KeyPattern>boardId$articleNo</KeyPattern>
+	<Repository>{RepositoryHome}\general\</Repository>
+	<Description>클리피아 사이트 전반</Description>
+	<Analyzer>bigram</Analyzer>
+	<DefaultQueryMode>amateur</DefaultQueryMode>
+	<Columns>
+		<Column name="group"
+				storable="yes" indexable="yes" queryable="no"
+				>게시판그룹</Column>
+		<Column name="category"
+				storable="yes" indexable="yes" queryable="no"
+				>분류</Column>
+		<Column name="title"
+				storable="yes" indexable="tokenize" queryable="yes"
+				boost="1.1"
+				>제목</Column>
+		<Column name="content"
+				storable="compress" indexable="tokenize" queryable="yes"
+				boost="1.0"
+				>내용</Column>
+		<Column name="tag"
+				storable="yes" indexable="tokenize" queryable="yes"
+				boost="1.2"
+				analyzer="csv"
+				>태그</Column>
+		<Column name="writer"
+				storable="yes" indexable="yes" queryable="no"
+				>작성자</Column>
+		<Column name="date"
+				storable="yes" indexable="yes" queryable="no"
+				>등록일자</Column>
+		<Column name="url"
+				storable="yes" indexable="no" queryable="no"
+				>URL</Column>
+	</Columns>
+	<Performance>
+		<MergeFactor>10</MergeFactor>
+		<MaxMergeDocs>10000</MaxMergeDocs>
+	</Performance>
+</Schema>
+
+<Schema name="lab_develop">
+	<KeyPattern>boardId$articleNo</KeyPattern>
+	<Repository>{RepositoryHome}\lab_develop\</Repository>
+	<Description>웹개발연구소 - 웹개발연구실</Description>
+	<Analyzer>bigram</Analyzer>
+	<Columns>
+		<Column name="group"
+				storable="yes" indexable="yes" queryable="no"
+				>게시판그룹</Column>
+		<Column name="category"
+				storable="yes" indexable="yes" queryable="no"
+				>분류</Column>
+		<Column name="title"
+				storable="yes" indexable="tokenize" queryable="yes"
+				>제목</Column>
+		<Column name="content"
+				storable="compress" indexable="tokenize" queryable="yes"
+				>내용</Column>
+		<Column name="tag"
+				storable="no" indexable="tokenize" queryable="yes" boost="1.2"
+				analyzer="csv"
+				>태그</Column>
+		<Column name="writer"
+				storable="yes" indexable="yes" queryable="no"
+				>작성자</Column>
+		<Column name="date"
+				storable="yes" indexable="yes" queryable="no"
+				>등록일자</Column>
+		<Column name="url"
+				storable="yes" indexable="no" queryable="no"
+				>URL</Column>
+	</Columns>
+</Schema>
+
+<Schema name="lab_database">
+	<KeyPattern>boardId$articleNo</KeyPattern>
+	<Repository>{RepositoryHome}\lab_database\</Repository>
+	<Description>웹개발연구소 - 데이터베이스</Description>
+	<Analyzer>bigram</Analyzer>
+	<Columns>
+		<Column name="group"
+				storable="yes" indexable="yes" queryable="no"
+				>게시판그룹</Column>
+		<Column name="category"
+				storable="yes" indexable="yes" queryable="no"
+				>분류</Column>
+		<Column name="title"
+				storable="yes" indexable="tokenize" queryable="yes"
+				>제목</Column>
+		<Column name="content"
+				storable="yes" indexable="tokenize" queryable="yes"
+				>내용</Column>
+		<Column name="tag"
+				storable="no" indexable="tokenize" queryable="yes" boost="1.2"
+				analyzer="csv"
+				>태그</Column>
+		<Column name="writer"
+				storable="yes" indexable="yes" queryable="no"
+				>작성자</Column>
+		<Column name="date"
+				storable="yes" indexable="yes" queryable="no"
+				>등록일자</Column>
+		<Column name="url"
+				storable="yes" indexable="no" queryable="no"
+				>URL</Column>
+	</Columns>
+</Schema>
+
+<Schema name="lab_programing">
+	<KeyPattern>boardId$articleNo</KeyPattern>
+	<Repository>{RepositoryHome}\lab_programing\</Repository>
+	<Description>웹개발연구소 - 프로그래밍</Description>
+	<Analyzer>bigram</Analyzer>
+	<Columns>
+		<Column name="group"
+				storable="yes" indexable="yes" queryable="no"
+				>게시판그룹</Column>
+		<Column name="category"
+				storable="yes" indexable="yes" queryable="no"
+				>분류</Column>
+		<Column name="title"
+				storable="yes" indexable="tokenize" queryable="yes"
+				>제목</Column>
+		<Column name="content"
+				storable="compress" indexable="tokenize" queryable="yes"
+				>내용</Column>
+		<Column name="tag"
+				storable="no" indexable="tokenize" queryable="yes" boost="1.2"
+				analyzer="csv"
+				>태그</Column>
+		<Column name="writer"
+				storable="yes" indexable="yes" queryable="no"
+				>작성자</Column>
+		<Column name="date"
+				storable="yes" indexable="yes" queryable="no"
+				>등록일자</Column>
+		<Column name="url"
+				storable="yes" indexable="no" queryable="no"
+				>URL</Column>
+	</Columns>
+</Schema>
+
+<Schema name="lab_server">
+	<KeyPattern>boardId$articleNo</KeyPattern>
+	<Repository>{RepositoryHome}\lab_server\</Repository>
+	<Description>웹개발연구소 - 서버운영체제</Description>
+	<Analyzer>bigram</Analyzer>
+	<Columns>
+		<Column name="group"
+				storable="yes" indexable="yes" queryable="no"
+				>게시판그룹</Column>
+		<Column name="category"
+				storable="yes" indexable="yes" queryable="no"
+				>분류</Column>
+		<Column name="title"
+				storable="yes" indexable="tokenize" queryable="yes"
+				>제목</Column>
+		<Column name="content"
+				storable="compress" indexable="tokenize" queryable="yes"
+				>내용</Column>
+		<Column name="tag"
+				storable="no" indexable="tokenize" queryable="yes" boost="1.2"
+				analyzer="csv"
+				>태그</Column>
+		<Column name="writer"
+				storable="yes" indexable="yes" queryable="no"
+				>작성자</Column>
+		<Column name="date"
+				storable="yes" indexable="yes" queryable="no"
+				>등록일자</Column>
+		<Column name="url"
+				storable="yes" indexable="no" queryable="no"
+				>URL</Column>
+	</Columns>
+</Schema>
+
+<Schema name="lab_uiux">
+	<KeyPattern>boardId$articleNo</KeyPattern>
+	<Repository>{RepositoryHome}\lab_uiux\</Repository>
+	<Description>웹개발연구소 - UI/UX 디자인</Description>
+	<Analyzer>bigram</Analyzer>
+	<Columns>
+		<Column name="group"
+				storable="yes" indexable="yes" queryable="no"
+				>게시판그룹</Column>
+		<Column name="category"
+				storable="yes" indexable="yes" queryable="no"
+				>분류</Column>
+		<Column name="title"
+				storable="yes" indexable="tokenize" queryable="yes"
+				>제목</Column>
+		<Column name="content"
+				storable="compress" indexable="tokenize" queryable="yes"
+				>내용</Column>
+		<Column name="tag"
+				storable="no" indexable="tokenize" queryable="yes" boost="1.2"
+				analyzer="csv"
+				>태그</Column>
+		<Column name="writer"
+				storable="yes" indexable="yes" queryable="no"
+				>작성자</Column>
+		<Column name="date"
+				storable="yes" indexable="yes" queryable="no"
+				>등록일자</Column>
+		<Column name="url"
+				storable="yes" indexable="no" queryable="no"
+				analyzer="csv"
+				>URL</Column>
+	</Columns>
+</Schema>
+
+<Schema name="community">
+	<KeyPattern>boardId$articleNo</KeyPattern>
+	<Repository>{RepositoryHome}\community\</Repository>
+	<Description>클립아트방 - 이미지 활용방</Description>
+	<Analyzer>bigram</Analyzer>
+	<Columns>
+		<Column name="group"
+				storable="yes" indexable="yes" queryable="no"
+				>게시판그룹</Column>
+		<Column name="category"
+				storable="yes" indexable="yes" queryable="no"
+				>분류</Column>
+		<Column name="title"
+				storable="yes" indexable="tokenize" queryable="yes"
+				>제목</Column>
+		<Column name="content"
+				storable="compress" indexable="tokenize" queryable="yes"
+				>내용</Column>
+		<Column name="tag"
+				storable="no" indexable="tokenize" queryable="yes" boost="1.2"
+				analyzer="csv"
+				>태그</Column>
+		<Column name="writer"
+				storable="yes" indexable="yes" queryable="no"
+				>작성자</Column>
+		<Column name="date"
+				storable="yes" indexable="yes" queryable="no"
+				>등록일자</Column>
+		<Column name="url"
+				storable="yes" indexable="no" queryable="no"
+				>URL</Column>
+	</Columns>
+</Schema>
+
+<Schema name="lab_community">
+	<KeyPattern>boardId$articleNo</KeyPattern>
+	<Repository>{RepositoryHome}\lab_community\</Repository>
+	<Description>웹개발연구소 - 커뮤니티</Description>
+	<Analyzer>bigram</Analyzer>
+	<Columns>
+		<Column name="group"
+				storable="yes" indexable="yes" queryable="no"
+				>게시판그룹</Column>
+		<Column name="category"
+				storable="yes" indexable="yes" queryable="no"
+				>분류</Column>
+		<Column name="title"
+				storable="yes" indexable="tokenize" queryable="yes"
+				>제목</Column>
+		<Column name="content"
+				storable="compress" indexable="tokenize" queryable="yes"
+				>내용</Column>
+		<Column name="tag"
+				storable="no" indexable="tokenize" queryable="yes" boost="1.2"
+				analyzer="csv"
+				>태그</Column>
+		<Column name="writer"
+				storable="yes" indexable="yes" queryable="no"
+				>작성자</Column>
+		<Column name="date"
+				storable="yes" indexable="yes" queryable="no"
+				>등록일자</Column>
+		<Column name="url"
+				storable="yes" indexable="no" queryable="no"
+				>URL</Column>
+	</Columns>
+</Schema>
+
+</ScanySchemas>
