@@ -12,7 +12,7 @@ package org.jhlabs.scany.engine.search;
 
 import org.jhlabs.scany.engine.entity.PrimaryKey;
 import org.jhlabs.scany.engine.entity.Record;
-import org.jhlabs.scany.engine.entity.Schema;
+import org.jhlabs.scany.engine.entity.Table;
 
 /**
  * 
@@ -27,14 +27,14 @@ public interface AnySearcher {
 	 * 현재 스키마를 반환한다.
 	 * @return Schema
 	 */
-	public Schema getSchema();
+	public Table getSchema();
 
 	/**
 	 * 스키마를 지정한다.
 	 * @param schema Schema Schema
 	 * @throws AnySearchException
 	 */
-	public void setSchema(Schema schema) throws AnySearchException;
+	public void setSchema(Table schema) throws AnySearchException;
 	
 	/**
 	 * 레코드(Document)의 총 개수를 반환한다.

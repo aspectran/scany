@@ -12,7 +12,7 @@ package org.jhlabs.scany.engine.index;
 
 import org.jhlabs.scany.engine.entity.PrimaryKey;
 import org.jhlabs.scany.engine.entity.Record;
-import org.jhlabs.scany.engine.entity.Schema;
+import org.jhlabs.scany.engine.entity.Table;
 
 /**
  * 색인 추가(insert), 색인 갱신(update), 색인 삭제(delete) 기능을 담당한다.
@@ -26,7 +26,7 @@ public interface AnyIndexer {
 	 * 스키마를 반환한다.
 	 * @throws AnyIndexException
 	 */
-	public Schema getSchema() throws AnyIndexException;
+	public Table getSchema() throws AnyIndexException;
 
 	/**
 	 * 색인등록

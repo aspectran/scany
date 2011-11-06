@@ -38,7 +38,7 @@ public class PrimaryKey {
 	 * @param keyPattern 키형식
 	 * @throws MultipartRequestzException
 	 */
-	public PrimaryKey(String primaryKey, Schema schema) throws PrimaryKeyException {
+	public PrimaryKey(String primaryKey, Table schema) throws PrimaryKeyException {
 		this(schema);
 		
 		decode(primaryKey);
@@ -50,7 +50,7 @@ public class PrimaryKey {
 	 * @param keyPattern 키형식
 	 * @throws MultipartRequestzException
 	 */
-	public PrimaryKey(Schema schema) {
+	public PrimaryKey(Table schema) {
 		this.keyPattern = schema.getKeyPattern();
 	}
 	

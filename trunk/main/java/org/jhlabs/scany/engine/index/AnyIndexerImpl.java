@@ -15,7 +15,7 @@ import org.jhlabs.scany.engine.entity.Column;
 import org.jhlabs.scany.engine.entity.PrimaryKey;
 import org.jhlabs.scany.engine.entity.PrimaryKeyException;
 import org.jhlabs.scany.engine.entity.Record;
-import org.jhlabs.scany.engine.entity.Schema;
+import org.jhlabs.scany.engine.entity.Table;
 import org.jhlabs.scany.util.StringUtils;
 
 import java.io.File;
@@ -42,7 +42,7 @@ import org.apache.lucene.store.FSDirectory;
  */
 public class AnyIndexerImpl implements AnyIndexer {
 
-	private Schema schema;
+	private Table schema;
 
 	private Directory directory;
 
@@ -54,12 +54,12 @@ public class AnyIndexerImpl implements AnyIndexer {
 	 * @param schema Schema
 	 * @throws MultipartRequestzException
 	 */
-	public AnyIndexerImpl(Schema schema) throws AnyIndexException {
+	public AnyIndexerImpl(Table schema) throws AnyIndexException {
 		this.schema = schema;
 		initialize(false);
 	}
 
-	public Schema getSchema() throws AnyIndexException {
+	public Table getSchema() throws AnyIndexException {
 		return schema;
 	}
 
