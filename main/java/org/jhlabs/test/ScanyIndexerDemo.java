@@ -11,10 +11,10 @@
 package org.jhlabs.test;
 
 import org.jhlabs.scany.client.ScanyClient;
-import org.jhlabs.scany.entity.PrimaryKey;
-import org.jhlabs.scany.entity.Record;
-import org.jhlabs.scany.entity.Schema;
-import org.jhlabs.scany.index.AnyIndexer;
+import org.jhlabs.scany.engine.entity.PrimaryKey;
+import org.jhlabs.scany.engine.entity.Record;
+import org.jhlabs.scany.engine.entity.Schema;
+import org.jhlabs.scany.engine.index.AnyIndexer;
 
 import org.apache.lucene.index.IndexReader;
 
@@ -37,7 +37,7 @@ public class ScanyIndexerDemo {
 			Schema schema = anyIndexer.getSchema();
 			
 			// Primary Key 생성
-			PrimaryKey primaryKey = new PrimaryKey(schema.getKeyPattern());
+			PrimaryKey primaryKey = new PrimaryKey(schema);
 			primaryKey.setKeyValue("boardId", "notice");
 			primaryKey.setKeyValue("articleNo", "2");
 			

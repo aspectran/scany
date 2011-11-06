@@ -13,12 +13,12 @@ package org.jhlabs.test;
 import org.jhlabs.scany.client.ScanyClient;
 import org.jhlabs.scany.client.ScanyClientBuilder;
 import org.jhlabs.scany.client.ScanyClientException;
-import org.jhlabs.scany.config.ScanyConfig;
-import org.jhlabs.scany.entity.PrimaryKey;
-import org.jhlabs.scany.entity.Record;
-import org.jhlabs.scany.search.AnySearcher;
-import org.jhlabs.scany.search.SortColumn;
-import org.jhlabs.scany.search.Summarizer;
+import org.jhlabs.scany.context.builder.ScanyContextBuilder;
+import org.jhlabs.scany.engine.entity.PrimaryKey;
+import org.jhlabs.scany.engine.entity.Record;
+import org.jhlabs.scany.engine.search.AnySearcher;
+import org.jhlabs.scany.engine.search.SortColumn;
+import org.jhlabs.scany.engine.search.Summarizer;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -53,7 +53,7 @@ public class ScanySearcherDemo {
 			
 			
 			// Primary Key 생성
-			PrimaryKey primaryKey = new PrimaryKey();
+			PrimaryKey primaryKey = new PrimaryKey(searcher.getSchema());
 			primaryKey.setKeyValue("boardId", "java");
 			primaryKey.setKeyValue("articleNo", "*");
 			
@@ -94,13 +94,13 @@ public class ScanySearcherDemo {
 			searcher.setHitsPerPage(10);
 			
 			// Primary Key 생성
-			PrimaryKey primaryKey = new PrimaryKey();
+			PrimaryKey primaryKey = new PrimaryKey(searcher.getSchema());
 			primaryKey.setKeyValue("boardId", "notice");
 			primaryKey.setKeyValue("articleNo", "*");
 			
 			// 정렬컬럼 생성
 			SortColumn sortColumn = new SortColumn();
-			sortColumn.addColumn(ScanyConfig.PRIMARY_KEY, SortColumn.AUTO, true);
+			sortColumn.addColumn(ScanyContextBuilder.PRIMARY_KEY, SortColumn.AUTO, true);
 			sortColumn.addColumn("date", SortColumn.STRING, true);
 
 			searcher.setSortColumn(sortColumn);

@@ -10,12 +10,12 @@
  ******************************************************************************/
 package org.jhlabs.scany.client;
 
-import org.jhlabs.scany.entity.Schema;
-import org.jhlabs.scany.index.AnyIndexer;
-import org.jhlabs.scany.index.AnyIndexerImpl;
-import org.jhlabs.scany.search.AnyExpertSearcher;
-import org.jhlabs.scany.search.AnySearcher;
-import org.jhlabs.scany.search.AnySmartSearcher;
+import org.jhlabs.scany.engine.entity.Schema;
+import org.jhlabs.scany.engine.index.AnyIndexer;
+import org.jhlabs.scany.engine.index.AnyIndexerImpl;
+import org.jhlabs.scany.engine.search.AnyExpertSearcher;
+import org.jhlabs.scany.engine.search.AnySearcher;
+import org.jhlabs.scany.engine.search.AnySmartSearcher;
 
 /**
  * 
