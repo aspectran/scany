@@ -25,9 +25,9 @@
 		<url>http://</url>
 		<parameters>
 			<parameter name="authKey" encryption="none">1234</parameter>
-			<parameter name="command"/>
-			<parameter name="content" compressable="true"/>
+			<parameter name="message" compressable="true"/>
 		</parameters>
+		<schema></schema>
 	</http>
 	
 	
