@@ -10,7 +10,7 @@
  ******************************************************************************/
 package org.jhlabs.scany.client;
 
-import org.jhlabs.scany.engine.entity.Schema;
+import org.jhlabs.scany.engine.entity.Table;
 import org.jhlabs.scany.engine.index.AnyIndexer;
 import org.jhlabs.scany.engine.search.AnySearcher;
 
@@ -28,7 +28,7 @@ public interface ScanyClient {
 	 * @param schemaId
 	 * @return
 	 */
-	public Schema getSchema(String schemaId);
+	public Table getSchema(String schemaId);
 	
 	/**
 	 * Scany 검색기(AnySearcher)를 생성후 반환한다.
@@ -42,7 +42,7 @@ public interface ScanyClient {
 	 * @param schema 스키마
 	 * @return
 	 */
-	public AnySearcher getSearcher(Schema schema);
+	public AnySearcher getSearcher(Table schema);
 	
 	/**
 	 * Scany 색인기(AnyIndexer)를 생성후 반환한다.
@@ -56,7 +56,7 @@ public interface ScanyClient {
 	 * @param schema 스키마
 	 * @return
 	 */
-	public AnyIndexer getIndexer(Schema schema);
+	public AnyIndexer getIndexer(Table schema);
 
 	/**
 	 * Scany Home Directory를 반환한다.

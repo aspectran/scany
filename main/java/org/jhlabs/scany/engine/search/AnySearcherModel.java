@@ -24,7 +24,7 @@ import org.jhlabs.scany.engine.entity.Column;
 import org.jhlabs.scany.engine.entity.PrimaryKey;
 import org.jhlabs.scany.engine.entity.PrimaryKeyException;
 import org.jhlabs.scany.engine.entity.Record;
-import org.jhlabs.scany.engine.entity.Schema;
+import org.jhlabs.scany.engine.entity.Table;
 
 /**
  * <p>
@@ -35,7 +35,7 @@ import org.jhlabs.scany.engine.entity.Schema;
  */
 public class AnySearcherModel {
 
-	protected Schema schema;
+	protected Table schema;
 
 	protected PrimaryKey primaryKey;
 
@@ -67,7 +67,7 @@ public class AnySearcherModel {
 	 * @param schema Schema
 	 * @throws ScanySearchException
 	 */
-	public AnySearcherModel(Schema schema) throws AnySearchException {
+	public AnySearcherModel(Table schema) throws AnySearchException {
 		setSchema(schema);
 	}
 
@@ -76,7 +76,7 @@ public class AnySearcherModel {
 	 * 
 	 * @return Schema
 	 */
-	public Schema getSchema() {
+	public Table getSchema() {
 		return schema;
 	}
 
@@ -86,7 +86,7 @@ public class AnySearcherModel {
 	 * @param schema Schema Schema
 	 * @throws AnySearchException
 	 */
-	public void setSchema(Schema schema) throws AnySearchException {
+	public void setSchema(Table schema) throws AnySearchException {
 		this.schema = schema;
 		this.isExpertQueryMode = schema.isExpertQueryMode();
 
@@ -519,7 +519,7 @@ public class AnySearcherModel {
 	 * @return Record
 	 * @throws PrimaryKeyException 
 	 */
-	protected static Record documentToRecord(Document document, Schema schema) throws PrimaryKeyException {
+	protected static Record documentToRecord(Document document, Table schema) throws PrimaryKeyException {
 		Record record = new Record();
 		record.setPrimaryKey(document.get(ScanyContextBuilder.PRIMARY_KEY), schema);
 		

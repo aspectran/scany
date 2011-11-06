@@ -11,7 +11,7 @@
 package org.jhlabs.scany.engine.search;
 
 import org.jhlabs.scany.engine.entity.Record;
-import org.jhlabs.scany.engine.entity.Schema;
+import org.jhlabs.scany.engine.entity.Table;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -61,7 +61,7 @@ public class AnyExpertSearcher extends AnySearcherModel implements AnySearcher {
 	 * @param schema 스키마
 	 * @throws ScanySearchException
 	 */
-	public AnyExpertSearcher(Schema schema) throws AnySearchException {
+	public AnyExpertSearcher(Table schema) throws AnySearchException {
 		super(schema);
 	}
 	

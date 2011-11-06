@@ -13,7 +13,7 @@ package org.jhlabs.test;
 import org.jhlabs.scany.client.ScanyClient;
 import org.jhlabs.scany.engine.entity.PrimaryKey;
 import org.jhlabs.scany.engine.entity.Record;
-import org.jhlabs.scany.engine.entity.Schema;
+import org.jhlabs.scany.engine.entity.Table;
 import org.jhlabs.scany.engine.index.AnyIndexer;
 
 import org.apache.lucene.index.IndexReader;
@@ -34,7 +34,7 @@ public class ScanyIndexerDemo {
 			
 			anyIndexer = scanyClient.getIndexer("notice");
 
-			Schema schema = anyIndexer.getSchema();
+			Table schema = anyIndexer.getSchema();
 			
 			// Primary Key 생성
 			PrimaryKey primaryKey = new PrimaryKey(schema);

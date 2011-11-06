@@ -15,7 +15,7 @@ import org.jhlabs.scany.engine.analysis.bigram.BigramAnalyzer;
 import org.jhlabs.scany.engine.analysis.csv.CSVAnalyzer;
 import org.jhlabs.scany.engine.analysis.syllabic.SyllabicAnalyzer;
 import org.jhlabs.scany.engine.entity.Column;
-import org.jhlabs.scany.engine.entity.Schema;
+import org.jhlabs.scany.engine.entity.Table;
 import org.jhlabs.scany.util.MultipleXReader;
 import org.jhlabs.scany.util.NumberUtils;
 import org.jhlabs.scany.util.StringUtils;
@@ -203,7 +203,7 @@ public class ScanyContextBuilder {
 				for(int i = 0; i < list.size(); i++) {
 					MultipleXReader.Record record = (MultipleXReader.Record)list.get(i);
 
-					Schema schema = new Schema();
+					Table schema = new Table();
 					schema.setSchemaId(record.getAttributeValue("name"));
 
 					// 중복되는 스키마 ID가 있는지 검사

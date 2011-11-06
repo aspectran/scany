@@ -21,7 +21,7 @@ import org.jhlabs.scany.engine.entity.Column;
  * @author Gulendol
  *
  */
-public class Schema {
+public class Table {
 
 	private String schemaId;
 	

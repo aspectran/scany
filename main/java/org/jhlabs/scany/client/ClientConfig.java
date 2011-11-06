@@ -10,7 +10,7 @@
  ******************************************************************************/
 package org.jhlabs.scany.client;
 
-import org.jhlabs.scany.engine.entity.Schema;
+import org.jhlabs.scany.engine.entity.Table;
 
 import java.util.Map;
 
@@ -59,11 +59,11 @@ public abstract class ClientConfig {
 	 * @param schemaId 스키마 ID
 	 * @return
 	 */
-	public Schema getSchema(String schemaId) {
+	public Table getSchema(String schemaId) {
 		if(schemas == null)
 			throw new ScanyClientException("등록된 스키마가 없습니다.");
 		
-		return (Schema)schemas.get(schemaId);
+		return (Table)schemas.get(schemaId);
 	}
 	
 	/**

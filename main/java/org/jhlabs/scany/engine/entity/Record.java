@@ -48,7 +48,7 @@ public class Record {
 	 * @param primaryKey the primaryKey to set
 	 * @throws PrimaryKeyException 
 	 */
-	public void setPrimaryKey(String primaryKey, Schema schema) throws PrimaryKeyException {
+	public void setPrimaryKey(String primaryKey, Table schema) throws PrimaryKeyException {
 		this.primaryKey = new PrimaryKey(primaryKey, schema);
 	}
 
