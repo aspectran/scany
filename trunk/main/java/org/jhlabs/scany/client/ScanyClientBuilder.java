@@ -10,7 +10,7 @@
  ******************************************************************************/
 package org.jhlabs.scany.client;
 
-import org.jhlabs.scany.config.ScanyConfig;
+import org.jhlabs.scany.context.builder.ScanyContextBuilder;
 import org.jhlabs.scany.util.MultipleXReader;
 
 import java.io.InputStream;
@@ -26,7 +26,7 @@ public class ScanyClientBuilder {
 
 	public static ScanyClient buildScanyClient(InputStream is, String serviceName) {
 		try {
-			ScanyConfig scanyConfig = new ScanyConfig();
+			ScanyContextBuilder scanyConfig = new ScanyContextBuilder();
 			
 			MultipleXReader.Record record = scanyConfig.loadClientConfig(is, serviceName);
 			

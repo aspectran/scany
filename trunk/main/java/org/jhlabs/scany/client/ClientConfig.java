@@ -10,7 +10,7 @@
  ******************************************************************************/
 package org.jhlabs.scany.client;
 
-import org.jhlabs.scany.entity.Schema;
+import org.jhlabs.scany.engine.entity.Schema;
 
 import java.util.Map;
 
