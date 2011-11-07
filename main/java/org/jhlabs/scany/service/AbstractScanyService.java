@@ -4,6 +4,7 @@
 package org.jhlabs.scany.service;
 
 import org.jhlabs.scany.context.rule.ServiceRule;
+import org.jhlabs.scany.engine.entity.Transaction;
 
 /**
  *
@@ -18,6 +19,12 @@ public abstract class AbstractScanyService {
 
 	public AbstractScanyService(ServiceRule serviceRule) {
 		this.serviceRule = serviceRule;
+	}
+	
+	public Transaction getTransaction(String tableId) {
+		Transaction t = new Transaction(null);
+		
+		return t;
 	}
 	
 }

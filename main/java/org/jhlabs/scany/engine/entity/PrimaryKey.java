@@ -25,6 +25,8 @@ import java.util.Map;
  */
 public class PrimaryKey {
 	
+	public static final String PRIMARY_KEY = "_p_key_";
+	
 	private Map keys = new HashMap();
 	
 	private boolean wildcard;
