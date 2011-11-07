@@ -3,8 +3,8 @@
  */
 package org.jhlabs.scany.service;
 
-import org.jhlabs.scany.context.rule.ServiceRule;
-import org.jhlabs.scany.engine.entity.Transaction;
+import org.jhlabs.scany.context.rule.BaseServiceRule;
+import org.jhlabs.scany.engine.search.AnySearcher;
 
 /**
  *
@@ -15,16 +15,8 @@ import org.jhlabs.scany.engine.entity.Transaction;
  */
 public abstract class AbstractScanyService {
 	
-	private ServiceRule serviceRule;
-
-	public AbstractScanyService(ServiceRule serviceRule) {
-		this.serviceRule = serviceRule;
-	}
+	public abstract ScanyTransaction getTransaction(String tableId);
 	
-	public Transaction getTransaction(String tableId) {
-		Transaction t = new Transaction(null);
-		
-		return t;
-	}
+	public abstract AnySearcher getSercher(String tableId);
 	
 }
