@@ -46,13 +46,13 @@ import org.apache.lucene.search.Searcher;
  * @author Gulendol
  *
  */
-public class AnyExpertSearcher extends AnySearcherModel implements AnySearcher {
+public class PrimitiveLuceneSearcher extends AnySearcherModel implements AnySearcher {
 	
 	/**
 	 * 생성자
 	 * 검색하기 전에 반드시 스키마를 지정해야 한다.
 	 */
-	public AnyExpertSearcher() {
+	public PrimitiveLuceneSearcher() {
 		super();
 	}
 
@@ -61,7 +61,7 @@ public class AnyExpertSearcher extends AnySearcherModel implements AnySearcher {
 	 * @param schema 스키마
 	 * @throws ScanySearchException
 	 */
-	public AnyExpertSearcher(Table schema) throws AnySearchException {
+	public PrimitiveLuceneSearcher(Table schema) throws AnySearchException {
 		super(schema);
 	}
 	

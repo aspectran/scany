@@ -1,21 +1,21 @@
 package org.jhlabs.scany.service.http;
 
 import org.jhlabs.scany.engine.entity.Table;
-import org.jhlabs.scany.service.AbstractAnyTransaction;
+import org.jhlabs.scany.engine.transaction.AbstractAnyTransaction;
 
 public class HttpAnyTransaction extends AbstractAnyTransaction {
 
-	public HttpAnyTransaction(Table table) {
-		super(table);
-	}
+	private Table table;
 
+	public HttpAnyTransaction(Table table) {
+		this.table = table;
+	}
+	
 	public void commit() {
-		// TODO Auto-generated method stub
 		
 	}
 
 	public void rollback() {
-		// TODO Auto-generated method stub
 		
 	}
 }

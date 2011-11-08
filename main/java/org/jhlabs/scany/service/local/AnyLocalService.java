@@ -5,8 +5,8 @@ package org.jhlabs.scany.service.local;
 
 import org.jhlabs.scany.context.rule.LocalServiceRule;
 import org.jhlabs.scany.engine.search.AnySearcher;
+import org.jhlabs.scany.engine.transaction.AnyTransaction;
 import org.jhlabs.scany.service.AbstractAnyService;
-import org.jhlabs.scany.service.AnyTransaction;
 
 /**
  *
