@@ -15,7 +15,7 @@ import org.jhlabs.scany.engine.search.AnySearcher;
  */
 public abstract class AbstractScanyService {
 	
-	public abstract ScanyTransaction getTransaction(String tableId);
+	public abstract AnyTransaction getTransaction(String tableId);
 	
 	public abstract AnySearcher getSercher(String tableId);
 	

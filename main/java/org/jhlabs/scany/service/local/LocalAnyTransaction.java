@@ -1,11 +1,11 @@
-package org.jhlabs.scany.service.remote;
+package org.jhlabs.scany.service.local;
 
 import org.jhlabs.scany.engine.entity.Table;
 import org.jhlabs.scany.service.AbstractScanyTransaction;
 
-public class RemoteScanyTransaction extends AbstractScanyTransaction {
+public class LocalAnyTransaction extends AbstractScanyTransaction {
 
-	public RemoteScanyTransaction(Table table) {
+	public LocalAnyTransaction(Table table) {
 		super(table);
 	}
 
