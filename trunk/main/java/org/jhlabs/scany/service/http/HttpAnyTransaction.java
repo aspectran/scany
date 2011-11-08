@@ -3,9 +3,9 @@ package org.jhlabs.scany.service.http;
 import org.jhlabs.scany.engine.entity.Table;
 import org.jhlabs.scany.service.AbstractScanyTransaction;
 
-public class HttpScanyTransaction extends AbstractScanyTransaction {
+public class HttpAnyTransaction extends AbstractScanyTransaction {
 
-	public HttpScanyTransaction(Table table) {
+	public HttpAnyTransaction(Table table) {
 		super(table);
 	}
 

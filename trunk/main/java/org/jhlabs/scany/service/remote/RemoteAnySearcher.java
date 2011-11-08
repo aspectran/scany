@@ -15,7 +15,7 @@ import org.jhlabs.scany.engine.search.AnySearcherModel;
  * <p>Created: 2011. 11. 6. 오후 4:46:36</p>
  *
  */
-public class RemoteScanySearcher extends AnySearcherModel implements AnySearcher {
+public class RemoteAnySearcher extends AnySearcherModel implements AnySearcher {
 
 	public Record[] search(String queryString) throws AnySearchException {
 		// TODO Auto-generated method stub

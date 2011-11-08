@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.jhlabs.scany.service;
+package org.jhlabs.scany.service.remote;
 
 /**
  *
@@ -10,6 +10,6 @@ package org.jhlabs.scany.service;
  * <p>Created: 2011. 11. 6. 오후 4:46:36</p>
  *
  */
-public class ScanyTransaction {
+public class AnyRemoteService {
 
 }

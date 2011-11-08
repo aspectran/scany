@@ -3,7 +3,7 @@
  */
 package org.jhlabs.scany.context;
 
-import org.jhlabs.scany.service.ScanyService;
+import org.jhlabs.scany.service.AnyService;
 
 /**
  *
@@ -18,7 +18,7 @@ public class ScanyContext {
 		
 	}
 	
-	public ScanyService getScanyService(String serviceId) {
+	public AnyService getScanyService(String serviceId) {
 		return null;
 	}
 	
