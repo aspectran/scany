@@ -5,6 +5,7 @@ package org.jhlabs.scany.service;
 
 import org.jhlabs.scany.context.rule.BaseServiceRule;
 import org.jhlabs.scany.engine.search.AnySearcher;
+import org.jhlabs.scany.engine.transaction.AnyTransaction;
 
 /**
  *

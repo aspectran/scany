@@ -38,7 +38,7 @@ import java.util.Iterator;
  * @author Gulendol
  *
  */
-public class AnySmartSearcher extends AnyExpertSearcher implements AnySearcher {
+public class AnySmartSearcher extends PrimitiveLuceneSearcher implements AnySearcher {
 	
 	/**
 	 * 생성자

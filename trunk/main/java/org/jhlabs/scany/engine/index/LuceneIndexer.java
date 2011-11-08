@@ -40,7 +40,7 @@ import org.apache.lucene.store.FSDirectory;
  * 
  * @author gulendol
  */
-public class AnyIndexerImpl implements AnyIndexer {
+public class LuceneIndexer implements AnyIndexer {
 
 	private Table schema;
 
@@ -54,7 +54,7 @@ public class AnyIndexerImpl implements AnyIndexer {
 	 * @param schema Schema
 	 * @throws MultipartRequestzException
 	 */
-	public AnyIndexerImpl(Table schema) throws AnyIndexException {
+	public LuceneIndexer(Table schema) throws AnyIndexException {
 		this.schema = schema;
 		initialize(false);
 	}
