@@ -8,8 +8,9 @@
  * Contributors:
  *     Jeong Ju Ho - initial API and implementation
  ******************************************************************************/
-package org.jhlabs.scany.engine.search;
+package org.jhlabs.scany.engine.summarize;
 
+import org.jhlabs.scany.engine.search.SmartQueryParser;
 import org.jhlabs.scany.util.StringUtils;
 
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ import java.util.List;
  * @author Gulendol
  *
  */
-public class Summarizer {
+public class SimpleFragmentSummarizer implements Summarizer {
 	
 	/**
 	 * 요약문의 최대 길이
@@ -53,7 +54,7 @@ public class Summarizer {
 	/**
 	 * 생성자
 	 */
-	public Summarizer() {
+	public SimpleFragmentSummarizer() {
 		this((String[])null, 0, 0);
 	}
 	
@@ -61,7 +62,7 @@ public class Summarizer {
 	 * 생성자
 	 * @param queryString 질의문
 	 */
-	public Summarizer(String[] keywords) {
+	public SimpleFragmentSummarizer(String[] keywords) {
 		this(keywords, 0, 0);
 	}
 	
@@ -69,7 +70,7 @@ public class Summarizer {
 	 * 생성자
 	 * @param queryString 질의문
 	 */
-	public Summarizer(String queryString) {
+	public SimpleFragmentSummarizer(String queryString) {
 		this(queryString, 0, 0);
 	}
 	
@@ -79,7 +80,7 @@ public class Summarizer {
 	 * @param summarizeLength 요약문의 최대 길이
 	 * @param contextLength
 	 */
-	public Summarizer(String queryString, int summarizeLength, int contextLength) {
+	public SimpleFragmentSummarizer(String queryString, int summarizeLength, int contextLength) {
 		setKeywords(extractKeywords(queryString));
 
 		if(summarizeLength > 0)
@@ -95,7 +96,7 @@ public class Summarizer {
 	 * @param summarizeLength 요약문의 최대 길이
 	 * @param contextLength
 	 */
-	public Summarizer(String[] keywords, int summarizeLength, int contextLength) {
+	public SimpleFragmentSummarizer(String[] keywords, int summarizeLength, int contextLength) {
 		setKeywords(keywords);
 
 		if(summarizeLength > 0)
@@ -576,7 +577,7 @@ public class Summarizer {
 //		//System.out.print(s.getSummary(body.toString()));
 //		System.out.print(s.summarize(" abcd 나인 1969년 샘 페킨파(Sam Peckinpah)가 연출하고 윌리엄 홀던(William Holden ), 어네스트 보그나인(Ernest Borgnine), 로버트 라이언(Robert Ryan) 등이 출연하였다. 기존의 서부극이 영웅적인 주인공과 악한의 대결구도를 강조하면서 주인공의 행동을 정당화시키는1969년 샘 페킨파(Sam Peckinpah)가 연출하고 윌리엄 홀던(William Holden ), 어네스트 보그나인(Ernest Borgnine), 로버트 라이언(Robert Ryan) 등이 출연하였다. 기존의 서부극이 영웅적인 주인공과 악한 나인의 대결구도를 강조하면서 주인공의 행동을 정당화시키는"));
 		
-		Summarizer s = new Summarizer("하이 오리 apple");
+		SimpleFragmentSummarizer s = new SimpleFragmentSummarizer("하이 오리 apple");
 		
 		//System.out.print(s.getSummary(body.toString()));
 		System.out.println(s.summarize("감 오리하이 Apple scany"));

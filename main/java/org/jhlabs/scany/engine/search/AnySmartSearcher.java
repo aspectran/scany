@@ -12,6 +12,7 @@ package org.jhlabs.scany.engine.search;
 
 import org.jhlabs.scany.engine.entity.Record;
 import org.jhlabs.scany.engine.entity.Table;
+import org.jhlabs.scany.engine.summarize.SimpleFragmentSummarizer;
 import org.jhlabs.scany.util.StringUtils;
 
 import java.util.Iterator;
@@ -137,7 +138,7 @@ public class AnySmartSearcher extends AnyExpertSearcher implements AnySearcher {
 		
 		while(it.hasNext()) {
 			String columnName = (String)it.next();
-			Summarizer summarizer = (Summarizer)summarizers.get(columnName);
+			SimpleFragmentSummarizer summarizer = (SimpleFragmentSummarizer)summarizers.get(columnName);
 			summarizer.setKeywords(keywords);
 			
 			for(int i = 0; i < records.length; i++) {
