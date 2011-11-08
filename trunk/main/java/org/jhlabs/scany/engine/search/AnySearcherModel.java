@@ -18,13 +18,13 @@ import java.util.Map;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.Hits;
-
 import org.jhlabs.scany.context.builder.ScanyContextBuilder;
 import org.jhlabs.scany.engine.entity.Column;
 import org.jhlabs.scany.engine.entity.PrimaryKey;
 import org.jhlabs.scany.engine.entity.PrimaryKeyException;
 import org.jhlabs.scany.engine.entity.Record;
 import org.jhlabs.scany.engine.entity.Table;
+import org.jhlabs.scany.engine.summarize.Summarizer;
 
 /**
  * <p>

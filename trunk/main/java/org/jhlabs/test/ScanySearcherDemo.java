@@ -18,7 +18,7 @@ import org.jhlabs.scany.engine.entity.PrimaryKey;
 import org.jhlabs.scany.engine.entity.Record;
 import org.jhlabs.scany.engine.search.AnySearcher;
 import org.jhlabs.scany.engine.search.SortColumn;
-import org.jhlabs.scany.engine.search.Summarizer;
+import org.jhlabs.scany.engine.summarize.SimpleFragmentSummarizer;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -47,7 +47,7 @@ public class ScanySearcherDemo {
 			
 			searcher.setHitsPerPage(100);
 			
-			Summarizer summarizer = new Summarizer();
+			SimpleFragmentSummarizer summarizer = new SimpleFragmentSummarizer();
 			
 			searcher.addSummarizer("title", summarizer);
 			
