@@ -58,14 +58,14 @@
 	</queryFilters>
 
 	<relation id="notice" analyzer="bigram">
+		<description>공지사항</description>
 		<directory type="relative">notice</directory>
 		<recordKey separator="$">boardId$articleNo</recordKey>
-		<description>공지사항</description>
 		<attributes>
-			<attribute name="boardId" key="true"
+			<attribute name="boardId"
 				storable="yes" indexable="no" queryable="no"
 				>게시판ID</attribute>
-			<attribute name="articleId" key="true"
+			<attribute name="articleId"
 				storable="yes" indexable="no" queryable="no"
 				>글ID</attribute>
 			<attribute name="group"
