@@ -105,12 +105,10 @@ public class QueryBuilder {
 
 			// 컬럼쿼리
 			if(!StringUtils.isEmpty(queryString)) {
-				if(queryString.length() > 0) {
-					Query parsedQuery = getParsedQuery(queryString);
+				Query parsedQuery = stringToQuery(queryString);
 
-					if(parsedQuery != null)
-						queries.add(parsedQuery);
-				}
+				if(parsedQuery != null)
+					queries.add(parsedQuery);
 			}
 
 			if(queries.size() == 0)
@@ -198,7 +196,7 @@ public class QueryBuilder {
 	 * @return
 	 * @throws MultipartRequestzException
 	 */
-	private Query getParsedQuery(String queryString) throws AnyQueryException {
+	private Query stringToQuery(String queryString) throws AnyQueryException {
 		String typicalColumnName;
 		
 		if(queryColumns == null || queryColumns.length == 0)

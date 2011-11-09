@@ -46,13 +46,13 @@ import org.apache.lucene.search.Searcher;
  * @author Gulendol
  *
  */
-public class PrimitiveLuceneSearcher extends AnySearcherModel implements AnySearcher {
+public class LuceneSearcher extends AnySearcherModel implements AnySearcher {
 	
 	/**
 	 * 생성자
 	 * 검색하기 전에 반드시 스키마를 지정해야 한다.
 	 */
-	public PrimitiveLuceneSearcher() {
+	public LuceneSearcher() {
 		super();
 	}
 
@@ -61,7 +61,7 @@ public class PrimitiveLuceneSearcher extends AnySearcherModel implements AnySear
 	 * @param schema 스키마
 	 * @throws ScanySearchException
 	 */
-	public PrimitiveLuceneSearcher(Relation schema) throws AnySearchException {
+	public LuceneSearcher(Relation schema) throws AnySearchException {
 		super(schema);
 	}
 	
@@ -123,7 +123,9 @@ public class PrimitiveLuceneSearcher extends AnySearcherModel implements AnySear
 			queryBuilder.setFilterColumns(getFilterColumns());
 			queryBuilder.setQeuryColumns(getQueryColumns());
 			
-			Query query = queryBuilder.getQuery(queryString);
+			QueryStringParser parser = new QueryStringParser(getQueryColumns());
+
+			Query query = queryBuilder.getQuery(parser.parse(queryString));
 			
 			//System.out.println(query.toString());
 
@@ -149,6 +151,9 @@ public class PrimitiveLuceneSearcher extends AnySearcherModel implements AnySear
 			int endDocNo = Math.min(startDocNo + hitsPerPage - 1, totalRecords - 1);
 
 			Record[] records = transplantToRecords(hits, startDocNo, endDocNo);
+			
+			if(getSummarizers() != null)
+				records = summarize(parser.getKeywords(), records);
 			
 			return records;
 
@@ -202,13 +207,15 @@ public class PrimitiveLuceneSearcher extends AnySearcherModel implements AnySear
 						schema.getSchemaId() + ")");
 			}
 			
-			List records = new ArrayList();
+			List recordList = new ArrayList();
 
 			QueryBuilder queryBuilder = new QueryBuilder(schema.getAnalyzer());
 			queryBuilder.setFilterColumns(getFilterColumns());
 			queryBuilder.setQeuryColumns(getQueryColumns());
 			
-			Query query = queryBuilder.getQuery(queryString);
+			QueryStringParser parser = new QueryStringParser(getQueryColumns());
+			
+			Query query = queryBuilder.getQuery(parser.parse(queryString));
 
 			Hits hits = null;
 			
@@ -228,7 +235,7 @@ public class PrimitiveLuceneSearcher extends AnySearcherModel implements AnySear
 						continue;
 					
 					Record record = documentToRecord(hits.doc(docs[i]), schema);
-					records.add(record);
+					recordList.add(record);
 				}
 				
 				//System.out.println("랜덤");
@@ -239,7 +246,7 @@ public class PrimitiveLuceneSearcher extends AnySearcherModel implements AnySear
 				if(sortColumn != null) {
 					for(int i = 0; i < totalRecords; i++) {							
 						Record record = documentToRecord(hits.doc(i), schema);
-						records.add(record);
+						recordList.add(record);
 					}
 					
 				// SortColumn이 지정되지 않았을 경우 document 번호를 역순으로
@@ -247,12 +254,17 @@ public class PrimitiveLuceneSearcher extends AnySearcherModel implements AnySear
 				} else {
 					for(int i = totalRecords - 1; i >= 0; i--) {
 						Record record = documentToRecord(hits.doc(i), schema);
-						records.add(record);
+						recordList.add(record);
 					}
 				}
 			}
 			
-			return (Record[])records.toArray(new Record[records.size()]);
+			Record[] records = (Record[])recordList.toArray(new Record[recordList.size()]);
+			
+			if(getSummarizers() != null)
+				records = summarize(parser.getKeywords(), records);
+			
+			return records;
 
 		} catch(Exception e) {
 			throw new AnySearchException("Scany(RandomSearcher) 검색 과정에서 오류가 발생했습니다.", e);

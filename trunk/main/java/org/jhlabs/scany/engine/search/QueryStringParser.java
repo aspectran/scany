@@ -42,7 +42,7 @@ import java.util.StringTokenizer;
  * @author Gulendol
  *
  */
-public class SmartQueryParser {
+public class QueryStringParser {
 
 	protected static final String[] OPERATORS = { "AND", "OR", "NOT" };
 	protected static final String[] OPERATOR_IMAGES = { "<AND>", "<OR>", "<NOT>" };
@@ -56,10 +56,10 @@ public class SmartQueryParser {
 	
 	private String[] fields;
 	
-	public SmartQueryParser() {
+	public QueryStringParser() {
 	}
 	
-	public SmartQueryParser(Attribute[] queryColumns) {
+	public QueryStringParser(Attribute[] queryColumns) {
 		this.queryColumns = queryColumns;
 	}
 	
