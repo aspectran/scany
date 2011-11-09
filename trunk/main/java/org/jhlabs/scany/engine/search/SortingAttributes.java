@@ -24,7 +24,7 @@ import org.apache.lucene.search.SortField;
  * @author Gulendol
  *
  */
-public class SortColumn {
+public class SortingAttributes {
 
 	public final int SCORE = SortField.SCORE;
 	

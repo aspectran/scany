@@ -46,7 +46,7 @@ public class AnySearcherModel {
 
 	private List filterColumns;
 
-	protected SortColumn sortColumn;
+	protected SortingAttributes sortColumn;
 
 	protected int totalRecords = 0;
 
@@ -192,7 +192,7 @@ public class AnySearcherModel {
 	 * @param reverse 역순 정렬 여부
 	 * @throws AnySearchException
 	 */
-	public void setSortColumn(SortColumn sortColumn) throws AnySearchException {
+	public void setSortColumn(SortingAttributes sortColumn) throws AnySearchException {
 		try {
 			String[] columnNames = sortColumn.getColumnNames();
 			Attribute[] columns = schema.getColumns();
@@ -260,11 +260,11 @@ public class AnySearcherModel {
 	 * 
 	 * @return
 	 */
-	protected FilterColumn[] getFilterColumns() {
+	protected FilteringAttributes[] getFilterColumns() {
 		if(filterColumns == null || filterColumns.size() == 0)
 			return null;
 
-		return (FilterColumn[])filterColumns.toArray(new FilterColumn[filterColumns.size()]);
+		return (FilteringAttributes[])filterColumns.toArray(new FilteringAttributes[filterColumns.size()]);
 	}
 
 	/**
@@ -340,7 +340,7 @@ public class AnySearcherModel {
 			if(filterColumns == null)
 				filterColumns = new ArrayList();
 
-			FilterColumn filterColumn = new FilterColumn(columnName, keyword, isEssentialClause);
+			FilteringAttributes filterColumn = new FilteringAttributes(columnName, keyword, isEssentialClause);
 
 			filterColumns.add(filterColumn);
 
@@ -360,9 +360,9 @@ public class AnySearcherModel {
 		try {
 			asureSchema();
 
-			String pkey = primaryKey.encode();
+			String pkey = primaryKey.combine();
 
-			FilterColumn fc = new FilterColumn(ScanyContextBuilder.PRIMARY_KEY, pkey, true);
+			FilteringAttributes fc = new FilteringAttributes(ScanyContextBuilder.PRIMARY_KEY, pkey, true);
 
 			if(filterColumns == null)
 				filterColumns = new ArrayList();

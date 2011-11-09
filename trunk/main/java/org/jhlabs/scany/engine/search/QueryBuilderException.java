@@ -18,14 +18,14 @@ package org.jhlabs.scany.engine.search;
  * @author Gulendol
  * 
  */
-public class AnyQueryException extends Exception {
+public class QueryBuilderException extends Exception {
 
 	static final long serialVersionUID = 2574168167336003956L;
 
 	/**
 	 * Simple constructor
 	 */
-	public AnyQueryException() {
+	public QueryBuilderException() {
 	}
 
 	/**
@@ -34,7 +34,7 @@ public class AnyQueryException extends Exception {
 	 * @param msg
 	 *            A message to associate with the exception
 	 */
-	public AnyQueryException(String msg) {
+	public QueryBuilderException(String msg) {
 		super(msg);
 	}
 
@@ -44,7 +44,7 @@ public class AnyQueryException extends Exception {
 	 * @param cause
 	 *            The real cause of the exception
 	 */
-	public AnyQueryException(Throwable cause) {
+	public QueryBuilderException(Throwable cause) {
 		super(cause);
 	}
 
@@ -57,7 +57,7 @@ public class AnyQueryException extends Exception {
 	 * @param cause
 	 *            The real cause of the exception
 	 */
-	public AnyQueryException(String msg, Throwable cause) {
+	public QueryBuilderException(String msg, Throwable cause) {
 		super(msg, cause);
 	}
 }
