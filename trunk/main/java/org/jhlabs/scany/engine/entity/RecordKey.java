@@ -25,9 +25,9 @@ import java.util.Map;
  */
 public class RecordKey {
 	
-	public static final String PRIMARY_KEY = "_p_key_";
+	public static final String RECORD_KEY = "_r_key_";
 	
-	private Map keys = new HashMap();
+	private Map<String, String> keys = new HashMap<String, String>();
 	
 	private boolean wildcard;
 	
@@ -43,7 +43,7 @@ public class RecordKey {
 	public RecordKey(String primaryKey, Relation schema) throws RecordKeyException {
 		this(schema);
 		
-		decode(primaryKey);
+		separate(primaryKey);
 	}
 	
 	/**
@@ -115,8 +115,8 @@ public class RecordKey {
 		setKeyValue(keyName, (new Integer(keyValue)).toString());
 	}
 	
-	public String encode() throws RecordKeyException {
-		return encode(this.keyPattern);
+	public String combine() throws RecordKeyException {
+		return combine(this.keyPattern);
 	}
 	
 	/**
@@ -125,7 +125,7 @@ public class RecordKey {
 	 * @return
 	 * @throws MultipartRequestzException
 	 */
-	public String encode(String keyPattern) throws RecordKeyException {
+	public String combine(String keyPattern) throws RecordKeyException {
 		try {
 			String[] keyNames = StringUtils.split(keyPattern, ScanyContextBuilder.KEY_DELIMITER);
 			String[] keyValues = new String[keyNames.length];
@@ -184,9 +184,9 @@ public class RecordKey {
 	 * @param keyPattern
 	 * @throws MultipartRequestzException
 	 */
-	public void decode(String primaryKey, String keyPattern) throws RecordKeyException {
+	public void separate(String primaryKey, String keyPattern) throws RecordKeyException {
 		this.keyPattern = keyPattern;
-		decode(primaryKey);
+		separate(primaryKey);
 	}
 	
 	/**
@@ -194,7 +194,7 @@ public class RecordKey {
 	 * @param primaryKey
 	 * @throws MultipartRequestzException
 	 */
-	public void decode(String primaryKey) throws RecordKeyException {
+	public void separate(String primaryKey) throws RecordKeyException {
 		try {
 			String[] keyNames = StringUtils.split(keyPattern, ScanyContextBuilder.KEY_DELIMITER);
 			String[] keyValues = StringUtils.split(primaryKey, ScanyContextBuilder.KEY_DELIMITER);
