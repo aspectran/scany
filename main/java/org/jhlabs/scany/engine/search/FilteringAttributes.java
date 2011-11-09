@@ -18,7 +18,7 @@ package org.jhlabs.scany.engine.search;
  * @author Gulendol
  *
  */
-public class FilterColumn {
+public class FilteringAttributes {
 	
 	private String columnName;
 	
@@ -35,7 +35,7 @@ public class FilterColumn {
 	 * @param keyword 키워드
 	 * @param isEssentialClause 필수항목 여부
 	 */
-	public FilterColumn(String columnName, String keyword, boolean isEssentialClause) {
+	public FilteringAttributes(String columnName, String keyword, boolean isEssentialClause) {
 		this.columnName = columnName;
 		this.keyword = keyword;
 		this.isEssentialClause = isEssentialClause;

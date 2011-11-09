@@ -104,7 +104,7 @@ public interface AnySearcher {
 	 * @param reverse 역순 정렬 여부
 	 * @throws AnySearchException
 	 */
-	public void setSortColumn(SortColumn sortColumn) throws AnySearchException;
+	public void setSortColumn(SortingAttributes sortColumn) throws AnySearchException;
 	
 	/**
 	 * 질의 가능 대상 컬럼을 추가한다.

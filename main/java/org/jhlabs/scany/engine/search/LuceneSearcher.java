@@ -119,7 +119,7 @@ public class LuceneSearcher extends AnySearcherModel implements AnySearcher {
 
 			Analyzer analyzer = schema.getAnalyzer();
 			
-			QueryBuilder queryBuilder = new QueryBuilder(analyzer);
+			LuceneQueryBuilder queryBuilder = new LuceneQueryBuilder(analyzer);
 			queryBuilder.setFilterColumns(getFilterColumns());
 			queryBuilder.setQeuryColumns(getQueryColumns());
 			
@@ -209,7 +209,7 @@ public class LuceneSearcher extends AnySearcherModel implements AnySearcher {
 			
 			List recordList = new ArrayList();
 
-			QueryBuilder queryBuilder = new QueryBuilder(schema.getAnalyzer());
+			LuceneQueryBuilder queryBuilder = new LuceneQueryBuilder(schema.getAnalyzer());
 			queryBuilder.setFilterColumns(getFilterColumns());
 			queryBuilder.setQeuryColumns(getQueryColumns());
 			

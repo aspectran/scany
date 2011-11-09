@@ -42,14 +42,14 @@ import org.apache.lucene.search.WildcardQuery;
  * 
  * @author Gulendol
  */
-public class QueryBuilder {
+public class LuceneQueryBuilder {
 
 	private Analyzer analyzer;
 	
 	/**
 	 * 필터 대상 컬럼
 	 */
-	private FilterColumn[] filterColumns;
+	private FilteringAttributes[] filterColumns;
 
 	/**
 	 * 질의 대상 컬럼
@@ -63,7 +63,7 @@ public class QueryBuilder {
 	 * @param analyzer 분석기
 	 * @param isExpertQueryMode 전문가용 질의문법 사용여부
 	 */
-	protected QueryBuilder(Analyzer analyzer) {
+	protected LuceneQueryBuilder(Analyzer analyzer) {
 		this.analyzer = analyzer;
 	}
 
@@ -72,7 +72,7 @@ public class QueryBuilder {
 	 * 
 	 * @param filterColumns
 	 */
-	protected void setFilterColumns(FilterColumn[] filterColumns) {
+	protected void setFilterColumns(FilteringAttributes[] filterColumns) {
 		this.filterColumns = filterColumns;
 	}
 
@@ -92,7 +92,7 @@ public class QueryBuilder {
 	 * @return
 	 * @throws MultipartRequestzException
 	 */
-	protected Query getQuery(String queryString) throws AnyQueryException {
+	protected Query getQuery(String queryString) throws QueryBuilderException {
 
 		try {
 			List queries = new ArrayList();
@@ -130,7 +130,7 @@ public class QueryBuilder {
 			return booleanQuery;
 
 		} catch(Exception e) {
-			throw new AnyQueryException("질의 조합에 실패했습니다.", e);
+			throw new QueryBuilderException("질의 조합에 실패했습니다.", e);
 		}
 	}
 
@@ -196,7 +196,7 @@ public class QueryBuilder {
 	 * @return
 	 * @throws MultipartRequestzException
 	 */
-	private Query stringToQuery(String queryString) throws AnyQueryException {
+	private Query stringToQuery(String queryString) throws QueryBuilderException {
 		String typicalColumnName;
 		
 		if(queryColumns == null || queryColumns.length == 0)
@@ -214,7 +214,7 @@ public class QueryBuilder {
 			
 			System.out.println(query);
 		} catch(ParseException e) {
-			throw new AnyQueryException("질의문을 분석할 수 없습니다.", e);
+			throw new QueryBuilderException("질의문을 분석할 수 없습니다.", e);
 		}
 
 		return query;
