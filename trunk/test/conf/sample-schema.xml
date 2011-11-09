@@ -48,6 +48,14 @@
 		<analyzer id="" class=""/>
 		<analyzer id="" class=""/>
 	</analyzers>
+	
+	<summarizers>
+		<summarizer id="summarizer" class="org.jhlabs.scany.engine.summarize.SimpleFragmentSummarizer"/>
+	</summarizers>
+	
+	<queryFilters>
+		<queryFilter id="queryFilter" class=""/>
+	</queryFilters>
 
 	<table id="notice" analyzer="bigram" queryMode="smart">
 		<directory type="relative">notice</directory>
@@ -65,7 +73,7 @@
 					boost="1.1"
 					>제목</column>
 			<column name="content"
-					storable="compress" indexable="tokenize" queryable="prefix"
+					storable="compress" indexable="tokenize" queryable="prefix" summarizer="summarizer"
 					boost="1.0"
 					>내용</column>
 			<column name="tag"
