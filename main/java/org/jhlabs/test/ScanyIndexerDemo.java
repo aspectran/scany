@@ -56,7 +56,7 @@ public class ScanyIndexerDemo {
 			record.addColumnValue("writer", "홍길동");
 			record.addColumnValue("url", "url");
 //			record.addColumnValue("date", Datez.format(new Date(), "yyyyMMddHHmmss"));
-			System.out.println(primaryKey.encode(schema.getKeyPattern()));
+			System.out.println(primaryKey.combine(schema.getKeyPattern()));
 			System.out.println();
 			
 			int result = 1;
