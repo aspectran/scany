@@ -57,41 +57,41 @@
 		<queryFilter id="queryFilter" class=""/>
 	</queryFilters>
 
-	<table id="notice" analyzer="bigram" queryMode="smart">
+	<relation id="notice" analyzer="bigram" queryMode="smart">
 		<directory type="relative">notice</directory>
 		<keyPattern separator="$">boardId$articleNo</keyPattern>
 		<description>공지사항</description>
-		<columns>
-			<column name="group"
+		<attributes>
+			<attribute name="group"
 					storable="yes" indexable="yes" queryable="no"
-					>게시판그룹</column>
-			<column name="category"
+					>게시판그룹</attribute>
+			<attribute name="category"
 					storable="yes" indexable="yes" queryable="no"
-					>분류</column>
-			<column name="title"
+					>분류</attribute>
+			<attribute name="title"
 					storable="yes" indexable="tokenize" queryable="prefix"
 					boost="1.1"
-					>제목</column>
-			<column name="content"
+					>제목</attribute>
+			<attribute name="content"
 					storable="compress" indexable="tokenize" queryable="prefix" summarizer="summarizer"
 					boost="1.0"
-					>내용</column>
-			<column name="tag"
+					>내용</attribute>
+			<attribute name="tag"
 					storable="yes" indexable="tokenize" queryable="yes"
 					boost="1.2"
 					analyzer="csv"
-					>태그</column>
-			<column name="writer"
+					>태그</attribute>
+			<attribute name="writer"
 					storable="yes" indexable="yes" queryable="no"
-					>작성자</column>
-			<column name="date"
+					>작성자</attribute>
+			<attribute name="date"
 					storable="yes" indexable="yes" queryable="no"
-					>등록일자</column>
-			<column name="url"
+					>등록일자</attribute>
+			<attribute name="url"
 					storable="yes" indexable="no" queryable="no"
-					>URL</column>
-		</columns>
-	</table>
+					>URL</attribute>
+		</attributes>
+	</relation>
 
 <Schema name="general">
 	<KeyPattern>boardId$articleNo</KeyPattern>
