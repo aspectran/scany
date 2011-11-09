@@ -57,39 +57,45 @@
 		<queryFilter id="queryFilter" class=""/>
 	</queryFilters>
 
-	<relation id="notice" analyzer="bigram" queryMode="smart">
+	<relation id="notice" analyzer="bigram">
 		<directory type="relative">notice</directory>
-		<keyPattern separator="$">boardId$articleNo</keyPattern>
+		<recordKey separator="$">boardId$articleNo</recordKey>
 		<description>공지사항</description>
 		<attributes>
+			<attribute name="boardId" key="true"
+				storable="yes" indexable="no" queryable="no"
+				>게시판ID</attribute>
+			<attribute name="articleId" key="true"
+				storable="yes" indexable="no" queryable="no"
+				>글ID</attribute>
 			<attribute name="group"
-					storable="yes" indexable="yes" queryable="no"
-					>게시판그룹</attribute>
+				storable="yes" indexable="yes" queryable="no"
+				>게시판그룹</attribute>
 			<attribute name="category"
-					storable="yes" indexable="yes" queryable="no"
-					>분류</attribute>
+				storable="yes" indexable="yes" queryable="no"
+				>분류</attribute>
 			<attribute name="title"
-					storable="yes" indexable="tokenize" queryable="prefix"
-					boost="1.1"
-					>제목</attribute>
+				storable="yes" indexable="tokenize" queryable="prefix"
+				boost="1.1"
+				>제목</attribute>
 			<attribute name="content"
-					storable="compress" indexable="tokenize" queryable="prefix" summarizer="summarizer"
-					boost="1.0"
-					>내용</attribute>
+				storable="compress" indexable="tokenize" queryable="prefix" summarizer="summarizer"
+				boost="1.0"
+				>내용</attribute>
 			<attribute name="tag"
-					storable="yes" indexable="tokenize" queryable="yes"
-					boost="1.2"
-					analyzer="csv"
-					>태그</attribute>
+				storable="yes" indexable="tokenize" queryable="yes"
+				boost="1.2"
+				analyzer="csv"
+				>태그</attribute>
 			<attribute name="writer"
-					storable="yes" indexable="yes" queryable="no"
-					>작성자</attribute>
+				storable="yes" indexable="yes" queryable="no"
+				>작성자</attribute>
 			<attribute name="date"
-					storable="yes" indexable="yes" queryable="no"
-					>등록일자</attribute>
+				storable="yes" indexable="yes" queryable="no"
+				>등록일자</attribute>
 			<attribute name="url"
-					storable="yes" indexable="no" queryable="no"
-					>URL</attribute>
+				storable="yes" indexable="no" queryable="no"
+				>URL</attribute>
 		</attributes>
 	</relation>
 

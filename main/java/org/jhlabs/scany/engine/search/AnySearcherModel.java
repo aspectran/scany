@@ -13,6 +13,7 @@ package org.jhlabs.scany.engine.search;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -24,7 +25,9 @@ import org.jhlabs.scany.engine.entity.RecordKey;
 import org.jhlabs.scany.engine.entity.RecordKeyException;
 import org.jhlabs.scany.engine.entity.Record;
 import org.jhlabs.scany.engine.entity.Relation;
+import org.jhlabs.scany.engine.summarize.SimpleFragmentSummarizer;
 import org.jhlabs.scany.engine.summarize.Summarizer;
+import org.jhlabs.scany.util.StringUtils;
 
 /**
  * <p>
@@ -530,5 +533,32 @@ public class AnySearcherModel {
 		}
 
 		return record;
+	}
+	
+	/**
+	 * Summarize.
+	 *
+	 * @param keywords the keywords
+	 * @param records the records
+	 * @return the record[]
+	 */
+	protected Record[] summarize(String[] keywords, Record[] records) {
+		Iterator it = (Iterator)summarizers.keySet().iterator();
+		
+		while(it.hasNext()) {
+			String columnName = (String)it.next();
+			SimpleFragmentSummarizer summarizer = (SimpleFragmentSummarizer)summarizers.get(columnName);
+			summarizer.setKeywords(keywords);
+			
+			for(int i = 0; i < records.length; i++) {
+				String content = records[i].getColumnValue(columnName);
+				
+				if(!StringUtils.isEmpty(content)) {
+					records[i].addColumnValue(columnName, summarizer.summarize(content));
+				}
+			}
+		}
+		
+		return records;
 	}
 }

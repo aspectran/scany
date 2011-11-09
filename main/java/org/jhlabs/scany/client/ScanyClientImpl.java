@@ -13,9 +13,8 @@ package org.jhlabs.scany.client;
 import org.jhlabs.scany.engine.entity.Relation;
 import org.jhlabs.scany.engine.index.AnyIndexer;
 import org.jhlabs.scany.engine.index.LuceneIndexer;
-import org.jhlabs.scany.engine.search.PrimitiveLuceneSearcher;
 import org.jhlabs.scany.engine.search.AnySearcher;
-import org.jhlabs.scany.engine.search.AnySmartSearcher;
+import org.jhlabs.scany.engine.search.LuceneSearcher;
 
 /**
  * 
@@ -54,7 +53,7 @@ public class ScanyClientImpl extends ClientConfig implements ScanyClient {
 		try {
 			AnySearcher anySearcher = null;
 			
-			anySearcher = new PrimitiveLuceneSearcher(schema);
+			anySearcher = new LuceneSearcher(schema);
 			
 			return anySearcher;
 		} catch(Exception e) {
@@ -66,7 +65,7 @@ public class ScanyClientImpl extends ClientConfig implements ScanyClient {
 		try {
 			AnySearcher anySearcher = null;
 			
-			anySearcher = new AnySmartSearcher(schema);
+			anySearcher = new LuceneSearcher(schema);
 			
 			return anySearcher;
 		} catch(Exception e) {
