@@ -11,7 +11,7 @@
 package org.jhlabs.scany.engine.search;
 
 import org.jhlabs.scany.engine.entity.Record;
-import org.jhlabs.scany.engine.entity.Table;
+import org.jhlabs.scany.engine.entity.Relation;
 import org.jhlabs.scany.engine.summarize.SimpleFragmentSummarizer;
 import org.jhlabs.scany.util.StringUtils;
 
@@ -53,7 +53,7 @@ public class AnySmartSearcher extends PrimitiveLuceneSearcher implements AnySear
 	 * @param schema 스키마
 	 * @throws ScanySearchException
 	 */
-	public AnySmartSearcher(Table schema) throws AnySearchException {
+	public AnySmartSearcher(Relation schema) throws AnySearchException {
 		super(schema);
 	}
 	

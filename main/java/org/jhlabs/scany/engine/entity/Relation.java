@@ -13,7 +13,7 @@ package org.jhlabs.scany.engine.entity;
 
 import org.apache.lucene.analysis.Analyzer;
 
-import org.jhlabs.scany.engine.entity.Column;
+import org.jhlabs.scany.engine.entity.Attribute;
 
 /**
  * 스키마 정보를 담고 있다.
@@ -21,7 +21,7 @@ import org.jhlabs.scany.engine.entity.Column;
  * @author Gulendol
  *
  */
-public class Table {
+public class Relation {
 
 	private String schemaId;
 	
@@ -31,7 +31,7 @@ public class Table {
 	
 	private String description;
 
-	private Column[] columns;
+	private Attribute[] columns;
 	
 	private Analyzer analyzer;
 	
@@ -47,7 +47,7 @@ public class Table {
 	 * @param columnName 컬럼명
 	 * @return
 	 */
-	public Column getColumn(String columnName) {
+	public Attribute getColumn(String columnName) {
 		if(columns == null)
 			return null;
 		
@@ -63,7 +63,7 @@ public class Table {
 	 * 컬럼을 반환한다.
 	 * @return the columns
 	 */
-	public Column[] getColumns() {
+	public Attribute[] getColumns() {
 		return columns;
 	}
 
@@ -71,7 +71,7 @@ public class Table {
 	 * 컬럼을 지정한다.
 	 * @param columns the columns to set
 	 */
-	public void setColumns(Column[] columns) {
+	public void setColumns(Attribute[] columns) {
 		this.columns = columns;
 	}
 

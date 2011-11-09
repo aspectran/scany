@@ -1,13 +1,13 @@
 package org.jhlabs.scany.service.http;
 
-import org.jhlabs.scany.engine.entity.Table;
+import org.jhlabs.scany.engine.entity.Relation;
 import org.jhlabs.scany.engine.transaction.AbstractAnyTransaction;
 
 public class HttpAnyTransaction extends AbstractAnyTransaction {
 
-	private Table table;
+	private Relation table;
 
-	public HttpAnyTransaction(Table table) {
+	public HttpAnyTransaction(Relation table) {
 		this.table = table;
 	}
 	

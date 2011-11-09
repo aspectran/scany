@@ -10,7 +10,7 @@
  ******************************************************************************/
 package org.jhlabs.scany.client;
 
-import org.jhlabs.scany.engine.entity.Table;
+import org.jhlabs.scany.engine.entity.Relation;
 import org.jhlabs.scany.engine.index.AnyIndexer;
 import org.jhlabs.scany.engine.index.LuceneIndexer;
 import org.jhlabs.scany.engine.search.PrimitiveLuceneSearcher;
@@ -31,7 +31,7 @@ public class ScanyClientImpl extends ClientConfig implements ScanyClient {
 	}
 
 	public AnySearcher getSearcher(String schemaId) {
-		Table schema = getSchema(schemaId);
+		Relation schema = getSchema(schemaId);
 		
 		if(schema == null)
 			throw new ScanyClientException("등록된 스키마가 아닙니다. (Schema ID: " + schemaId + ")");
@@ -39,7 +39,7 @@ public class ScanyClientImpl extends ClientConfig implements ScanyClient {
 		return getSearcher(schema);
 	}
 	
-	public AnySearcher getSearcher(Table schema) {
+	public AnySearcher getSearcher(Relation schema) {
 		AnySearcher anySearcher = null;
 
 		if(schema.isExpertQueryMode())
@@ -50,7 +50,7 @@ public class ScanyClientImpl extends ClientConfig implements ScanyClient {
 		return anySearcher;
 	}
 
-	public AnySearcher getExpertSearcher(Table schema) {
+	public AnySearcher getExpertSearcher(Relation schema) {
 		try {
 			AnySearcher anySearcher = null;
 			
@@ -62,7 +62,7 @@ public class ScanyClientImpl extends ClientConfig implements ScanyClient {
 		}
 	}
 
-	public AnySearcher getAmateurSearcher(Table schema) {
+	public AnySearcher getAmateurSearcher(Relation schema) {
 		try {
 			AnySearcher anySearcher = null;
 			
@@ -75,7 +75,7 @@ public class ScanyClientImpl extends ClientConfig implements ScanyClient {
 	}
 
 	public AnyIndexer getIndexer(String schemaId) {
-		Table schema = getSchema(schemaId);
+		Relation schema = getSchema(schemaId);
 		
 		if(schema == null)
 			throw new ScanyClientException("등록된 스키마가 아닙니다. (Schema ID: " + schemaId + ")");
@@ -83,7 +83,7 @@ public class ScanyClientImpl extends ClientConfig implements ScanyClient {
 		return getIndexer(schema);
 	}
 	
-	public AnyIndexer getIndexer(Table schema) {
+	public AnyIndexer getIndexer(Relation schema) {
 		try {
 			AnyIndexer anyIndexer = null;
 			

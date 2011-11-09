@@ -11,7 +11,7 @@
 package org.jhlabs.scany.engine.search;
 
 import org.jhlabs.scany.context.builder.ScanyContextBuilder;
-import org.jhlabs.scany.engine.entity.Column;
+import org.jhlabs.scany.engine.entity.Attribute;
 import org.jhlabs.scany.util.StringUtils;
 
 import java.util.ArrayList;
@@ -54,7 +54,7 @@ public class QueryBuilder {
 	/**
 	 * 질의 대상 컬럼
 	 */
-	private Column[] queryColumns;
+	private Attribute[] queryColumns;
 
 	//private String queryString;
 
@@ -81,7 +81,7 @@ public class QueryBuilder {
 	 * 
 	 * @param queryColumns 질의 대상 컬럼
 	 */
-	protected void setQeuryColumns(Column[] queryColumns) {
+	protected void setQeuryColumns(Attribute[] queryColumns) {
 		this.queryColumns = queryColumns;
 	}
 
