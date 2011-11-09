@@ -23,7 +23,7 @@ import java.util.Map;
  * @author Gulendol
  *
  */
-public class PrimaryKey {
+public class RecordKey {
 	
 	public static final String PRIMARY_KEY = "_p_key_";
 	
@@ -40,7 +40,7 @@ public class PrimaryKey {
 	 * @param keyPattern 키형식
 	 * @throws MultipartRequestzException
 	 */
-	public PrimaryKey(String primaryKey, Relation schema) throws PrimaryKeyException {
+	public RecordKey(String primaryKey, Relation schema) throws RecordKeyException {
 		this(schema);
 		
 		decode(primaryKey);
@@ -52,7 +52,7 @@ public class PrimaryKey {
 	 * @param keyPattern 키형식
 	 * @throws MultipartRequestzException
 	 */
-	public PrimaryKey(Relation schema) {
+	public RecordKey(Relation schema) {
 		this.keyPattern = schema.getKeyPattern();
 	}
 	
@@ -115,7 +115,7 @@ public class PrimaryKey {
 		setKeyValue(keyName, (new Integer(keyValue)).toString());
 	}
 	
-	public String encode() throws PrimaryKeyException {
+	public String encode() throws RecordKeyException {
 		return encode(this.keyPattern);
 	}
 	
@@ -125,7 +125,7 @@ public class PrimaryKey {
 	 * @return
 	 * @throws MultipartRequestzException
 	 */
-	public String encode(String keyPattern) throws PrimaryKeyException {
+	public String encode(String keyPattern) throws RecordKeyException {
 		try {
 			String[] keyNames = StringUtils.split(keyPattern, ScanyContextBuilder.KEY_DELIMITER);
 			String[] keyValues = new String[keyNames.length];
@@ -173,7 +173,7 @@ public class PrimaryKey {
 			return sb.toString();
 
 		} catch(Exception e) {
-			throw new PrimaryKeyException("PrimaryKey를 인코딩하는 중 오류가 발생했습니다.", e);
+			throw new RecordKeyException("PrimaryKey를 인코딩하는 중 오류가 발생했습니다.", e);
 		}
 	}
 
@@ -184,7 +184,7 @@ public class PrimaryKey {
 	 * @param keyPattern
 	 * @throws MultipartRequestzException
 	 */
-	public void decode(String primaryKey, String keyPattern) throws PrimaryKeyException {
+	public void decode(String primaryKey, String keyPattern) throws RecordKeyException {
 		this.keyPattern = keyPattern;
 		decode(primaryKey);
 	}
@@ -194,7 +194,7 @@ public class PrimaryKey {
 	 * @param primaryKey
 	 * @throws MultipartRequestzException
 	 */
-	public void decode(String primaryKey) throws PrimaryKeyException {
+	public void decode(String primaryKey) throws RecordKeyException {
 		try {
 			String[] keyNames = StringUtils.split(keyPattern, ScanyContextBuilder.KEY_DELIMITER);
 			String[] keyValues = StringUtils.split(primaryKey, ScanyContextBuilder.KEY_DELIMITER);
@@ -209,7 +209,7 @@ public class PrimaryKey {
 				setKeyValue(keyNames[i], keyValues[i]);
 			}
 		} catch(Exception e) {
-			throw new PrimaryKeyException("PrimaryKey를 디코딩하는 중 오류가 발생했습니다.", e);
+			throw new RecordKeyException("PrimaryKey를 디코딩하는 중 오류가 발생했습니다.", e);
 		}
 	}
 	

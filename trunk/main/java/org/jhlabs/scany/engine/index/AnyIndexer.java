@@ -10,7 +10,7 @@
  ******************************************************************************/
 package org.jhlabs.scany.engine.index;
 
-import org.jhlabs.scany.engine.entity.PrimaryKey;
+import org.jhlabs.scany.engine.entity.RecordKey;
 import org.jhlabs.scany.engine.entity.Record;
 import org.jhlabs.scany.engine.entity.Relation;
 
@@ -50,7 +50,7 @@ public interface AnyIndexer {
 	 * @param isAutoOptimizeOff Auto Optimize 기능을 강제로 끌지 여부.
 	 * @throws AnyIndexException
 	 */
-	public void delete(PrimaryKey primaryKey) throws AnyIndexException;
+	public void delete(RecordKey primaryKey) throws AnyIndexException;
 	
 	/**
 	 * 발생한 트랜잭션에 대해 Optimize를 수행한다.
@@ -76,6 +76,6 @@ public interface AnyIndexer {
 	 * @return
 	 * @throws AnyIndexException
 	 */
-	public boolean exists(PrimaryKey primaryKey) throws AnyIndexException;
+	public boolean exists(RecordKey primaryKey) throws AnyIndexException;
 	
 }
