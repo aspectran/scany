@@ -12,8 +12,8 @@ package org.jhlabs.scany.engine.index;
 
 import org.jhlabs.scany.context.builder.ScanyContextBuilder;
 import org.jhlabs.scany.engine.entity.Attribute;
-import org.jhlabs.scany.engine.entity.PrimaryKey;
-import org.jhlabs.scany.engine.entity.PrimaryKeyException;
+import org.jhlabs.scany.engine.entity.RecordKey;
+import org.jhlabs.scany.engine.entity.RecordKeyException;
 import org.jhlabs.scany.engine.entity.Record;
 import org.jhlabs.scany.engine.entity.Relation;
 import org.jhlabs.scany.util.StringUtils;
@@ -114,7 +114,7 @@ public class LuceneIndexer implements AnyIndexer {
 
 		try {
 			// Primary Key 생성
-			PrimaryKey primaryKey = record.getPrimaryKey();
+			RecordKey primaryKey = record.getPrimaryKey();
 
 			if(primaryKey.hasWildcard())
 				throw new IllegalArgumentException("PrimaryKey가 와일드카드 문자를 포함하고 있습니다.");
@@ -164,7 +164,7 @@ public class LuceneIndexer implements AnyIndexer {
 	 * @param isAutoOptimizeOff Auto Optimize 기능을 강제로 끌지 여부.
 	 * @throws AnyIndexException
 	 */
-	public void delete(PrimaryKey primaryKey) throws AnyIndexException {
+	public void delete(RecordKey primaryKey) throws AnyIndexException {
 		Searcher searcher = null;
 
 		try {
@@ -286,7 +286,7 @@ public class LuceneIndexer implements AnyIndexer {
 	 * @return
 	 * @throws AnyIndexException
 	 */
-	public boolean exists(PrimaryKey primaryKey) throws AnyIndexException {
+	public boolean exists(RecordKey primaryKey) throws AnyIndexException {
 		IndexSearcher searcher = null;
 
 		try {

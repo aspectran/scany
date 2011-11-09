@@ -18,7 +18,7 @@ package org.jhlabs.scany.engine.entity;
  * @author Gulendol
  * 
  */
-public class PrimaryKeyException extends Exception {
+public class RecordKeyException extends Exception {
 
 	/** @serial */
 	static final long serialVersionUID = -6281810821687331562L;
@@ -26,7 +26,7 @@ public class PrimaryKeyException extends Exception {
 	/**
 	 * Simple constructor
 	 */
-	public PrimaryKeyException() {
+	public RecordKeyException() {
 	}
 
 	/**
@@ -35,7 +35,7 @@ public class PrimaryKeyException extends Exception {
 	 * @param msg
 	 *            A message to associate with the exception
 	 */
-	public PrimaryKeyException(String msg) {
+	public RecordKeyException(String msg) {
 		super(msg);
 	}
 
@@ -45,7 +45,7 @@ public class PrimaryKeyException extends Exception {
 	 * @param cause
 	 *            The real cause of the exception
 	 */
-	public PrimaryKeyException(Throwable cause) {
+	public RecordKeyException(Throwable cause) {
 		super(cause);
 	}
 
@@ -58,7 +58,7 @@ public class PrimaryKeyException extends Exception {
 	 * @param cause
 	 *            The real cause of the exception
 	 */
-	public PrimaryKeyException(String msg, Throwable cause) {
+	public RecordKeyException(String msg, Throwable cause) {
 		super(msg, cause);
 	}
 }

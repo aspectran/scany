@@ -10,7 +10,7 @@
  ******************************************************************************/
 package org.jhlabs.scany.engine.search;
 
-import org.jhlabs.scany.engine.entity.PrimaryKey;
+import org.jhlabs.scany.engine.entity.RecordKey;
 import org.jhlabs.scany.engine.entity.Record;
 import org.jhlabs.scany.engine.entity.Relation;
 import org.jhlabs.scany.engine.summarize.Summarizer;
@@ -73,7 +73,7 @@ public interface AnySearcher {
 	 * 검색범위를 
 	 * @return the primaryKey
 	 */
-	public PrimaryKey getPrimaryKey();
+	public RecordKey getPrimaryKey();
 
 	/**
 	 * PrimaryKey를 지정하여 검색범위를 줄인다.<pre>
@@ -83,7 +83,7 @@ public interface AnySearcher {
 	 *     "site" 그룹의 "notice" 게시판의 모든 글에서 검색할 것이다.
 	 * @param primaryKey the primaryKey to set
 	 */
-	public void setPrimaryKey(PrimaryKey primaryKey);
+	public void setPrimaryKey(RecordKey primaryKey);
 	
 	/**
 	 * Query Parser Syntax 문법의 종류
@@ -133,7 +133,7 @@ public interface AnySearcher {
 	 * @param primaryKey PrimaryKey
 	 * @throws AnySearchException
 	 */
-	public void addFilterColumn(PrimaryKey primaryKey)
+	public void addFilterColumn(RecordKey primaryKey)
 	throws AnySearchException;
 
 	/**

@@ -20,8 +20,8 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.search.Hits;
 import org.jhlabs.scany.context.builder.ScanyContextBuilder;
 import org.jhlabs.scany.engine.entity.Attribute;
-import org.jhlabs.scany.engine.entity.PrimaryKey;
-import org.jhlabs.scany.engine.entity.PrimaryKeyException;
+import org.jhlabs.scany.engine.entity.RecordKey;
+import org.jhlabs.scany.engine.entity.RecordKeyException;
 import org.jhlabs.scany.engine.entity.Record;
 import org.jhlabs.scany.engine.entity.Relation;
 import org.jhlabs.scany.engine.summarize.Summarizer;
@@ -37,7 +37,7 @@ public class AnySearcherModel {
 
 	protected Relation schema;
 
-	protected PrimaryKey primaryKey;
+	protected RecordKey primaryKey;
 
 	private List queryColumns;
 
@@ -148,7 +148,7 @@ public class AnySearcherModel {
 	 * 
 	 * @return the primaryKey
 	 */
-	public PrimaryKey getPrimaryKey() {
+	public RecordKey getPrimaryKey() {
 		return primaryKey;
 	}
 
@@ -164,7 +164,7 @@ public class AnySearcherModel {
 	 * @param primaryKey the primaryKey to set
 	 * 
 	 */
-	public void setPrimaryKey(PrimaryKey primaryKey) {
+	public void setPrimaryKey(RecordKey primaryKey) {
 		this.primaryKey = primaryKey;
 	}
 
@@ -353,7 +353,7 @@ public class AnySearcherModel {
 	 * @param primaryKey PrimaryKey
 	 * @throws AnySearchException
 	 */
-	public void addFilterColumn(PrimaryKey primaryKey) throws AnySearchException {
+	public void addFilterColumn(RecordKey primaryKey) throws AnySearchException {
 		try {
 			asureSchema();
 
@@ -467,9 +467,9 @@ public class AnySearcherModel {
 	 * @param startDocNo
 	 * @param endDocNo
 	 * @return Record 배열
-	 * @throws PrimaryKeyException 
+	 * @throws RecordKeyException 
 	 */
-	protected Record[] transplantToRecords(Hits hits, int startDocNo, int endDocNo) throws PrimaryKeyException {
+	protected Record[] transplantToRecords(Hits hits, int startDocNo, int endDocNo) throws RecordKeyException {
 		List records = new ArrayList(endDocNo - startDocNo + 1);
 		transplantToRecords(records, hits, startDocNo, endDocNo);
 		
@@ -485,9 +485,9 @@ public class AnySearcherModel {
 	 * @param endDocNo
 	 * @param summarizer
 	 * @return List
-	 * @throws PrimaryKeyException 
+	 * @throws RecordKeyException 
 	 */
-	protected List transplantToRecords(List records, Hits hits, int startDocNo, int endDocNo) throws PrimaryKeyException {
+	protected List transplantToRecords(List records, Hits hits, int startDocNo, int endDocNo) throws RecordKeyException {
 		try {
 			for(int i = startDocNo; i <= endDocNo; i++) {
 				Record record = documentToRecord(hits.doc(i), schema);
@@ -517,9 +517,9 @@ public class AnySearcherModel {
 	 * @param document
 	 * @param columns
 	 * @return Record
-	 * @throws PrimaryKeyException 
+	 * @throws RecordKeyException 
 	 */
-	protected static Record documentToRecord(Document document, Relation schema) throws PrimaryKeyException {
+	protected static Record documentToRecord(Document document, Relation schema) throws RecordKeyException {
 		Record record = new Record();
 		record.setPrimaryKey(document.get(ScanyContextBuilder.PRIMARY_KEY), schema);
 		

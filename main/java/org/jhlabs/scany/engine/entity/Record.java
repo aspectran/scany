@@ -21,7 +21,7 @@ import java.util.Map;
  */
 public class Record {
 
-	private PrimaryKey primaryKey;
+	private RecordKey primaryKey;
 	
 	private Map values;
 
@@ -32,7 +32,7 @@ public class Record {
 	/**
 	 * @return the primaryKey
 	 */
-	public PrimaryKey getPrimaryKey() {
+	public RecordKey getPrimaryKey() {
 		return primaryKey;
 	}
 
@@ -40,16 +40,16 @@ public class Record {
 	 * @param primaryKey the primaryKey to set
 	 * @throws ScanyEntityException
 	 */
-	public void setPrimaryKey(PrimaryKey primaryKey) throws PrimaryKeyException {
+	public void setPrimaryKey(RecordKey primaryKey) throws RecordKeyException {
 		this.primaryKey = primaryKey;
 	}
 
 	/**
 	 * @param primaryKey the primaryKey to set
-	 * @throws PrimaryKeyException 
+	 * @throws RecordKeyException 
 	 */
-	public void setPrimaryKey(String primaryKey, Relation schema) throws PrimaryKeyException {
-		this.primaryKey = new PrimaryKey(primaryKey, schema);
+	public void setPrimaryKey(String primaryKey, Relation schema) throws RecordKeyException {
+		this.primaryKey = new RecordKey(primaryKey, schema);
 	}
 
 	/**

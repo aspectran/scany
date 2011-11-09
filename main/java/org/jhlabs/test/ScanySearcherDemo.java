@@ -14,7 +14,7 @@ import org.jhlabs.scany.client.ScanyClient;
 import org.jhlabs.scany.client.ScanyClientBuilder;
 import org.jhlabs.scany.client.ScanyClientException;
 import org.jhlabs.scany.context.builder.ScanyContextBuilder;
-import org.jhlabs.scany.engine.entity.PrimaryKey;
+import org.jhlabs.scany.engine.entity.RecordKey;
 import org.jhlabs.scany.engine.entity.Record;
 import org.jhlabs.scany.engine.search.AnySearcher;
 import org.jhlabs.scany.engine.search.SortColumn;
@@ -53,7 +53,7 @@ public class ScanySearcherDemo {
 			
 			
 			// Primary Key 생성
-			PrimaryKey primaryKey = new PrimaryKey(searcher.getSchema());
+			RecordKey primaryKey = new RecordKey(searcher.getSchema());
 			primaryKey.setKeyValue("boardId", "java");
 			primaryKey.setKeyValue("articleNo", "*");
 			
@@ -94,7 +94,7 @@ public class ScanySearcherDemo {
 			searcher.setHitsPerPage(10);
 			
 			// Primary Key 생성
-			PrimaryKey primaryKey = new PrimaryKey(searcher.getSchema());
+			RecordKey primaryKey = new RecordKey(searcher.getSchema());
 			primaryKey.setKeyValue("boardId", "notice");
 			primaryKey.setKeyValue("articleNo", "*");
 			

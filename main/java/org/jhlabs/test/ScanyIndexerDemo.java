@@ -11,7 +11,7 @@
 package org.jhlabs.test;
 
 import org.jhlabs.scany.client.ScanyClient;
-import org.jhlabs.scany.engine.entity.PrimaryKey;
+import org.jhlabs.scany.engine.entity.RecordKey;
 import org.jhlabs.scany.engine.entity.Record;
 import org.jhlabs.scany.engine.entity.Relation;
 import org.jhlabs.scany.engine.index.AnyIndexer;
@@ -37,7 +37,7 @@ public class ScanyIndexerDemo {
 			Relation schema = anyIndexer.getSchema();
 			
 			// Primary Key 생성
-			PrimaryKey primaryKey = new PrimaryKey(schema);
+			RecordKey primaryKey = new RecordKey(schema);
 			primaryKey.setKeyValue("boardId", "notice");
 			primaryKey.setKeyValue("articleNo", "2");
 			
