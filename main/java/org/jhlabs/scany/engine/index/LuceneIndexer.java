@@ -10,14 +10,6 @@
  ******************************************************************************/
 package org.jhlabs.scany.engine.index;
 
-import org.jhlabs.scany.context.builder.ScanyContextBuilder;
-import org.jhlabs.scany.engine.entity.Attribute;
-import org.jhlabs.scany.engine.entity.RecordKey;
-import org.jhlabs.scany.engine.entity.RecordKeyException;
-import org.jhlabs.scany.engine.entity.Record;
-import org.jhlabs.scany.engine.entity.Relation;
-import org.jhlabs.scany.util.StringUtils;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -34,6 +26,12 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.jhlabs.scany.context.builder.ScanyContextBuilder;
+import org.jhlabs.scany.engine.entity.Attribute;
+import org.jhlabs.scany.engine.entity.Record;
+import org.jhlabs.scany.engine.entity.RecordKey;
+import org.jhlabs.scany.engine.entity.Relation;
+import org.jhlabs.scany.util.StringUtils;
 
 /**
  * 색인 추가(insert), 색인 갱신(update), 색인 삭제(delete) 기능을 담당한다.
@@ -149,7 +147,7 @@ public class LuceneIndexer implements AnyIndexer {
 				throw new IllegalArgumentException("PrimaryKey가 와일드카드 문자를 포함하고 있습니다.");
 
 			Document document = recordToDocument(record); 
-			Term term = new Term(ScanyContextBuilder.PRIMARY_KEY, record.getPrimaryKey().encode());
+			Term term = new Term(ScanyContextBuilder.PRIMARY_KEY, record.getPrimaryKey().combine());
 
 			indexWriter.updateDocument(term, document);
 		} catch(Exception e) {
@@ -168,7 +166,7 @@ public class LuceneIndexer implements AnyIndexer {
 		Searcher searcher = null;
 
 		try {
-			String pkey = primaryKey.encode(schema.getKeyPattern());
+			String pkey = primaryKey.combine(schema.getKeyPattern());
 
 			/**
 			 * Term 선택 순서대로 속도에서 차이가 난다.
@@ -292,7 +290,7 @@ public class LuceneIndexer implements AnyIndexer {
 		try {
 			searcher = new IndexSearcher(directory);
 
-			Term term = new Term(ScanyContextBuilder.PRIMARY_KEY, primaryKey.encode());
+			Term term = new Term(ScanyContextBuilder.PRIMARY_KEY, primaryKey.combine());
 			Query query = new TermQuery(term);
 
 			Hits hits = searcher.search(query);
@@ -336,7 +334,7 @@ public class LuceneIndexer implements AnyIndexer {
 			Field.Store store = null;
 
 			// Primary Key 필드
-			field = new Field(ScanyContextBuilder.PRIMARY_KEY, record.getPrimaryKey().encode(), Field.Store.YES,
+			field = new Field(ScanyContextBuilder.PRIMARY_KEY, record.getPrimaryKey().combine(), Field.Store.YES,
 					Field.Index.UN_TOKENIZED);
 			document.add(field);
 
