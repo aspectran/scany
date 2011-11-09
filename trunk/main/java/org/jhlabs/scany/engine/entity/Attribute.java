@@ -22,7 +22,7 @@ import org.apache.lucene.analysis.TokenStream;
  * @author Gulendol
  *
  */
-public class Column {
+public class Attribute {
 
 	private String name;
 	

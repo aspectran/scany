@@ -10,7 +10,7 @@
  ******************************************************************************/
 package org.jhlabs.scany.engine.search;
 
-import org.jhlabs.scany.engine.entity.Column;
+import org.jhlabs.scany.engine.entity.Attribute;
 import org.jhlabs.scany.util.StringUtils;
 
 import java.util.ArrayList;
@@ -52,14 +52,14 @@ public class SmartQueryParser {
 	 */
 	private static final String DELIMITERS = "*~+-:!^?(){}[]\"'\\<>`=\t\n\r\f;@#$%&/,. ";
 
-	private Column[] queryColumns;
+	private Attribute[] queryColumns;
 	
 	private String[] fields;
 	
 	public SmartQueryParser() {
 	}
 	
-	public SmartQueryParser(Column[] queryColumns) {
+	public SmartQueryParser(Attribute[] queryColumns) {
 		this.queryColumns = queryColumns;
 	}
 	

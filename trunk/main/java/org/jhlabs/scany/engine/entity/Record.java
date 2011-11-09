@@ -23,10 +23,10 @@ public class Record {
 
 	private PrimaryKey primaryKey;
 	
-	private Map columnValues;
+	private Map values;
 
 	public Record() {
-		columnValues = new HashMap();
+		values = new HashMap();
 	}
 	
 	/**
@@ -48,7 +48,7 @@ public class Record {
 	 * @param primaryKey the primaryKey to set
 	 * @throws PrimaryKeyException 
 	 */
-	public void setPrimaryKey(String primaryKey, Table schema) throws PrimaryKeyException {
+	public void setPrimaryKey(String primaryKey, Relation schema) throws PrimaryKeyException {
 		this.primaryKey = new PrimaryKey(primaryKey, schema);
 	}
 
@@ -58,7 +58,7 @@ public class Record {
 	 * @return
 	 */
 	public String getColumnValue(String columnName) {
-		return (String)columnValues.get(columnName);
+		return (String)values.get(columnName);
 	}
 	
 	/**
@@ -67,7 +67,7 @@ public class Record {
 	 * @param columnValue 컬럼의 값
 	 */
 	public void addColumnValue(String columnName, String columnValue) {
-		columnValues.put(columnName, columnValue);
+		values.put(columnName, columnValue);
 	}
 	
 }

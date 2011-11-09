@@ -19,11 +19,11 @@ import java.util.Map;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.Hits;
 import org.jhlabs.scany.context.builder.ScanyContextBuilder;
-import org.jhlabs.scany.engine.entity.Column;
+import org.jhlabs.scany.engine.entity.Attribute;
 import org.jhlabs.scany.engine.entity.PrimaryKey;
 import org.jhlabs.scany.engine.entity.PrimaryKeyException;
 import org.jhlabs.scany.engine.entity.Record;
-import org.jhlabs.scany.engine.entity.Table;
+import org.jhlabs.scany.engine.entity.Relation;
 import org.jhlabs.scany.engine.summarize.Summarizer;
 
 /**
@@ -35,7 +35,7 @@ import org.jhlabs.scany.engine.summarize.Summarizer;
  */
 public class AnySearcherModel {
 
-	protected Table schema;
+	protected Relation schema;
 
 	protected PrimaryKey primaryKey;
 
@@ -67,7 +67,7 @@ public class AnySearcherModel {
 	 * @param schema Schema
 	 * @throws ScanySearchException
 	 */
-	public AnySearcherModel(Table schema) throws AnySearchException {
+	public AnySearcherModel(Relation schema) throws AnySearchException {
 		setSchema(schema);
 	}
 
@@ -76,7 +76,7 @@ public class AnySearcherModel {
 	 * 
 	 * @return Schema
 	 */
-	public Table getSchema() {
+	public Relation getSchema() {
 		return schema;
 	}
 
@@ -86,7 +86,7 @@ public class AnySearcherModel {
 	 * @param schema Schema Schema
 	 * @throws AnySearchException
 	 */
-	public void setSchema(Table schema) throws AnySearchException {
+	public void setSchema(Relation schema) throws AnySearchException {
 		this.schema = schema;
 		this.isExpertQueryMode = schema.isExpertQueryMode();
 
@@ -192,7 +192,7 @@ public class AnySearcherModel {
 	public void setSortColumn(SortColumn sortColumn) throws AnySearchException {
 		try {
 			String[] columnNames = sortColumn.getColumnNames();
-			Column[] columns = schema.getColumns();
+			Attribute[] columns = schema.getColumns();
 
 			for(int i = 0; i < columnNames.length; i++) {
 				boolean isOk = false;
@@ -226,7 +226,7 @@ public class AnySearcherModel {
 	 * 
 	 * @return
 	 */
-	protected Column[] getQueryColumns() {
+	protected Attribute[] getQueryColumns() {
 		List list = null;
 
 		// 질의가능 컬럼을 수동으로 지정했을 경우
@@ -237,7 +237,7 @@ public class AnySearcherModel {
 		} else {
 			list = new ArrayList();
 
-			Column[] columns = schema.getColumns();
+			Attribute[] columns = schema.getColumns();
 
 			for(int i = 0; i < columns.length; i++) {
 				if(columns[i].isQueryable()) {
@@ -249,7 +249,7 @@ public class AnySearcherModel {
 		if(list == null || list.size() == 0)
 			return null;
 
-		return (Column[])list.toArray(new Column[list.size()]);
+		return (Attribute[])list.toArray(new Attribute[list.size()]);
 	}
 
 	/**
@@ -288,7 +288,7 @@ public class AnySearcherModel {
 		try {
 			asureSchema();
 
-			Column column = schema.getColumn(columnName);
+			Attribute column = schema.getColumn(columnName);
 
 			if(column == null)
 				throw new IllegalArgumentException("유효한 컬럼명이 아닙니다. (Column: " + columnName + ")");
@@ -326,7 +326,7 @@ public class AnySearcherModel {
 		try {
 			asureSchema();
 
-			Column column = schema.getColumn(columnName);
+			Attribute column = schema.getColumn(columnName);
 
 			if(column == null)
 				throw new IllegalArgumentException("유효한 컬럼명이 아닙니다. (Column: " + columnName + ")");
@@ -420,7 +420,7 @@ public class AnySearcherModel {
 	 * @return true or false
 	 */
 	public boolean isColumnName(String columnName) {
-		Column[] columns = schema.getColumns();
+		Attribute[] columns = schema.getColumns();
 
 		for(int i = 0; i < columns.length; i++) {
 			if(columnName.equals(columns[i].getName())) {
@@ -449,7 +449,7 @@ public class AnySearcherModel {
 
 			// 기본 질의 컬럼
 		} else if(isIncludeDefaultQueryColumn) {
-			Column[] columns = schema.getColumns();
+			Attribute[] columns = schema.getColumns();
 
 			for(int i = 0; i < columns.length; i++) {
 				if(columns[i].isQueryable()) {
@@ -519,11 +519,11 @@ public class AnySearcherModel {
 	 * @return Record
 	 * @throws PrimaryKeyException 
 	 */
-	protected static Record documentToRecord(Document document, Table schema) throws PrimaryKeyException {
+	protected static Record documentToRecord(Document document, Relation schema) throws PrimaryKeyException {
 		Record record = new Record();
 		record.setPrimaryKey(document.get(ScanyContextBuilder.PRIMARY_KEY), schema);
 		
-		Column[] columns = schema.getColumns();
+		Attribute[] columns = schema.getColumns();
 
 		for(int i = 0; i < columns.length; i++) {
 			record.addColumnValue(columns[i].getName(), document.get(columns[i].getName()));

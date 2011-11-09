@@ -14,8 +14,8 @@ import org.jhlabs.scany.context.ScanyContextException;
 import org.jhlabs.scany.engine.analysis.bigram.BigramAnalyzer;
 import org.jhlabs.scany.engine.analysis.csv.CSVAnalyzer;
 import org.jhlabs.scany.engine.analysis.syllabic.SyllabicAnalyzer;
-import org.jhlabs.scany.engine.entity.Column;
-import org.jhlabs.scany.engine.entity.Table;
+import org.jhlabs.scany.engine.entity.Attribute;
+import org.jhlabs.scany.engine.entity.Relation;
 import org.jhlabs.scany.util.MultipleXReader;
 import org.jhlabs.scany.util.NumberUtils;
 import org.jhlabs.scany.util.StringUtils;
@@ -203,7 +203,7 @@ public class ScanyContextBuilder {
 				for(int i = 0; i < list.size(); i++) {
 					MultipleXReader.Record record = (MultipleXReader.Record)list.get(i);
 
-					Table schema = new Table();
+					Relation schema = new Relation();
 					schema.setSchemaId(record.getAttributeValue("name"));
 
 					// 중복되는 스키마 ID가 있는지 검사
@@ -261,10 +261,10 @@ public class ScanyContextBuilder {
 					// 컬럼
 					MultipleXReader.Column[] xcolumns = record.getColumns(columnNames[7]);
 					
-					Column[] columns = new Column[xcolumns.length];
+					Attribute[] columns = new Attribute[xcolumns.length];
 					
 					for(int j = 0; j < xcolumns.length; j++) {
-						columns[j] = new Column();
+						columns[j] = new Attribute();
 						columns[j].setName(xcolumns[j].getAttributeValue("name"));
 						columns[j].setStorable(YES.equals(xcolumns[j].getAttributeValue("storable")));
 						columns[j].setCompressable(COMPRESS.equals(xcolumns[j].getAttributeValue("storable")));

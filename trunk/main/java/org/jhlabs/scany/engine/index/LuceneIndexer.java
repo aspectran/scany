@@ -11,11 +11,11 @@
 package org.jhlabs.scany.engine.index;
 
 import org.jhlabs.scany.context.builder.ScanyContextBuilder;
-import org.jhlabs.scany.engine.entity.Column;
+import org.jhlabs.scany.engine.entity.Attribute;
 import org.jhlabs.scany.engine.entity.PrimaryKey;
 import org.jhlabs.scany.engine.entity.PrimaryKeyException;
 import org.jhlabs.scany.engine.entity.Record;
-import org.jhlabs.scany.engine.entity.Table;
+import org.jhlabs.scany.engine.entity.Relation;
 import org.jhlabs.scany.util.StringUtils;
 
 import java.io.File;
@@ -42,7 +42,7 @@ import org.apache.lucene.store.FSDirectory;
  */
 public class LuceneIndexer implements AnyIndexer {
 
-	private Table schema;
+	private Relation schema;
 
 	private Directory directory;
 
@@ -54,12 +54,12 @@ public class LuceneIndexer implements AnyIndexer {
 	 * @param schema Schema
 	 * @throws MultipartRequestzException
 	 */
-	public LuceneIndexer(Table schema) throws AnyIndexException {
+	public LuceneIndexer(Relation schema) throws AnyIndexException {
 		this.schema = schema;
 		initialize(false);
 	}
 
-	public Table getSchema() throws AnyIndexException {
+	public Relation getSchema() throws AnyIndexException {
 		return schema;
 	}
 
@@ -325,7 +325,7 @@ public class LuceneIndexer implements AnyIndexer {
 	private Document recordToDocument(Record record) throws AnyIndexException {
 		try {
 			// 컬럼속성
-			Column[] columns = schema.getColumns();
+			Attribute[] columns = schema.getColumns();
 
 			if(columns.length == 0)
 				throw new IllegalArgumentException("Column 속성이 정의되어 있지 않습니다.");
