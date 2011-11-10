@@ -50,13 +50,14 @@
 	</analyzers>
 	
 	<summarizers>
-		<summarizer id="summarizer" class="org.jhlabs.scany.engine.summarize.SimpleFragmentSummarizer"/>
+		<summarizer id="summarizer" class="org.jhlabs.scany.engine.search.summarize.SimpleFragmentSummarizer">
+			<properties>
+				<property name=""></property>
+				<property name=""></property>
+			</properties>
+		</summarizer>
 	</summarizers>
 	
-	<queryFilters>
-		<queryFilter id="queryFilter" class=""/>
-	</queryFilters>
-
 	<relation id="notice" analyzer="bigram">
 		<description>공지사항</description>
 		<directory type="relative">notice</directory>
