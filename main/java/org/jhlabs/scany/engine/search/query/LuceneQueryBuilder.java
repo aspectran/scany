@@ -8,10 +8,11 @@
  * Contributors:
  *     Jeong Ju Ho - initial API and implementation
  ******************************************************************************/
-package org.jhlabs.scany.engine.search;
+package org.jhlabs.scany.engine.search.query;
 
 import org.jhlabs.scany.context.builder.ScanyContextBuilder;
 import org.jhlabs.scany.engine.entity.Attribute;
+import org.jhlabs.scany.engine.search.FilteringAttributes;
 import org.jhlabs.scany.util.StringUtils;
 
 import java.util.ArrayList;
@@ -63,7 +64,7 @@ public class LuceneQueryBuilder {
 	 * @param analyzer 분석기
 	 * @param isExpertQueryMode 전문가용 질의문법 사용여부
 	 */
-	protected LuceneQueryBuilder(Analyzer analyzer) {
+	public LuceneQueryBuilder(Analyzer analyzer) {
 		this.analyzer = analyzer;
 	}
 
@@ -72,7 +73,7 @@ public class LuceneQueryBuilder {
 	 * 
 	 * @param filterColumns
 	 */
-	protected void setFilterColumns(FilteringAttributes[] filterColumns) {
+	public void setFilterColumns(FilteringAttributes[] filterColumns) {
 		this.filterColumns = filterColumns;
 	}
 
@@ -81,7 +82,7 @@ public class LuceneQueryBuilder {
 	 * 
 	 * @param queryColumns 질의 대상 컬럼
 	 */
-	protected void setQeuryColumns(Attribute[] queryColumns) {
+	public void setQeuryColumns(Attribute[] queryColumns) {
 		this.queryColumns = queryColumns;
 	}
 
@@ -92,7 +93,7 @@ public class LuceneQueryBuilder {
 	 * @return
 	 * @throws MultipartRequestzException
 	 */
-	protected Query getQuery(String queryString) throws QueryBuilderException {
+	public Query getQuery(String queryString) throws QueryBuilderException {
 
 		try {
 			List queries = new ArrayList();

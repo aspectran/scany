@@ -25,8 +25,8 @@ import org.jhlabs.scany.engine.entity.RecordKey;
 import org.jhlabs.scany.engine.entity.RecordKeyException;
 import org.jhlabs.scany.engine.entity.Record;
 import org.jhlabs.scany.engine.entity.Relation;
-import org.jhlabs.scany.engine.summarize.SimpleFragmentSummarizer;
-import org.jhlabs.scany.engine.summarize.Summarizer;
+import org.jhlabs.scany.engine.search.summarize.SimpleFragmentSummarizer;
+import org.jhlabs.scany.engine.search.summarize.Summarizer;
 import org.jhlabs.scany.util.StringUtils;
 
 /**

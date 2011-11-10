@@ -13,7 +13,7 @@ package org.jhlabs.scany.engine.search;
 import org.jhlabs.scany.engine.entity.RecordKey;
 import org.jhlabs.scany.engine.entity.Record;
 import org.jhlabs.scany.engine.entity.Relation;
-import org.jhlabs.scany.engine.summarize.Summarizer;
+import org.jhlabs.scany.engine.search.summarize.Summarizer;
 
 /**
  * 
