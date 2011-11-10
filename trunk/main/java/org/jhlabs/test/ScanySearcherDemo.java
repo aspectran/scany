@@ -18,7 +18,7 @@ import org.jhlabs.scany.engine.entity.RecordKey;
 import org.jhlabs.scany.engine.entity.Record;
 import org.jhlabs.scany.engine.search.AnySearcher;
 import org.jhlabs.scany.engine.search.SortingAttributes;
-import org.jhlabs.scany.engine.summarize.SimpleFragmentSummarizer;
+import org.jhlabs.scany.engine.search.summarize.SimpleFragmentSummarizer;
 
 import java.io.File;
 import java.io.FileInputStream;

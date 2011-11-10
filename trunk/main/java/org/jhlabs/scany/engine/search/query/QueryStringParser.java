@@ -8,7 +8,7 @@
  * Contributors:
  *     Jeong Ju Ho - initial API and implementation
  ******************************************************************************/
-package org.jhlabs.scany.engine.search;
+package org.jhlabs.scany.engine.search.query;
 
 import org.jhlabs.scany.engine.entity.Attribute;
 import org.jhlabs.scany.util.StringUtils;

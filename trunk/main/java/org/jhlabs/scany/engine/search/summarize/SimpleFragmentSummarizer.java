@@ -8,9 +8,9 @@
  * Contributors:
  *     Jeong Ju Ho - initial API and implementation
  ******************************************************************************/
-package org.jhlabs.scany.engine.summarize;
+package org.jhlabs.scany.engine.search.summarize;
 
-import org.jhlabs.scany.engine.search.QueryStringParser;
+import org.jhlabs.scany.engine.search.query.QueryStringParser;
 import org.jhlabs.scany.util.StringUtils;
 
 import java.util.ArrayList;

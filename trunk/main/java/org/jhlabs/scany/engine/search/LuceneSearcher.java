@@ -10,9 +10,6 @@
  ******************************************************************************/
 package org.jhlabs.scany.engine.search;
 
-import org.jhlabs.scany.engine.entity.Record;
-import org.jhlabs.scany.engine.entity.Relation;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +21,10 @@ import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searcher;
+import org.jhlabs.scany.engine.entity.Record;
+import org.jhlabs.scany.engine.entity.Relation;
+import org.jhlabs.scany.engine.search.query.LuceneQueryBuilder;
+import org.jhlabs.scany.engine.search.query.QueryStringParser;
 
 /**
  * 검색기.

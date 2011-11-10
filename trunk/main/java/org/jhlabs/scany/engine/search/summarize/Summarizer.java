@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.jhlabs.scany.engine.summarize;
+package org.jhlabs.scany.engine.search.summarize;
 
 /**
  *
