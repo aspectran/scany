@@ -21,9 +21,9 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.search.Hits;
 import org.jhlabs.scany.context.builder.ScanyContextBuilder;
 import org.jhlabs.scany.engine.entity.Attribute;
+import org.jhlabs.scany.engine.entity.Record;
 import org.jhlabs.scany.engine.entity.RecordKey;
 import org.jhlabs.scany.engine.entity.RecordKeyException;
-import org.jhlabs.scany.engine.entity.Record;
 import org.jhlabs.scany.engine.entity.Relation;
 import org.jhlabs.scany.engine.search.summarize.SimpleFragmentSummarizer;
 import org.jhlabs.scany.engine.search.summarize.Summarizer;
@@ -54,8 +54,6 @@ public class AnySearcherModel {
 
 	protected int summaryLength = 200;
 	
-	private boolean isExpertQueryMode = false;
-
 	protected Map summarizers;
 	
 	/**
@@ -91,7 +89,6 @@ public class AnySearcherModel {
 	 */
 	public void setSchema(Relation schema) throws AnySearchException {
 		this.schema = schema;
-		this.isExpertQueryMode = schema.isExpertQueryMode();
 
 		this.primaryKey = null;
 		this.queryColumns = null;
@@ -172,13 +169,6 @@ public class AnySearcherModel {
 	}
 
 	/**
-	 * @return the isExpertQueryMode
-	 */
-	public boolean isExpertQueryMode() {
-		return isExpertQueryMode;
-	}
-
-	/**
 	 * 정렬 컬럼을 지정한다. 해제할때는 null을 입력하자.
 	 * 
 	 * <pre>
@@ -195,7 +185,7 @@ public class AnySearcherModel {
 	public void setSortColumn(SortingAttributes sortColumn) throws AnySearchException {
 		try {
 			String[] columnNames = sortColumn.getColumnNames();
-			Attribute[] columns = schema.getColumns();
+			Attribute[] columns = schema.getAttributes();
 
 			for(int i = 0; i < columnNames.length; i++) {
 				boolean isOk = false;
@@ -240,7 +230,7 @@ public class AnySearcherModel {
 		} else {
 			list = new ArrayList();
 
-			Attribute[] columns = schema.getColumns();
+			Attribute[] columns = schema.getAttributes();
 
 			for(int i = 0; i < columns.length; i++) {
 				if(columns[i].isQueryable()) {
@@ -291,7 +281,7 @@ public class AnySearcherModel {
 		try {
 			asureSchema();
 
-			Attribute column = schema.getColumn(columnName);
+			Attribute column = schema.getAttribute(columnName);
 
 			if(column == null)
 				throw new IllegalArgumentException("유효한 컬럼명이 아닙니다. (Column: " + columnName + ")");
@@ -329,7 +319,7 @@ public class AnySearcherModel {
 		try {
 			asureSchema();
 
-			Attribute column = schema.getColumn(columnName);
+			Attribute column = schema.getAttribute(columnName);
 
 			if(column == null)
 				throw new IllegalArgumentException("유효한 컬럼명이 아닙니다. (Column: " + columnName + ")");
@@ -423,7 +413,7 @@ public class AnySearcherModel {
 	 * @return true or false
 	 */
 	public boolean isColumnName(String columnName) {
-		Attribute[] columns = schema.getColumns();
+		Attribute[] columns = schema.getAttributes();
 
 		for(int i = 0; i < columns.length; i++) {
 			if(columnName.equals(columns[i].getName())) {
@@ -452,7 +442,7 @@ public class AnySearcherModel {
 
 			// 기본 질의 컬럼
 		} else if(isIncludeDefaultQueryColumn) {
-			Attribute[] columns = schema.getColumns();
+			Attribute[] columns = schema.getAttributes();
 
 			for(int i = 0; i < columns.length; i++) {
 				if(columns[i].isQueryable()) {
@@ -522,14 +512,17 @@ public class AnySearcherModel {
 	 * @return Record
 	 * @throws RecordKeyException 
 	 */
-	protected static Record documentToRecord(Document document, Relation schema) throws RecordKeyException {
-		Record record = new Record();
-		record.setPrimaryKey(document.get(ScanyContextBuilder.PRIMARY_KEY), schema);
+	protected static Record documentToRecord(Document document, Relation relation) throws RecordKeyException {
+		RecordKey recordKey = relation.newRecordKey();
+		recordKey.setRecordKey(document.get(RecordKey.RECORD_KEY));
 		
-		Attribute[] columns = schema.getColumns();
+		Record record = new Record();
+		record.setRecordKey(recordKey);
+		
+		Attribute[] columns = relation.getAttributes();
 
 		for(int i = 0; i < columns.length; i++) {
-			record.addColumnValue(columns[i].getName(), document.get(columns[i].getName()));
+			record.setValue(columns[i].getName(), document.get(columns[i].getName()));
 		}
 
 		return record;
@@ -546,15 +539,15 @@ public class AnySearcherModel {
 		Iterator it = (Iterator)summarizers.keySet().iterator();
 		
 		while(it.hasNext()) {
-			String columnName = (String)it.next();
-			SimpleFragmentSummarizer summarizer = (SimpleFragmentSummarizer)summarizers.get(columnName);
+			String attributenName = (String)it.next();
+			SimpleFragmentSummarizer summarizer = (SimpleFragmentSummarizer)summarizers.get(attributenName);
 			summarizer.setKeywords(keywords);
 			
 			for(int i = 0; i < records.length; i++) {
-				String content = records[i].getColumnValue(columnName);
+				String content = records[i].getValue(attributenName);
 				
 				if(!StringUtils.isEmpty(content)) {
-					records[i].addColumnValue(columnName, summarizer.summarize(content));
+					records[i].setValue(attributenName, summarizer.summarize(content));
 				}
 			}
 		}

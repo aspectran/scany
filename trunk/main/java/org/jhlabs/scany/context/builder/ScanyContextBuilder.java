@@ -211,7 +211,7 @@ public class ScanyContextBuilder {
 						throw new IllegalArgumentException("중복된 Schema ID가 존재합니다. - (" + schema.getSchemaId() + ")");
 
 					// 키패턴
-					schema.setKeyPattern(record.getColumnValue(columnNames[0]));
+					//schema.setKeyPattern(record.getColumnValue(columnNames[0]));
 
 					// 저장소
 					String repository = record.getColumnValue(columnNames[1]);
@@ -252,7 +252,7 @@ public class ScanyContextBuilder {
 					schema.setAnalyzer(analyzerWrapper);
 					
 					// 전문가용 Query Parser Syntax 문법의 사용여부
-					schema.setExpertQueryMode(EXPERT.equals(record.getColumnValue(columnNames[4])));
+					//schema.setExpertQueryMode(EXPERT.equals(record.getColumnValue(columnNames[4])));
 					
 					// Perfomance
 					schema.setMergeFactor(NumberUtils.parseInt(record.getColumnValue(columnNames[5]), DEFAULT_MERGE_FACTOR));
@@ -299,7 +299,7 @@ public class ScanyContextBuilder {
 						}
 					}
 
-					schema.setColumns(columns);
+					schema.setAttributes(columns);
 					
 					schemas.put(schema.getSchemaId(), schema);
 					

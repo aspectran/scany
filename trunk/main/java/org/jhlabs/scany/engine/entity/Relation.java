@@ -13,8 +13,6 @@ package org.jhlabs.scany.engine.entity;
 
 import org.apache.lucene.analysis.Analyzer;
 
-import org.jhlabs.scany.engine.entity.Attribute;
-
 /**
  * 스키마 정보를 담고 있다.
  * 
@@ -23,37 +21,38 @@ import org.jhlabs.scany.engine.entity.Attribute;
  */
 public class Relation {
 
-	private String schemaId;
+	private String id;
 	
-	private String keyFormat;
+	private RecordKeyPattern recordKeyPattern;
 	
-	private String repository;
+	private String directory;
 	
 	private String description;
 
-	private Attribute[] columns;
+	private Attribute[] attributes;
 	
 	private Analyzer analyzer;
 	
-	private boolean expertQueryMode;
-
 	private int mergeFactor;
 	
 	private int maxMergeDocs;
 	
+	public RecordKey newRecordKey() {
+		return new RecordKey(recordKeyPattern);
+	}
 	
 	/**
 	 * 해당하는 이름을 가진 컬럼을 반환한다.
-	 * @param columnName 컬럼명
+	 * @param attributeName 컬럼명
 	 * @return
 	 */
-	public Attribute getColumn(String columnName) {
-		if(columns == null)
+	public Attribute getAttribute(String attributeName) {
+		if(attributes == null)
 			return null;
 		
-		for(int i = 0; i < columns.length; i++) {
-			if(columnName.equalsIgnoreCase(columns[i].getName()))
-				return columns[i];
+		for(int i = 0; i < attributes.length; i++) {
+			if(attributeName.equalsIgnoreCase(attributes[i].getName()))
+				return attributes[i];
 		}
 		
 		return null;
@@ -63,32 +62,32 @@ public class Relation {
 	 * 컬럼을 반환한다.
 	 * @return the columns
 	 */
-	public Attribute[] getColumns() {
-		return columns;
+	public Attribute[] getAttributes() {
+		return attributes;
 	}
 
 	/**
 	 * 컬럼을 지정한다.
 	 * @param columns the columns to set
 	 */
-	public void setColumns(Attribute[] columns) {
-		this.columns = columns;
+	public void setAttributes(Attribute[] columns) {
+		this.attributes = columns;
 	}
 
 	/**
 	 * PrimaryKey의 형식을 반환한다.
 	 * @return the keyFormat
 	 */
-	public String getKeyPattern() {
-		return keyFormat;
+	public RecordKeyPattern getRecordKeyPattern() {
+		return recordKeyPattern;
 	}
 
 	/**
 	 * PrimaryKey의 형식을 지정한다.
 	 * @param keyFormat the keyFormat to set
 	 */
-	public void setKeyPattern(String keyFormat) {
-		this.keyFormat = keyFormat;
+	public void setRecordKeyPattern(RecordKeyPattern recordKeyPattern) {
+		this.recordKeyPattern = recordKeyPattern;
 	}
 
 	/**
@@ -96,7 +95,7 @@ public class Relation {
 	 * @return the schemaId
 	 */
 	public String getSchemaId() {
-		return schemaId;
+		return id;
 	}
 
 	/**
@@ -104,21 +103,21 @@ public class Relation {
 	 * @param schemaId the schemaId to set
 	 */
 	public void setSchemaId(String schemaId) {
-		this.schemaId = schemaId;
+		this.id = schemaId;
 	}
 
 	/**
 	 * @return the repository
 	 */
 	public String getRepository() {
-		return repository;
+		return directory;
 	}
 
 	/**
 	 * @param repository the repository to set
 	 */
 	public void setRepository(String repository) {
-		this.repository = repository;
+		this.directory = repository;
 	}
 
 	/**
@@ -147,20 +146,6 @@ public class Relation {
 	 */
 	public void setAnalyzer(Analyzer analyzer) {
 		this.analyzer = analyzer;
-	}
-
-	/**
-	 * @return the expertQueryMode
-	 */
-	public boolean isExpertQueryMode() {
-		return expertQueryMode;
-	}
-
-	/**
-	 * @param expertQueryMode the expertQueryMode to set
-	 */
-	public void setExpertQueryMode(boolean expertQueryMode) {
-		this.expertQueryMode = expertQueryMode;
 	}
 
 	/**

@@ -41,10 +41,10 @@ public class ScanyClientImpl extends ClientConfig implements ScanyClient {
 	public AnySearcher getSearcher(Relation schema) {
 		AnySearcher anySearcher = null;
 
-		if(schema.isExpertQueryMode())
-			anySearcher = getExpertSearcher(schema);
-		else
-			anySearcher = getAmateurSearcher(schema);
+//		if(schema.isExpertQueryMode())
+//			anySearcher = getExpertSearcher(schema);
+//		else
+//			anySearcher = getAmateurSearcher(schema);
 		
 		return anySearcher;
 	}

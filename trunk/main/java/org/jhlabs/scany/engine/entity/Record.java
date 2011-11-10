@@ -21,53 +21,32 @@ import java.util.Map;
  */
 public class Record {
 
-	private RecordKey primaryKey;
-	
-	private Map values;
+	private RecordKey recordKey;
 
-	public Record() {
-		values = new HashMap();
-	}
-	
-	/**
-	 * @return the primaryKey
-	 */
-	public RecordKey getPrimaryKey() {
-		return primaryKey;
+	private Map<String, String> values = new HashMap<String, String>();
+
+	public RecordKey getRecordKey() {
+		return recordKey;
 	}
 
-	/**
-	 * @param primaryKey the primaryKey to set
-	 * @throws ScanyEntityException
-	 */
-	public void setPrimaryKey(RecordKey primaryKey) throws RecordKeyException {
-		this.primaryKey = primaryKey;
+	public void setRecordKey(RecordKey recordKey) {
+		this.recordKey = recordKey;
 	}
 
-	/**
-	 * @param primaryKey the primaryKey to set
-	 * @throws RecordKeyException 
-	 */
-	public void setPrimaryKey(String primaryKey, Relation schema) throws RecordKeyException {
-		this.primaryKey = new RecordKey(primaryKey, schema);
+	public Map<String, String> getValues() {
+		return values;
 	}
 
-	/**
-	 * 컬럼명에 해당하는 컬럼의 값을 반환한다.
-	 * @param columnName 컬럼명
-	 * @return
-	 */
-	public String getColumnValue(String columnName) {
-		return (String)values.get(columnName);
+	public void setValues(Map<String, String> values) {
+		this.values = values;
 	}
 	
-	/**
-	 * 컬럼을 추가한다.
-	 * @param columnName 컬럼명
-	 * @param columnValue 컬럼의 값
-	 */
-	public void addColumnValue(String columnName, String columnValue) {
-		values.put(columnName, columnValue);
+	public String getValue(String attributeName) {
+		return values.get(attributeName);
+	}
+	
+	public String setValue(String attributeName, String value) {
+		return values.put(attributeName, value);
 	}
 	
 }
