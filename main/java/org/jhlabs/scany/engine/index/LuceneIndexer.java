@@ -107,12 +107,12 @@ public class LuceneIndexer implements AnyIndexer {
 	 * @throws AnyIndexException
 	 */
 	public void insert(Record record) throws AnyIndexException {
-		if(exists(record.getPrimaryKey()))
+		if(exists(record.getRecordKey()))
 			throw new AnyIndexException("동일한 Primary Key를 가진 레코드(Record)가 이미 존재합니다.");
 
 		try {
 			// Primary Key 생성
-			RecordKey primaryKey = record.getPrimaryKey();
+			RecordKey primaryKey = record.getRecordKey();
 
 			if(primaryKey.hasWildcard())
 				throw new IllegalArgumentException("PrimaryKey가 와일드카드 문자를 포함하고 있습니다.");
@@ -127,7 +127,7 @@ public class LuceneIndexer implements AnyIndexer {
 	}
 
 	public void merge(Record record) throws AnyIndexException {
-		if(exists(record.getPrimaryKey()))
+		if(exists(record.getRecordKey()))
 			update(record);
 		else
 			insert(record);
@@ -143,11 +143,11 @@ public class LuceneIndexer implements AnyIndexer {
 	 */
 	public void update(Record record) throws AnyIndexException {
 		try {
-			if(record.getPrimaryKey().hasWildcard())
+			if(record.getRecordKey().hasWildcard())
 				throw new IllegalArgumentException("PrimaryKey가 와일드카드 문자를 포함하고 있습니다.");
 
 			Document document = recordToDocument(record); 
-			Term term = new Term(ScanyContextBuilder.PRIMARY_KEY, record.getPrimaryKey().combine());
+			Term term = new Term(ScanyContextBuilder.PRIMARY_KEY, record.getRecordKey().combine());
 
 			indexWriter.updateDocument(term, document);
 		} catch(Exception e) {
@@ -158,15 +158,15 @@ public class LuceneIndexer implements AnyIndexer {
 	/**
 	 * 색인삭제. 와일드카드(*)를 사용한 하위 key 일괄 삭제 가능.
 	 * 
-	 * @param primaryKey 삭제 대상 레코드의 키
+	 * @param recordKey 삭제 대상 레코드의 키
 	 * @param isAutoOptimizeOff Auto Optimize 기능을 강제로 끌지 여부.
 	 * @throws AnyIndexException
 	 */
-	public void delete(RecordKey primaryKey) throws AnyIndexException {
+	public void delete(RecordKey recordKey) throws AnyIndexException {
 		Searcher searcher = null;
 
 		try {
-			String pkey = primaryKey.combine(schema.getKeyPattern());
+			String rkey = recordKey.combine();
 
 			/**
 			 * Term 선택 순서대로 속도에서 차이가 난다.
@@ -176,21 +176,21 @@ public class LuceneIndexer implements AnyIndexer {
 			 */
 			int whatQuery = 0;
 
-			if(primaryKey.hasWildcard()) {
+			if(recordKey.hasWildcard()) {
 				int wildcardCnt = 0;
 
-				if(pkey.indexOf("?") != -1) {
+				if(rkey.indexOf("?") != -1) {
 					wildcardCnt = 99;
 				} else {
-					wildcardCnt = StringUtils.search(pkey, "*");
+					wildcardCnt = StringUtils.search(rkey, "*");
 				}
 
 				if(wildcardCnt == 1) {
-					if(pkey.indexOf("*") == pkey.length() - 1) {
+					if(rkey.indexOf("*") == rkey.length() - 1) {
 						whatQuery = 1;
 
 						// PrefixTerm을 위해 "*" 제거
-						pkey = pkey.substring(0, pkey.length() - 1);
+						rkey = rkey.substring(0, rkey.length() - 1);
 
 					} else {
 						whatQuery = 2;
@@ -200,7 +200,7 @@ public class LuceneIndexer implements AnyIndexer {
 				}
 			}
 
-			Term term = new Term(ScanyContextBuilder.PRIMARY_KEY, pkey);
+			Term term = new Term(ScanyContextBuilder.PRIMARY_KEY, rkey);
 
 			if(whatQuery == 0) {
 				indexWriter.deleteDocuments(term);
@@ -323,7 +323,7 @@ public class LuceneIndexer implements AnyIndexer {
 	private Document recordToDocument(Record record) throws AnyIndexException {
 		try {
 			// 컬럼속성
-			Attribute[] columns = schema.getColumns();
+			Attribute[] columns = schema.getAttributes();
 
 			if(columns.length == 0)
 				throw new IllegalArgumentException("Column 속성이 정의되어 있지 않습니다.");
@@ -334,17 +334,17 @@ public class LuceneIndexer implements AnyIndexer {
 			Field.Store store = null;
 
 			// Primary Key 필드
-			field = new Field(ScanyContextBuilder.PRIMARY_KEY, record.getPrimaryKey().combine(), Field.Store.YES,
+			field = new Field(ScanyContextBuilder.PRIMARY_KEY, record.getRecordKey().combine(), Field.Store.YES,
 					Field.Index.UN_TOKENIZED);
 			document.add(field);
 
 			// 일반 필드 분석
 			for(int i = 0; i < columns.length; i++) {
-				String columnName = columns[i].getName();
-				String columnValue = record.getColumnValue(columnName);
+				String attributeName = columns[i].getName();
+				String columnValue = record.getValue(attributeName);
 
 				if(columnValue == null)
-					throw new IllegalArgumentException("[" + columnName + "] Column의 값이 지정되어 있지 않습니다.");
+					throw new IllegalArgumentException("[" + attributeName + "] Column의 값이 지정되어 있지 않습니다.");
 
 				// 긴 내용 또는 바이너리 데이터의 압축 여부
 				if(columns[i].isCompressable())
@@ -358,7 +358,7 @@ public class LuceneIndexer implements AnyIndexer {
 				else
 					index = columns[i].isIndexable() ? Field.Index.UN_TOKENIZED : Field.Index.NO;
 
-				field = new Field(columnName, columnValue, store, index);
+				field = new Field(attributeName, columnValue, store, index);
 				
 				// boost factor
 				field.setBoost(columns[i].getBoost());

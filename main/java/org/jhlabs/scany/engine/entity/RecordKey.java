@@ -11,11 +11,10 @@
 package org.jhlabs.scany.engine.entity;
 
 
-import org.jhlabs.scany.context.builder.ScanyContextBuilder;
-import org.jhlabs.scany.util.StringUtils;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.jhlabs.scany.context.builder.ScanyContextBuilder;
 
 /**
  * PrimaryKey 정보를 담고 있다.
@@ -27,42 +26,22 @@ public class RecordKey {
 	
 	public static final String RECORD_KEY = "_r_key_";
 	
-	private Map<String, String> keys = new HashMap<String, String>();
+	private Map<String, String> keyMembers = new HashMap<String, String>();
 	
 	private boolean wildcard;
 	
-	private String keyPattern;
+	private RecordKeyPattern recordKeyPattern;
 
-	/**
-	 * 생성자.
-	 * 주어진 인자를 이용해 디코딩
-	 * @param primaryKey 인코딩된 키
-	 * @param keyPattern 키형식
-	 * @throws MultipartRequestzException
-	 */
-	public RecordKey(String primaryKey, Relation schema) throws RecordKeyException {
-		this(schema);
-		
-		separate(primaryKey);
+	public RecordKey(RecordKeyPattern recordKeyPattern) {
+		this.recordKeyPattern = recordKeyPattern;
 	}
-	
-	/**
-	 * 생성자.
-	 * 주어진 인자를 이용해 디코딩
-	 * @param keyPattern 키형식
-	 * @throws MultipartRequestzException
-	 */
-	public RecordKey(Relation schema) {
-		this.keyPattern = schema.getKeyPattern();
+
+	public void setRecordKey(String recordKey) throws RecordKeyException {
+		separate(recordKey);
 	}
-	
-	/**
-	 * PrimaryKey의 한 요소(Key)의 값을 반한다.
-	 * @param keyName
-	 * @return
-	 */
+
 	public String getKeyValue(String keyName) {
-		return (String)keys.get(keyName);
+		return keyMembers.get(keyName);
 	}
 
 	/**
@@ -101,80 +80,11 @@ public class RecordKey {
 			}
 		}
 		
-		keys.put(keyName, keyValue);
-	}
-	
-	/**
-	 * PrimaryKey에 한 요소(Key)를 추가한다.<pre>
-	 * 아래와 같은 문자는 특수문자로 분류되어 있으므로 키값으로 절대 입력하면 안된다.
-	 *     + - && || ! ( ) { } [ ] ^ " ~ * ? : \</pre>
-	 * @param keyName
-	 * @param keyValue int형, 내부적으로 문자열로 변환된다.
-	 */
-	public void setKeyValue(String keyName, int keyValue) {
-		setKeyValue(keyName, (new Integer(keyValue)).toString());
+		keyMembers.put(keyName, keyValue);
 	}
 	
 	public String combine() throws RecordKeyException {
-		return combine(this.keyPattern);
-	}
-	
-	/**
-	 * 각 요소(Key)를 키패턴(KeyPattern)에 맞게 조합하여 PrimaryKey를 생성한다.
-	 * @param keyPattern
-	 * @return
-	 * @throws MultipartRequestzException
-	 */
-	public String combine(String keyPattern) throws RecordKeyException {
-		try {
-			String[] keyNames = StringUtils.split(keyPattern, ScanyContextBuilder.KEY_DELIMITER);
-			String[] keyValues = new String[keyNames.length];
-	
-			if(keyNames.length == 0)
-				throw new IllegalArgumentException("스키마 설정정보에서 KeyPattern이 지정되지 않았습니다.");
-			
-			for(int i = 0; i < keyNames.length; i++) {
-				keyValues[i] = (String)keys.get(keyNames[i]);
-				
-				if(keyValues[i] == null || keyValues[i].length() < 1)
-					throw new IllegalArgumentException("부적합한 Primary Key입니다.");
-			}
-	
-			if(wildcard) {
-				for(int i = 0; i < ScanyContextBuilder.WILDCARDS.length; i++) {
-					if(ScanyContextBuilder.WILDCARDS[i].equals(keyValues[0].substring(0, 1)))
-						throw new IllegalArgumentException("PrimaryKey에서 와일드카드 문자('?', '*')는 첫번째 인자가 될 수 없습니다.");
-				}
-		
-				// groupId:*:* == > groupId:*
-				for(int i = keyValues.length - 1; i >= 0; i--) {
-					if(!"*".equals(keyValues[i]))
-						break;
-		
-					keyValues[i] = null;
-				}
-			}
-			
-			// 키조합
-			StringBuffer sb = new StringBuffer();
-			
-			for(int i = 0; i < keyValues.length; i++) {
-				if(keyValues[i] == null) {
-					sb.append("*");
-					break;
-				}
-				
-				sb.append(keyValues[i]);
-				
-				if(i < keyValues.length - 1)
-					sb.append(ScanyContextBuilder.KEY_DELIMITER);
-			}
-			
-			return sb.toString();
-
-		} catch(Exception e) {
-			throw new RecordKeyException("PrimaryKey를 인코딩하는 중 오류가 발생했습니다.", e);
-		}
+		return recordKeyPattern.combine(this);
 	}
 
 	/**
@@ -184,33 +94,8 @@ public class RecordKey {
 	 * @param keyPattern
 	 * @throws MultipartRequestzException
 	 */
-	public void separate(String primaryKey, String keyPattern) throws RecordKeyException {
-		this.keyPattern = keyPattern;
-		separate(primaryKey);
-	}
-	
-	/**
-	 * PrimaryKey를 각 요소(Key)로 분리한다.
-	 * @param primaryKey
-	 * @throws MultipartRequestzException
-	 */
-	public void separate(String primaryKey) throws RecordKeyException {
-		try {
-			String[] keyNames = StringUtils.split(keyPattern, ScanyContextBuilder.KEY_DELIMITER);
-			String[] keyValues = StringUtils.split(primaryKey, ScanyContextBuilder.KEY_DELIMITER);
-	
-			if(keyNames.length != keyValues.length)
-				throw new IllegalArgumentException("부적합한 Primary Key입니다.");
-			
-			if(keys.size() != 0)
-				keys.clear();
-	
-			for(int i = 0; i < keyNames.length; i++) {
-				setKeyValue(keyNames[i], keyValues[i]);
-			}
-		} catch(Exception e) {
-			throw new RecordKeyException("PrimaryKey를 디코딩하는 중 오류가 발생했습니다.", e);
-		}
+	public void separate(String recordKey) throws RecordKeyException {
+		recordKeyPattern.separate(recordKey, this);
 	}
 	
 	/**

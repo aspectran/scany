@@ -37,7 +37,7 @@ public class ScanyIndexerDemo {
 			Relation schema = anyIndexer.getSchema();
 			
 			// Primary Key 생성
-			RecordKey primaryKey = new RecordKey(schema);
+			RecordKey primaryKey = schema.newRecordKey();
 			primaryKey.setKeyValue("boardId", "notice");
 			primaryKey.setKeyValue("articleNo", "2");
 			
