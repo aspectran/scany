@@ -38,10 +38,6 @@
 				(기본값: Integer.MAX_VALUE)
 -->
 
-	<settings>
-		<setting name="keySeparator" value="$"/>
-	</settings>
-
 	<analyzers>
 		<analyzer id="bigram" class="org.jhlabs.scany.engine.analysis.bigram.BigramAnalyzer"/>
 		<analyzer id="" class=""/>
@@ -61,7 +57,7 @@
 	<relation id="notice" analyzer="bigram">
 		<description>공지사항</description>
 		<directory type="relative">notice</directory>
-		<recordKey separator="$">boardId$articleNo</recordKey>
+		<recordKeyPattern separator="$">boardId$articleNo</recordKeyPattern>
 		<attributes>
 			<attribute name="boardId"
 				storable="yes" indexable="no" queryable="no"
