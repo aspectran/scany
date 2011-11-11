@@ -204,11 +204,11 @@ public class ScanyContextBuilder {
 					MultipleXReader.Record record = (MultipleXReader.Record)list.get(i);
 
 					Relation schema = new Relation();
-					schema.setSchemaId(record.getAttributeValue("name"));
+					schema.setRelationId(record.getAttributeValue("name"));
 
 					// 중복되는 스키마 ID가 있는지 검사
-					if(schemas.get(schema.getSchemaId()) != null)
-						throw new IllegalArgumentException("중복된 Schema ID가 존재합니다. - (" + schema.getSchemaId() + ")");
+					if(schemas.get(schema.getRelationId()) != null)
+						throw new IllegalArgumentException("중복된 Schema ID가 존재합니다. - (" + schema.getRelationId() + ")");
 
 					// 키패턴
 					//schema.setKeyPattern(record.getColumnValue(columnNames[0]));
@@ -217,7 +217,7 @@ public class ScanyContextBuilder {
 					String repository = record.getColumnValue(columnNames[1]);
 					
 					if(repository == null)
-						throw new IllegalArgumentException("데이터 저장소가 지정되지 않았습니다. - (" + schema.getSchemaId() + ")");
+						throw new IllegalArgumentException("데이터 저장소가 지정되지 않았습니다. - (" + schema.getRelationId() + ")");
 						
 					if(repository.indexOf("{RepositoryHome}") != -1) {
 						if(!StringUtils.isEmpty(repositoryHome)) {
@@ -301,7 +301,7 @@ public class ScanyContextBuilder {
 
 					schema.setAttributes(columns);
 					
-					schemas.put(schema.getSchemaId(), schema);
+					schemas.put(schema.getRelationId(), schema);
 					
 //					System.out.println(schema.getSchemaId());
 //					System.out.println(schema.getRepository());

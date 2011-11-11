@@ -43,20 +43,20 @@ public class ScanyIndexerDemo {
 			
 			// 레코드 생성
 			Record record = new Record();
-			record.setPrimaryKey(primaryKey);
-			record.addColumnValue("category", "free");
-			record.addColumnValue("group", "cm");
-			record.addColumnValue("title", "감 오리하이 Apple scany +fff ");
-//			record.addColumnValue("content", "gulendol@aaa.com");
-//			record.addColumnValue("title", "aaa");
-			record.addColumnValue("content", "bbb");
-			record.addColumnValue("tag", "사과,감,오렌지,파인애플,ccc,Orange");
-//			record.addColumnValue("title", "오늘 록된 공지사항입니다. apple scany");
-//			record.addColumnValue("content", "금수 내내 강산2 members 오늘 록된 공지사항입니다.");
-			record.addColumnValue("writer", "홍길동");
-			record.addColumnValue("url", "url");
-//			record.addColumnValue("date", Datez.format(new Date(), "yyyyMMddHHmmss"));
-			System.out.println(primaryKey.combine(schema.getKeyPattern()));
+			record.setRecordKey(primaryKey);
+			record.setValue("category", "free");
+			record.setValue("group", "cm");
+			record.setValue("title", "감 오리하이 Apple scany +fff ");
+//			record.setValue("content", "gulendol@aaa.com");
+//			record.setValue("title", "aaa");
+			record.setValue("content", "bbb");
+			record.setValue("tag", "사과,감,오렌지,파인애플,ccc,Orange");
+//			record.setValue("title", "오늘 록된 공지사항입니다. apple scany");
+//			record.setValue("content", "금수 내내 강산2 members 오늘 록된 공지사항입니다.");
+			record.setValue("writer", "홍길동");
+			record.setValue("url", "url");
+//			record.setValue("date", Datez.format(new Date(), "yyyyMMddHHmmss"));
+			System.out.println(primaryKey.toString());
 			System.out.println();
 			
 			int result = 1;

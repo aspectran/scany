@@ -41,6 +41,12 @@ public class Relation {
 		return new RecordKey(recordKeyPattern);
 	}
 	
+	public RecordKey newRecordKey(String recordKeyString) throws RecordKeyException {
+		RecordKey recordKey = new RecordKey(recordKeyPattern);
+		recordKey.setRecordKeyString(recordKeyString);
+		return recordKey;
+	}
+	
 	/**
 	 * 해당하는 이름을 가진 컬럼을 반환한다.
 	 * @param attributeName 컬럼명
@@ -94,16 +100,16 @@ public class Relation {
 	 * 스키마 ID를 반환한다.
 	 * @return the schemaId
 	 */
-	public String getSchemaId() {
+	public String getRelationId() {
 		return id;
 	}
 
 	/**
 	 * 스키마 ID를 지정한다.
-	 * @param schemaId the schemaId to set
+	 * @param id the schemaId to set
 	 */
-	public void setSchemaId(String schemaId) {
-		this.id = schemaId;
+	public void setRelationId(String id) {
+		this.id = id;
 	}
 
 	/**

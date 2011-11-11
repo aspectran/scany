@@ -147,7 +147,7 @@ public class LuceneIndexer implements AnyIndexer {
 				throw new IllegalArgumentException("PrimaryKey가 와일드카드 문자를 포함하고 있습니다.");
 
 			Document document = recordToDocument(record); 
-			Term term = new Term(ScanyContextBuilder.PRIMARY_KEY, record.getRecordKey().combine());
+			Term term = new Term(RecordKey.RECORD_KEY, record.getRecordKey().getRecordKeyString());
 
 			indexWriter.updateDocument(term, document);
 		} catch(Exception e) {
@@ -166,7 +166,7 @@ public class LuceneIndexer implements AnyIndexer {
 		Searcher searcher = null;
 
 		try {
-			String rkey = recordKey.combine();
+			String rkey = recordKey.getRecordKeyString();
 
 			/**
 			 * Term 선택 순서대로 속도에서 차이가 난다.
@@ -280,17 +280,17 @@ public class LuceneIndexer implements AnyIndexer {
 	 * 해당 Key가 존재하는 여부를 반환.
 	 * 와일드카드 문자가 포함된 primaryKey를 지정하면 안된다.
 	 * 
-	 * @param primaryKey 레코드의 키
+	 * @param recordKey 레코드의 키
 	 * @return
 	 * @throws AnyIndexException
 	 */
-	public boolean exists(RecordKey primaryKey) throws AnyIndexException {
+	public boolean exists(RecordKey recordKey) throws AnyIndexException {
 		IndexSearcher searcher = null;
 
 		try {
 			searcher = new IndexSearcher(directory);
 
-			Term term = new Term(ScanyContextBuilder.PRIMARY_KEY, primaryKey.combine());
+			Term term = new Term(RecordKey.RECORD_KEY, recordKey.getRecordKeyString());
 			Query query = new TermQuery(term);
 
 			Hits hits = searcher.search(query);
@@ -334,7 +334,7 @@ public class LuceneIndexer implements AnyIndexer {
 			Field.Store store = null;
 
 			// Primary Key 필드
-			field = new Field(ScanyContextBuilder.PRIMARY_KEY, record.getRecordKey().combine(), Field.Store.YES,
+			field = new Field(RecordKey.RECORD_KEY, record.getRecordKey().getRecordKeyString(), Field.Store.YES,
 					Field.Index.UN_TOKENIZED);
 			document.add(field);
 

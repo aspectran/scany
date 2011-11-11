@@ -343,16 +343,16 @@ public class AnySearcherModel {
 	 * PrimaryKey를 필터 컬럼으로 추가한다.
 	 * PrimaryKey는 필수조건이 된다.
 	 * 
-	 * @param primaryKey PrimaryKey
+	 * @param recordKey PrimaryKey
 	 * @throws AnySearchException
 	 */
-	public void addFilterColumn(RecordKey primaryKey) throws AnySearchException {
+	public void addFilterColumn(RecordKey recordKey) throws AnySearchException {
 		try {
 			asureSchema();
 
-			String pkey = primaryKey.combine();
+			String rkey = recordKey.getRecordKeyString();
 
-			FilteringAttributes fc = new FilteringAttributes(ScanyContextBuilder.PRIMARY_KEY, pkey, true);
+			FilteringAttributes fc = new FilteringAttributes(RecordKey.RECORD_KEY, rkey, true);
 
 			if(filterColumns == null)
 				filterColumns = new ArrayList();
@@ -514,7 +514,7 @@ public class AnySearcherModel {
 	 */
 	protected static Record documentToRecord(Document document, Relation relation) throws RecordKeyException {
 		RecordKey recordKey = relation.newRecordKey();
-		recordKey.setRecordKey(document.get(RecordKey.RECORD_KEY));
+		recordKey.setRecordKeyString(document.get(RecordKey.RECORD_KEY));
 		
 		Record record = new Record();
 		record.setRecordKey(recordKey);
