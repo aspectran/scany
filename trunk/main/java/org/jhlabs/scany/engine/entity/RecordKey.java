@@ -26,21 +26,50 @@ public class RecordKey {
 	
 	public static final String RECORD_KEY = "_r_key_";
 	
+	private RecordKeyPattern recordKeyPattern;
+	
 	private Map<String, String> keyMembers = new HashMap<String, String>();
+	
+	private String recordKeyString;
 	
 	private boolean wildcard;
 	
-	private RecordKeyPattern recordKeyPattern;
+	public boolean combined;
 
+	public boolean separated;
+	
 	public RecordKey(RecordKeyPattern recordKeyPattern) {
 		this.recordKeyPattern = recordKeyPattern;
 	}
 
-	public void setRecordKey(String recordKey) throws RecordKeyException {
-		separate(recordKey);
+	public String toString() {
+		String recordKeyString = null;
+		
+		try {
+			recordKeyString = getRecordKeyString();
+		} catch(RecordKeyException e) {
+		}
+		
+		return recordKeyString;
+	}
+	
+	public String getRecordKeyString() throws RecordKeyException {
+		if(!combined)
+			combine();
+		
+		return recordKeyString;
+	}
+	
+	public void setRecordKeyString(String recordKeyString) throws RecordKeyException {
+		this.recordKeyString = recordKeyString;
+		separated = false;
+		combined = true;
 	}
 
-	public String getKeyValue(String keyName) {
+	public String getKeyValue(String keyName) throws RecordKeyException {
+		if(!separated)
+			separate();
+		
 		return keyMembers.get(keyName);
 	}
 
@@ -81,10 +110,14 @@ public class RecordKey {
 		}
 		
 		keyMembers.put(keyName, keyValue);
+		combined = false;
 	}
 	
-	public String combine() throws RecordKeyException {
-		return recordKeyPattern.combine(this);
+	private void combine() throws RecordKeyException {
+		if(keyMembers.size() > 0) {
+			recordKeyString = recordKeyPattern.combine(this);
+			combined = true;
+		}
 	}
 
 	/**
@@ -94,8 +127,11 @@ public class RecordKey {
 	 * @param keyPattern
 	 * @throws MultipartRequestzException
 	 */
-	public void separate(String recordKey) throws RecordKeyException {
-		recordKeyPattern.separate(recordKey, this);
+	private void separate() throws RecordKeyException {
+		if(recordKeyString != null) {
+			recordKeyPattern.separate(recordKeyString, this);
+			separated = true;
+		}
 	}
 	
 	/**

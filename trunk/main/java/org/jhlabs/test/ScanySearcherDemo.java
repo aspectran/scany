@@ -53,7 +53,7 @@ public class ScanySearcherDemo {
 			
 			
 			// Primary Key 생성
-			RecordKey primaryKey = new RecordKey(searcher.getSchema());
+			RecordKey primaryKey = searcher.getSchema().newRecordKey();
 			primaryKey.setKeyValue("boardId", "java");
 			primaryKey.setKeyValue("articleNo", "*");
 			
@@ -68,9 +68,9 @@ public class ScanySearcherDemo {
 
 	    	if(records != null) {
 		    	for(int i = 0; i < records.length; i++) {
-		    		System.out.print(records[i].getPrimaryKey());
+		    		System.out.print(records[i].getRecordKey().toString());
 		    		System.out.print(" ");
-		    		System.out.println(records[i].getColumnValue("title"));
+		    		System.out.println(records[i].getValue("title"));
 		    	}
 		    	
 		    	if(records.length == 0)
@@ -94,7 +94,7 @@ public class ScanySearcherDemo {
 			searcher.setHitsPerPage(10);
 			
 			// Primary Key 생성
-			RecordKey primaryKey = new RecordKey(searcher.getSchema());
+			RecordKey primaryKey = searcher.getSchema().newRecordKey();
 			primaryKey.setKeyValue("boardId", "notice");
 			primaryKey.setKeyValue("articleNo", "*");
 			
@@ -110,8 +110,8 @@ public class ScanySearcherDemo {
 	    	Record[] records = searcher.random();
 
 	    	for(int i = 0; i < records.length; i++) {
-	    		System.out.print(records[i].getPrimaryKey() + "   ");
-	    		System.out.println(records[i].getColumnValue("date"));
+	    		System.out.print(records[i].getRecordKey() + "   ");
+	    		System.out.println(records[i].getValue("date"));
 	    	}
 	    	
 	    	if(records.length == 0)
@@ -132,9 +132,9 @@ public class ScanySearcherDemo {
 
 	    	if(records != null) {
 		    	for(int i = 0; i < records.length; i++) {
-		    		System.out.print(records[i].getPrimaryKey());
+		    		System.out.print(records[i].getRecordKey());
 		    		System.out.print(" ");
-		    		System.out.println(records[i].getColumnValue("title"));
+		    		System.out.println(records[i].getValue("title"));
 		    	}
 		    	
 		    	if(records.length == 0)
