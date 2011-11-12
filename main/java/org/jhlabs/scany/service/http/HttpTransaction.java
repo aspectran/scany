@@ -3,11 +3,11 @@ package org.jhlabs.scany.service.http;
 import org.jhlabs.scany.engine.entity.Relation;
 import org.jhlabs.scany.engine.transaction.AbstractAnyTransaction;
 
-public class HttpAnyTransaction extends AbstractAnyTransaction {
+public class HttpTransaction extends AbstractAnyTransaction {
 
 	private Relation table;
 
-	public HttpAnyTransaction(Relation table) {
+	public HttpTransaction(Relation table) {
 		this.table = table;
 	}
 	
