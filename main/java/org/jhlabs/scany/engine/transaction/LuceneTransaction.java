@@ -2,7 +2,7 @@ package org.jhlabs.scany.engine.transaction;
 
 import org.jhlabs.scany.engine.entity.Relation;
 
-public class LuceneTransaction extends AbstractAnyTransaction implements AnyTransaction {
+public class LuceneTransaction extends AbstractTransaction implements AnyTransaction {
 
 	private Relation table;
 
