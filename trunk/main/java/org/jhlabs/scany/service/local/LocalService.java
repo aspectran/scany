@@ -6,7 +6,7 @@ package org.jhlabs.scany.service.local;
 import org.jhlabs.scany.context.rule.LocalServiceRule;
 import org.jhlabs.scany.engine.search.AnySearcher;
 import org.jhlabs.scany.engine.transaction.AnyTransaction;
-import org.jhlabs.scany.service.AbstractAnyService;
+import org.jhlabs.scany.service.AbstractService;
 
 /**
  *
@@ -15,19 +15,19 @@ import org.jhlabs.scany.service.AbstractAnyService;
  * <p>Created: 2011. 11. 6. 오후 4:46:36</p>
  *
  */
-public class AnyLocalService extends AbstractAnyService {
+public class LocalService extends AbstractService {
 	
 	private LocalServiceRule localServiceRule;
 
-	public AnyLocalService(LocalServiceRule localServiceRule) {
+	public LocalService(LocalServiceRule localServiceRule) {
 		this.localServiceRule = localServiceRule;
 	}
 
-	public AnyTransaction getTransaction(String tableId) {
+	public AnyTransaction getTransaction(String relationId) {
 		return null;
 	}
 	
-	public AnySearcher getSercher(String tableId) {
+	public AnySearcher getSercher(String relationId) {
 		return null;
 	}
 
