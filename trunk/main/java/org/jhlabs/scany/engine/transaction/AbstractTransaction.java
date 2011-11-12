@@ -16,7 +16,7 @@ import org.jhlabs.scany.engine.entity.Record;
  * <p>Created: 2011. 11. 7. 오후 1:17:21</p>
  *
  */
-public abstract class AbstractAnyTransaction {
+public abstract class AbstractTransaction {
 
 	protected JobQueue jobQueue;
 	

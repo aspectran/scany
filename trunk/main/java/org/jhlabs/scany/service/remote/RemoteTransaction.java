@@ -1,9 +1,9 @@
 package org.jhlabs.scany.service.remote;
 
 import org.jhlabs.scany.engine.entity.Relation;
-import org.jhlabs.scany.engine.transaction.AbstractAnyTransaction;
+import org.jhlabs.scany.engine.transaction.AbstractTransaction;
 
-public class RemoteTransaction extends AbstractAnyTransaction {
+public class RemoteTransaction extends AbstractTransaction {
 
 	private Relation table;
 
