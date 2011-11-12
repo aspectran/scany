@@ -2,35 +2,56 @@
 
 <service>
 
+	<schema></schema>
+
 	<local id="localService" searchable="true" indexable="false">
+		<schema></schema>
 		<directory></directory>
 		<characterEncoding>utf-8</characterEncoding>
-		<schema></schema>
+		<spooling background="true|false">
+			<local>
+				<directory></directory>
+			</local>
+			<ftp>
+				<connection>
+					<host port=""></host>
+					<timeout unit="millisecond">2000</timeout>
+				</connection>
+				<user>
+					<id></id>
+					<password encryption="none"></password>
+				</user>
+				<directory></directory>
+			</ftp>
+			<jdbc>
+			</jdbc>
+			<jndi>
+			</jndi>
+		</spooling>
 	</local>
 	
-	<remote id="remoteService" searchable="true" indexable="false">
-		<connection>
-			<host ip="" port=""/>
-			<timeout unit="millisecond">2000</timeout>
-		</connection>
-		<login>
-			<user></user>
-			<password encryption="none"></password>
-		</login>
-		<message encryption="none" compressable="true"/>
-		<schema></schema>
-	</remote>
-	
 	<http id="httpService" searchable="true" indexable="false">
+		<schema></schema>
 		<url>http://</url>
 		<parameters>
 			<parameter name="authKey" encryption="none">1234</parameter>
 			<parameter name="message" compressable="true"/>
 		</parameters>
-		<schema></schema>
 	</http>
 	
-	
+	<remote id="remoteService" searchable="true" indexable="false">
+		<schema></schema>
+		<connection>
+			<host port=""></host>
+			<timeout unit="millisecond">2000</timeout>
+		</connection>
+		<user>
+			<id></id>
+			<password encryption="none"></password>
+		</user>
+		<message encryption="none" compressable="true"/>
+	</remote>
+
 
 <!--
 	Service: 서비스 정의 (원격)

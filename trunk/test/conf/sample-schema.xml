@@ -56,7 +56,7 @@
 	
 	<relation id="notice" analyzer="bigram">
 		<description>공지사항</description>
-		<directory type="relative">notice</directory>
+		<directory relative="true">notice</directory>
 		<recordKeyPattern separator="$">boardId$articleNo</recordKeyPattern>
 		<attributes>
 			<attribute name="boardId"
