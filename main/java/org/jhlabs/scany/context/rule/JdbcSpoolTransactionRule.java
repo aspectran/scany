@@ -1,5 +1,5 @@
 package org.jhlabs.scany.context.rule;
 
-public class BaseServiceRule {
+public class JdbcSpoolTransactionRule {
 
 }

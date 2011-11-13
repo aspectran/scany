@@ -4,10 +4,10 @@ import org.jhlabs.scany.engine.entity.Relation;
 
 public class LuceneTransaction extends AbstractTransaction implements AnyTransaction {
 
-	private Relation table;
+	private Relation relation;
 
-	public LuceneTransaction(Relation table) {
-		this.table = table;
+	public LuceneTransaction(Relation relation) {
+		this.relation = relation;
 	}
 
 	public void commit() {
