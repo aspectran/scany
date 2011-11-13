@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<scany>
+
+	<http>
+		<schema></schema>
+		<characterEncoding>utf-8</characterEncoding>
+		<url>http://</url>
+		<parameters>
+			<parameter name="authKey" encryption="none">1234</parameter>
+			<parameter name="message" compressable="true"/>
+		</parameters>
+	</http>
+
+</scany>

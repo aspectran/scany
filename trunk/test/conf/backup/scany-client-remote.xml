@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<scany>
+
+	<remote>
+		<schema></schema>
+		<connection>
+			<host port=""/>
+			<timeout>2000</timeout>
+		</connection>
+		<authentificationKey></authentificationKey>
+		<message encryption="none" compressable="true"/>
+	</remote>
+
+</scany>
