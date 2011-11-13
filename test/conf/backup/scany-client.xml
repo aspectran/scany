@@ -15,7 +15,7 @@
 			<ftp>
 				<connection>
 					<host port=""></host>
-					<timeout unit="millisecond">2000</timeout>
+					<timeout>2000</timeout>
 				</connection>
 				<user>
 					<id></id>
@@ -32,6 +32,7 @@
 	
 	<http id="httpService" searchable="true" indexable="false">
 		<schema></schema>
+		<characterEncoding>utf-8</characterEncoding>
 		<url>http://</url>
 		<parameters>
 			<parameter name="authKey" encryption="none">1234</parameter>
@@ -43,12 +44,9 @@
 		<schema></schema>
 		<connection>
 			<host port=""></host>
-			<timeout unit="millisecond">2000</timeout>
+			<timeout>2000</timeout>
 		</connection>
-		<user>
-			<id></id>
-			<password encryption="none"></password>
-		</user>
+		<authentificationKey></authentificationKey>
 		<message encryption="none" compressable="true"/>
 	</remote>
 
@@ -119,4 +117,4 @@
 	<CharacterSet>EUC-KR</CharacterSet>
 </Client>
 
-</services>
+</service>
