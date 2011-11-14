@@ -15,7 +15,7 @@ public class HttpServiceRule {
 	
 	private String url;
 	
-	private Map<String, String> parameters = new LinkedHashMap<String, String>();
+	private Map<String, String> parameters;
 
 	public Schema getSchema() {
 		return schema;
