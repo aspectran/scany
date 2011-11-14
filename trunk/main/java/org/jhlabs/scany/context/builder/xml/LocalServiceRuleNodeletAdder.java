@@ -15,7 +15,6 @@
  */
 package org.jhlabs.scany.context.builder.xml;
 
-import java.io.InputStream;
 import java.util.Properties;
 
 import org.jhlabs.scany.context.builder.ScanyContextBuilderAssistant;
@@ -24,6 +23,7 @@ import org.jhlabs.scany.context.rule.LocalServiceRule;
 import org.jhlabs.scany.context.rule.SpoolingRule;
 import org.jhlabs.scany.context.type.SpoolingMode;
 import org.jhlabs.scany.util.xml.Nodelet;
+import org.jhlabs.scany.util.xml.NodeletAdder;
 import org.jhlabs.scany.util.xml.NodeletParser;
 import org.w3c.dom.Node;
 
@@ -32,91 +32,75 @@ import org.w3c.dom.Node;
  * 
  * <p>Created: 2008. 06. 14 오전 4:39:24</p>
  */
-public class ScanyNodeParser {
+public class LocalServiceRuleNodeletAdder implements NodeletAdder {
 	
-	private final NodeletParser parser = new NodeletParser();
+	protected ScanyContextBuilderAssistant assistant;
+	
+	private String prefixPath;
 
-	private final ScanyContextBuilderAssistant assistant;
-	
 	/**
-	 * Instantiates a new translet map parser.
+	 * Instantiates a new content nodelet adder.
 	 * 
+	 * @param parser the parser
 	 * @param assistant the assistant for Context Builder
 	 */
-	public ScanyNodeParser(ScanyContextBuilderAssistant assistant) {
-		//super(log);
-		
+	public LocalServiceRuleNodeletAdder(ScanyContextBuilderAssistant assistant) {
 		this.assistant = assistant;
-		this.assistant.clearObjectStack();
-
-		parser.setValidation(true);
-		parser.setEntityResolver(new ScanyDtdResolver());
-
-		addRootNodelets();
-		addLocalServiceNodelets();
 	}
 
 	/**
-	 * Parses the translet map.
+	 * Gets the prefix path.
 	 * 
-	 * @param inputStream the input stream
-	 * 
-	 * @return the translet rule map
-	 * 
-	 * @throws Exception the exception
+	 * @return the prefixPath
 	 */
-	public void parse(InputStream inputStream) throws Exception {
-		try {
-			parser.parse(inputStream);
-		} catch(Exception e) {
-			throw new Exception("Error parsing translet-map. Cause: " + e, e);
-		}
+	public String getPrefixPath() {
+		return prefixPath;
 	}
 
 	/**
-	 * Adds the translet map nodelets.
+	 * Sets the prefix path.
+	 * 
+	 * @param prefixPath the prefixPath to set
 	 */
-	private void addRootNodelets() {
-		parser.addNodelet("/scany", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
-			}
-		});
+	public void setPrefixPath(String prefixPath) {
+		this.prefixPath = prefixPath;
 	}
-
-	private void addLocalServiceNodelets() {
-		parser.addNodelet("/scany/local", new LocalServiceRuleNodeletAdder(assistant));
-
-		parser.addNodelet("/scany/local", new Nodelet() {
+	
+	/**
+	 * Process.
+	 */
+	public void process(String xpath, NodeletParser parser) {
+		parser.addNodelet(xpath, "/local", new Nodelet() {
 			public void process(Node node, Properties attributes, String text) throws Exception {
 				LocalServiceRule lsr = new LocalServiceRule();
 				assistant.pushObject(lsr);
 			}
 		});
-		parser.addNodelet("/scany/local/schema", new Nodelet() {
+		parser.addNodelet(xpath, "/local/schema", new Nodelet() {
 			public void process(Node node, Properties attributes, String text) throws Exception {
 				LocalServiceRule lsr = (LocalServiceRule)assistant.peekObject();
 				lsr.setSchemaConfigLocation(text);
 			}
 		});
-		parser.addNodelet("/scany/local/directory", new Nodelet() {
+		parser.addNodelet(xpath, "/local/directory", new Nodelet() {
 			public void process(Node node, Properties attributes, String text) throws Exception {
 				LocalServiceRule lsr = (LocalServiceRule)assistant.peekObject();
 				lsr.setDirectory(text);
 			}
 		});
-		parser.addNodelet("/scany/local/characterEncoding", new Nodelet() {
+		parser.addNodelet(xpath, "/local/characterEncoding", new Nodelet() {
 			public void process(Node node, Properties attributes, String text) throws Exception {
 				LocalServiceRule lsr = (LocalServiceRule)assistant.peekObject();
-				lsr.setDirectory(text);
+				lsr.setCharacterEncoding(text);
 			}
 		});
-		parser.addNodelet("/scany/local/spooling", new Nodelet() {
+		parser.addNodelet(xpath, "/local/spooling", new Nodelet() {
 			public void process(Node node, Properties attributes, String text) throws Exception {
 				SpoolingRule sr = new SpoolingRule();
 				assistant.pushObject(sr);
 			}
 		});
-		parser.addNodelet("/scany/local/spooling/directory", new Nodelet() {
+		parser.addNodelet(xpath, "/local/spooling/directory", new Nodelet() {
 			public void process(Node node, Properties attributes, String text) throws Exception {
 				SpoolingRule sr = (SpoolingRule)assistant.peekObject();
 				sr.setSpoolingMode(SpoolingMode.FILE);
@@ -127,7 +111,7 @@ public class ScanyNodeParser {
 				sr.setSpoolTransactionRule(fstr);
 			}
 		});
-		parser.addNodelet("/scany/local/spooling/end()", new Nodelet() {
+		parser.addNodelet(xpath, "/local/spooling/end()", new Nodelet() {
 			public void process(Node node, Properties attributes, String text) throws Exception {
 				SpoolingRule sr = (SpoolingRule)assistant.popObject();
 				LocalServiceRule lsr = (LocalServiceRule)assistant.peekObject();
@@ -135,13 +119,12 @@ public class ScanyNodeParser {
 				lsr.setSpoolingRule(sr);
 			}
 		});
-		parser.addNodelet("/scany/local/end()", new Nodelet() {
+		parser.addNodelet(xpath, "/local/end()", new Nodelet() {
 			public void process(Node node, Properties attributes, String text) throws Exception {
 				LocalServiceRule lsr = (LocalServiceRule)assistant.popObject();
 				assistant.setLocalServiceRule(lsr);
 			}
 		});
 	}
-
 
 }

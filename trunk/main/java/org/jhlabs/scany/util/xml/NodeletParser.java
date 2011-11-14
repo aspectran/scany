@@ -57,11 +57,55 @@ public class NodeletParser {
 	 * <li> Element Path - /rootElement/childElement/theElement
 	 * <li> All Elements Named - //theElement
 	 * </ul>
+	 *
+	 * @param xpath the xpath
+	 * @param nodelet the nodelet
 	 */
 	public void addNodelet(String xpath, Nodelet nodelet) {
 		nodeletMap.put(xpath, nodelet);
 	}
 
+	/**
+	 * Registers a nodelet for the specified XPath. Current XPaths supported
+	 * are:
+	 * <ul>
+	 * <li> Text Path - /rootElement/childElement/text()
+	 * <li> Attribute Path  - /rootElement/childElement/@theAttribute
+	 * <li> Element Path - /rootElement/childElement/theElement
+	 * <li> All Elements Named - //theElement
+	 * </ul>
+	 *
+	 * @param prefix the prefix xpath
+	 * @param xpath the xpath
+	 * @param nodelet the nodelet
+	 */
+	public void addNodelet(String prefix, String xpath, Nodelet nodelet) {
+		addNodelet(new StringBuilder(prefix).append(xpath).toString(), nodelet);
+	}
+
+	/**
+	 * Adds the nodelet.
+	 *
+	 * @param xpath the xpath
+	 * @param nodeletAdder the nodelet adder
+	 * @throws Exception the exception
+	 */
+	public void addNodelet(String xpath, NodeletAdder nodeletAdder) {
+		nodeletAdder.process(xpath, this);
+	}
+	
+	/**
+	 * Adds the nodelet.
+	 *
+	 * @param prefix the prefix
+	 * @param xpath the xpath
+	 * @param nodeletAdder the nodelet adder
+	 * @throws Exception the exception
+	 */
+	public void addNodelet(String prefix, String xpath, NodeletAdder nodeletAdder) {
+		addNodelet(new StringBuilder(prefix).append(xpath).toString(), nodeletAdder);
+	}
+	
 	/**
 	 * Begins parsing from the provided Reader.
 	 */
