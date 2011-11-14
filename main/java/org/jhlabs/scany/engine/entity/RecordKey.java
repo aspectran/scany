@@ -14,7 +14,7 @@ package org.jhlabs.scany.engine.entity;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.jhlabs.scany.context.builder.ScanyContextBuilder;
+import org.jhlabs.scany.context.builder.ScanyContextConstant;
 
 /**
  * PrimaryKey 정보를 담고 있다.
@@ -100,8 +100,8 @@ public class RecordKey {
 		keyValue = keyValue.trim();
 		
 		if(!wildcard) {
-			for(int i = 0; i < ScanyContextBuilder.WILDCARDS.length; i++) {
-				if(keyValue.indexOf(ScanyContextBuilder.WILDCARDS[i]) != -1) {
+			for(int i = 0; i < ScanyContextConstant.WILDCARDS.length; i++) {
+				if(keyValue.indexOf(ScanyContextConstant.WILDCARDS[i]) != -1) {
 					wildcard = true;
 					break;
 				}

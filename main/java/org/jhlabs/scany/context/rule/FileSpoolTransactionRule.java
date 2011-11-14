@@ -1,6 +1,6 @@
 package org.jhlabs.scany.context.rule;
 
-public class FtpSpoolTransactionRule {
+public class FileSpoolTransactionRule {
 
 	private String host;
 
