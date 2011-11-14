@@ -19,7 +19,6 @@ import java.util.Map;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.Hits;
-import org.jhlabs.scany.context.builder.ScanyContextBuilder;
 import org.jhlabs.scany.engine.entity.Attribute;
 import org.jhlabs.scany.engine.entity.Record;
 import org.jhlabs.scany.engine.entity.RecordKey;
@@ -190,7 +189,7 @@ public class AnySearcherModel {
 			for(int i = 0; i < columnNames.length; i++) {
 				boolean isOk = false;
 
-				if(columnNames[i].equals(ScanyContextBuilder.PRIMARY_KEY)) {
+				if(columnNames[i].equals(RecordKey.RECORD_KEY)) {
 					isOk = true;
 					break;
 				}

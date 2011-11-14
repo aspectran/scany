@@ -11,7 +11,7 @@
 package org.jhlabs.scany.engine.entity;
 
 
-import org.jhlabs.scany.context.builder.ScanyContextBuilder;
+import org.jhlabs.scany.context.builder.ScanyContextConstant;
 import org.jhlabs.scany.util.StringUtils;
 
 /**
@@ -66,8 +66,8 @@ public class RecordKeyPattern {
 			}
 	
 			if(recordKey.hasWildcard()) {
-				for(int i = 0; i < ScanyContextBuilder.WILDCARDS.length; i++) {
-					if(ScanyContextBuilder.WILDCARDS[i].equals(keyValues[0].substring(0, 1)))
+				for(int i = 0; i < ScanyContextConstant.WILDCARDS.length; i++) {
+					if(ScanyContextConstant.WILDCARDS[i].equals(keyValues[0].substring(0, 1)))
 						throw new IllegalArgumentException("PrimaryKey에서 와일드카드 문자('?', '*')는 첫번째 인자가 될 수 없습니다.");
 				}
 		

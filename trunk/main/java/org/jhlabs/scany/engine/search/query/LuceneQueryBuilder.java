@@ -10,11 +10,6 @@
  ******************************************************************************/
 package org.jhlabs.scany.engine.search.query;
 
-import org.jhlabs.scany.context.builder.ScanyContextBuilder;
-import org.jhlabs.scany.engine.entity.Attribute;
-import org.jhlabs.scany.engine.search.FilteringAttributes;
-import org.jhlabs.scany.util.StringUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +22,10 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.WildcardQuery;
+import org.jhlabs.scany.engine.entity.Attribute;
+import org.jhlabs.scany.engine.entity.RecordKey;
+import org.jhlabs.scany.engine.search.FilteringAttributes;
+import org.jhlabs.scany.util.StringUtils;
 
 /**
  * 검색 조항을 모두 조합한 후 하나의 Query를 반환한다.
@@ -201,7 +200,7 @@ public class LuceneQueryBuilder {
 		String typicalColumnName;
 		
 		if(queryColumns == null || queryColumns.length == 0)
-			typicalColumnName = ScanyContextBuilder.PRIMARY_KEY;
+			typicalColumnName = RecordKey.RECORD_KEY;
 		else
 			typicalColumnName = queryColumns[0].getName();
 		

@@ -200,7 +200,7 @@ public class LuceneIndexer implements AnyIndexer {
 				}
 			}
 
-			Term term = new Term(ScanyContextBuilder.PRIMARY_KEY, rkey);
+			Term term = new Term(RecordKey.RECORD_KEY, rkey);
 
 			if(whatQuery == 0) {
 				indexWriter.deleteDocuments(term);
@@ -223,7 +223,7 @@ public class LuceneIndexer implements AnyIndexer {
 
 					for(int i = 0; i < hits.length(); i++) {
 						doc = hits.doc(i);
-						term = new Term(ScanyContextBuilder.PRIMARY_KEY, doc.get(ScanyContextBuilder.PRIMARY_KEY));
+						term = new Term(RecordKey.RECORD_KEY, doc.get(RecordKey.RECORD_KEY));
 
 						indexWriter.deleteDocuments(term);
 					}
