@@ -85,6 +85,7 @@ public class ScanyNodeParser {
 
 	private void addLocalServiceNodelets() {
 		parser.addNodelet("/scany/local", new LocalServiceRuleNodeletAdder(assistant));
+		parser.addNodelet("/scany/client/http", new HttpServiceRuleNodeletAdder(assistant));
 
 		parser.addNodelet("/scany/local", new Nodelet() {
 			public void process(Node node, Properties attributes, String text) throws Exception {
