@@ -19,10 +19,6 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import org.jhlabs.scany.context.builder.ScanyContextBuilderAssistant;
-import org.jhlabs.scany.context.rule.FileSpoolTransactionRule;
-import org.jhlabs.scany.context.rule.LocalServiceRule;
-import org.jhlabs.scany.context.rule.SpoolingRule;
-import org.jhlabs.scany.context.type.SpoolingMode;
 import org.jhlabs.scany.util.xml.Nodelet;
 import org.jhlabs.scany.util.xml.NodeletParser;
 import org.w3c.dom.Node;
@@ -86,63 +82,6 @@ public class ScanyNodeParser {
 	private void addLocalServiceNodelets() {
 		parser.addNodelet("/scany/local", new LocalServiceRuleNodeletAdder(assistant));
 		parser.addNodelet("/scany/client/http", new HttpServiceRuleNodeletAdder(assistant));
-
-		parser.addNodelet("/scany/local", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
-				LocalServiceRule lsr = new LocalServiceRule();
-				assistant.pushObject(lsr);
-			}
-		});
-		parser.addNodelet("/scany/local/schema", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
-				LocalServiceRule lsr = (LocalServiceRule)assistant.peekObject();
-				lsr.setSchemaConfigLocation(text);
-			}
-		});
-		parser.addNodelet("/scany/local/directory", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
-				LocalServiceRule lsr = (LocalServiceRule)assistant.peekObject();
-				lsr.setDirectory(text);
-			}
-		});
-		parser.addNodelet("/scany/local/characterEncoding", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
-				LocalServiceRule lsr = (LocalServiceRule)assistant.peekObject();
-				lsr.setDirectory(text);
-			}
-		});
-		parser.addNodelet("/scany/local/spooling", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
-				SpoolingRule sr = new SpoolingRule();
-				assistant.pushObject(sr);
-			}
-		});
-		parser.addNodelet("/scany/local/spooling/directory", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
-				SpoolingRule sr = (SpoolingRule)assistant.peekObject();
-				sr.setSpoolingMode(SpoolingMode.FILE);
-				
-				FileSpoolTransactionRule fstr = new FileSpoolTransactionRule();
-				fstr.setDirectory(text);
-				
-				sr.setSpoolTransactionRule(fstr);
-			}
-		});
-		parser.addNodelet("/scany/local/spooling/end()", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
-				SpoolingRule sr = (SpoolingRule)assistant.popObject();
-				LocalServiceRule lsr = (LocalServiceRule)assistant.peekObject();
-				
-				lsr.setSpoolingRule(sr);
-			}
-		});
-		parser.addNodelet("/scany/local/end()", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
-				LocalServiceRule lsr = (LocalServiceRule)assistant.popObject();
-				assistant.setLocalServiceRule(lsr);
-			}
-		});
 	}
-
 
 }
