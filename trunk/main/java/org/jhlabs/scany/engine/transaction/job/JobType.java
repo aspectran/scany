@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.jhlabs.scany.engine.transaction;
+package org.jhlabs.scany.engine.transaction.job;
 
 
 /**

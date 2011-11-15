@@ -1,8 +1,6 @@
 package org.jhlabs.scany.context.rule;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
+import org.jhlabs.scany.context.type.MessageFormat;
 import org.jhlabs.scany.engine.entity.Schema;
 
 public class HttpServiceRule {
@@ -15,8 +13,12 @@ public class HttpServiceRule {
 	
 	private String url;
 	
-	private Map<String, String> parameters;
+	private MessageFormat messageFormat;
+	
+	private MessageRule keysignMessageRule;
 
+	private MessageRule bodyMessageRule;
+	
 	public Schema getSchema() {
 		return schema;
 	}
@@ -49,20 +51,28 @@ public class HttpServiceRule {
 		this.url = url;
 	}
 
-	public Map<String, String> getParameters() {
-		return parameters;
+	public MessageFormat getMessageFormat() {
+		return messageFormat;
 	}
 
-	public void setParameters(Map<String, String> parameters) {
-		this.parameters = parameters;
+	public void setMessageFormat(MessageFormat messageFormat) {
+		this.messageFormat = messageFormat;
 	}
-	
-	public String getParamter(String name) {
-		return parameters.get(name);
+
+	public MessageRule getKeysignMessageRule() {
+		return keysignMessageRule;
 	}
-	
-	public String setParameter(String name, String value) {
-		return parameters.put(name, value);
+
+	public void setKeysignMessageRule(MessageRule keysignMessageRule) {
+		this.keysignMessageRule = keysignMessageRule;
+	}
+
+	public MessageRule getBodyMessageRule() {
+		return bodyMessageRule;
+	}
+
+	public void setBodyMessageRule(MessageRule bodyMessageRule) {
+		this.bodyMessageRule = bodyMessageRule;
 	}
 	
 }

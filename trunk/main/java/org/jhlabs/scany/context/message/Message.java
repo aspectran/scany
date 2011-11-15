@@ -10,12 +10,7 @@ package org.jhlabs.scany.context.message;
  * <p>Created: 2011. 11. 15. 오후 6:37:32</p>
  *
  */
-public class Message {
+public interface Message {
 
-	private String keysign;
-	
-	private String command;
-	
-	private String body;
 	
 }

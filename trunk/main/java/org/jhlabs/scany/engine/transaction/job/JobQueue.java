@@ -1,11 +1,9 @@
 /**
  * 
  */
-package org.jhlabs.scany.engine.transaction;
+package org.jhlabs.scany.engine.transaction.job;
 
 import java.util.LinkedList;
-
-import org.jhlabs.scany.engine.entity.Record;
 
 /**
  *
@@ -18,8 +16,4 @@ public class JobQueue extends LinkedList<Job> {
 	
 	private static final long serialVersionUID = 8014732370875518324L;
 
-	public boolean offer(JobType jobType, Record record) {
-		return offer(new Job(jobType, record));
-	}
-	
 }

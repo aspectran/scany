@@ -4,6 +4,11 @@
 package org.jhlabs.scany.engine.transaction;
 
 import org.jhlabs.scany.engine.entity.Record;
+import org.jhlabs.scany.engine.transaction.job.DeleteJob;
+import org.jhlabs.scany.engine.transaction.job.InsertJob;
+import org.jhlabs.scany.engine.transaction.job.JobQueue;
+import org.jhlabs.scany.engine.transaction.job.MergeJob;
+import org.jhlabs.scany.engine.transaction.job.UpdateJob;
 
 /**
  *
@@ -37,19 +42,19 @@ public abstract class AbstractTransaction {
 	public abstract void rollback();
 	
 	public void insert(Record record) {
-		jobQueue.offer(JobType.INSERT, record);
+		jobQueue.offer(new InsertJob(record));
 	}
 	
 	public void update(Record record) {
-		jobQueue.offer(JobType.UPDATE, record);
+		jobQueue.offer(new UpdateJob(record));
 	}
 	
 	public void merge(Record record) {
-		jobQueue.offer(JobType.MERGE, record);
+		jobQueue.offer(new MergeJob(record));
 	}
 	
 	public void delete(Record record) {
-		jobQueue.offer(JobType.DELETE, record);
+		jobQueue.offer(new DeleteJob(record));
 	}
 	
 }

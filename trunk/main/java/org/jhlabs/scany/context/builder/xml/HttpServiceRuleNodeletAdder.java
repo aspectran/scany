@@ -15,12 +15,12 @@
  */
 package org.jhlabs.scany.context.builder.xml;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Properties;
 
 import org.jhlabs.scany.context.builder.ScanyContextBuilderAssistant;
 import org.jhlabs.scany.context.rule.HttpServiceRule;
+import org.jhlabs.scany.context.rule.MessageRule;
+import org.jhlabs.scany.context.type.MessageFormat;
 import org.jhlabs.scany.util.xml.Nodelet;
 import org.jhlabs.scany.util.xml.NodeletAdder;
 import org.jhlabs.scany.util.xml.NodeletParser;
@@ -93,21 +93,38 @@ public class HttpServiceRuleNodeletAdder implements NodeletAdder {
 				hsr.setUrl(text);
 			}
 		});
-		parser.addNodelet(xpath, "/http/parameters", new Nodelet() {
+		parser.addNodelet(xpath, "/http/message", new Nodelet() {
 			public void process(Node node, Properties attributes, String text) throws Exception {
-				Map<String, String> parameters = new LinkedHashMap<String, String>();
-				assistant.pushObject(parameters);
+				String format = attributes.getProperty("format");
+
+				HttpServiceRule hsr = (HttpServiceRule)assistant.peekObject();
+				hsr.setMessageFormat(MessageFormat.valueOf(format));
 			}
 		});
-		parser.addNodelet(xpath, "/http/parameters/parameter", new Nodelet() {
+		parser.addNodelet(xpath, "/http/message/keysign", new Nodelet() {
 			public void process(Node node, Properties attributes, String text) throws Exception {
-				String name = attributes.getProperty("name");
 				String encryption = attributes.getProperty("encryption");
 				String compressable = attributes.getProperty("compressable");
+				
+				MessageRule mr = new MessageRule();
+				mr.setEncryption(encryption);
+				mr.setCompressable(Boolean.valueOf(compressable));
 
-				@SuppressWarnings("unchecked")
-				Map<String, String> parameters = (Map<String, String>)assistant.peekObject();
-				//parameters.put(name, value)
+				HttpServiceRule hsr = (HttpServiceRule)assistant.peekObject();
+				hsr.setKeysignMessageRule(mr);
+			}
+		});
+		parser.addNodelet(xpath, "/http/message/body", new Nodelet() {
+			public void process(Node node, Properties attributes, String text) throws Exception {
+				String encryption = attributes.getProperty("encryption");
+				String compressable = attributes.getProperty("compressable");
+				
+				MessageRule mr = new MessageRule();
+				mr.setEncryption(encryption);
+				mr.setCompressable(Boolean.valueOf(compressable));
+
+				HttpServiceRule hsr = (HttpServiceRule)assistant.peekObject();
+				hsr.setBodyMessageRule(mr);
 			}
 		});
 	}

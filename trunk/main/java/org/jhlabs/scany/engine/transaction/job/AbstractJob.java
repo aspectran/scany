@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.jhlabs.scany.engine.transaction;
+package org.jhlabs.scany.engine.transaction.job;
 
 import org.jhlabs.scany.engine.entity.Record;
 
@@ -12,13 +12,13 @@ import org.jhlabs.scany.engine.entity.Record;
  * <p>Created: 2011. 11. 8. 오후 11:45:55</p>
  *
  */
-public class Job {
+public class AbstractJob implements Job {
 	
 	private final JobType jobType;
 	
 	private final Record record;
 	
-	public Job(JobType jobType, Record record) {
+	public AbstractJob(JobType jobType, Record record) {
 		this.jobType = jobType;
 		this.record = record;
 	}
