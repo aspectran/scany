@@ -17,7 +17,7 @@
 		<http>
 			<characterEncoding>utf-8</characterEncoding>
 			<url>http://</url>
-			<message type="json">
+			<message format="json">
 				<keysign encryption="none">1234</keysign>
 				<body compressable="true"/>
 			</message>
@@ -30,7 +30,7 @@
 				<host port=""/>
 				<timeout>2000</timeout>
 			</connection>
-			<message type="xml">
+			<message format="xml">
 				<keysign encryption="none">1234</keysign>
 				<body compressable="true"/>
 			</message>
