@@ -101,8 +101,13 @@ public class HttpServiceRuleNodeletAdder implements NodeletAdder {
 		});
 		parser.addNodelet(xpath, "/http/parameters/parameter", new Nodelet() {
 			public void process(Node node, Properties attributes, String text) throws Exception {
+				String name = attributes.getProperty("name");
+				String encryption = attributes.getProperty("encryption");
+				String compressable = attributes.getProperty("compressable");
+
 				@SuppressWarnings("unchecked")
 				Map<String, String> parameters = (Map<String, String>)assistant.peekObject();
+				//parameters.put(name, value)
 			}
 		});
 	}
