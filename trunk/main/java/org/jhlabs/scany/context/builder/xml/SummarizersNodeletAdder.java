@@ -21,7 +21,9 @@ import java.util.Properties;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.jhlabs.scany.context.builder.ScanyContextBuilderAssistant;
+import org.jhlabs.scany.context.rule.LocalServiceRule;
 import org.jhlabs.scany.engine.entity.Schema;
+import org.jhlabs.scany.engine.search.summarize.Summarizer;
 import org.jhlabs.scany.util.xml.EasyNodelet;
 import org.jhlabs.scany.util.xml.EasyNodeletAdder;
 import org.jhlabs.scany.util.xml.EasyNodeletParser;
@@ -31,7 +33,7 @@ import org.jhlabs.scany.util.xml.EasyNodeletParser;
  * 
  * <p>Created: 2008. 06. 14 오전 4:39:24</p>
  */
-public class AnalyzersNodeletAdder implements EasyNodeletAdder {
+public class SummarizersNodeletAdder implements EasyNodeletAdder {
 	
 	protected ScanyContextBuilderAssistant assistant;
 	
@@ -41,7 +43,7 @@ public class AnalyzersNodeletAdder implements EasyNodeletAdder {
 	 * @param parser the parser
 	 * @param assistant the assistant for Context Builder
 	 */
-	public AnalyzersNodeletAdder(ScanyContextBuilderAssistant assistant) {
+	public SummarizersNodeletAdder(ScanyContextBuilderAssistant assistant) {
 		this.assistant = assistant;
 	}
 
@@ -49,50 +51,50 @@ public class AnalyzersNodeletAdder implements EasyNodeletAdder {
 	 * Process.
 	 */
 	public void process(String xpath, EasyNodeletParser parser) {
-		parser.addNodelet(xpath, "/analyzers", new EasyNodelet() {
+		parser.addNodelet(xpath, "/summarizers", new EasyNodelet() {
 			public void process(Properties attributes, String text) throws Exception {
-				Map<String, Analyzer> analyzerMap = new HashMap<String, Analyzer>(); 
-				assistant.pushObject(analyzerMap);
+				Map<String, Summarizer> summarizerMap = new HashMap<String, Summarizer>(); 
+				assistant.pushObject(summarizerMap);
 			}
 		});
-		parser.addNodelet(xpath, "/analyzers/analyzer", new EasyNodelet() {
+		parser.addNodelet(xpath, "/summarizers/summarizer", new EasyNodelet() {
 			public void process(Properties attributes, String text) throws Exception {
 				String id = attributes.getProperty("id");
 				String classType = attributes.getProperty("class");
 				
-				Analyzer analyzer = null;
+				Summarizer summarizer = null;
 				
 				try {
 					Class<?> clazz = Class.forName(classType);
-					analyzer = (Analyzer)clazz.newInstance();
+					summarizer = (Summarizer)clazz.newInstance();
 				} catch(Exception e) {
-					throw new RuntimeException("Error setting Analyzer Class.  Cause: " + e, e);
+					throw new RuntimeException("Error setting Summarizer Class.  Cause: " + e, e);
 				}
 				
 				assistant.pushObject(id);
-				assistant.pushObject(analyzer);
+				assistant.pushObject(summarizer);
 			}
 		});
 
-		parser.addNodelet(xpath + "/analyzers/analyzer/properties", new LocalServiceRuleNodeletAdder(assistant));
-
-		parser.addNodelet(xpath, "/analyzers/analyzer/end()", new EasyNodelet() {
+		parser.addNodelet(xpath + "/summarizers/summarizer/properties", new PropertiesNodeletAdder(assistant));
+		
+		parser.addNodelet(xpath, "/summarizers/summarizer/end()", new EasyNodelet() {
 			public void process(Properties attributes, String text) throws Exception {
-				Analyzer analyzer = (Analyzer)assistant.popObject();
+				Summarizer summarizer = (Summarizer)assistant.popObject();
 				String id = (String)assistant.popObject();
 				
 				@SuppressWarnings("unchecked")
-				Map<String, Analyzer> analyzerMap = (Map<String, Analyzer>)assistant.peekObject();
-				analyzerMap.put(id, analyzer);
+				Map<String, Summarizer> summarizerMap = (Map<String, Summarizer>)assistant.peekObject();
+				summarizerMap.put(id, summarizer);
 			}
 		});
-		parser.addNodelet(xpath, "/analyzers/end()", new EasyNodelet() {
+		parser.addNodelet(xpath, "/summarizers/end()", new EasyNodelet() {
 			public void process(Properties attributes, String text) throws Exception {
 				@SuppressWarnings("unchecked")
-				Map<String, Analyzer> analyzerMap = (Map<String, Analyzer>)assistant.popObject();
+				Map<String, Summarizer> summarizerMap = (Map<String, Summarizer>)assistant.popObject();
 
 				Schema schema = (Schema)assistant.peekObject();
-				schema.setAnalyzerMap(analyzerMap);
+				schema.setSummarizerMap(summarizerMap);
 			}
 		});
 	}
