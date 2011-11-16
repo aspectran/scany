@@ -18,9 +18,10 @@ package org.jhlabs.scany.context.builder.xml;
 import java.util.Properties;
 
 import org.jhlabs.scany.context.builder.ScanyContextBuilderAssistant;
-import org.jhlabs.scany.context.rule.HttpServiceRule;
+import org.jhlabs.scany.context.rule.ClientRule;
 import org.jhlabs.scany.context.rule.MessageRule;
-import org.jhlabs.scany.context.type.MessageFormat;
+import org.jhlabs.scany.context.rule.RemoteServiceRule;
+import org.jhlabs.scany.context.rule.ServerRule;
 import org.jhlabs.scany.util.xml.Nodelet;
 import org.jhlabs.scany.util.xml.NodeletAdder;
 import org.jhlabs.scany.util.xml.NodeletParser;
@@ -31,7 +32,7 @@ import org.w3c.dom.Node;
  * 
  * <p>Created: 2008. 06. 14 오전 4:39:24</p>
  */
-public class HttpServiceRuleNodeletAdder implements NodeletAdder {
+public class RemoteServiceRuleNodeletAdder implements NodeletAdder {
 	
 	protected ScanyContextBuilderAssistant assistant;
 	
@@ -41,7 +42,7 @@ public class HttpServiceRuleNodeletAdder implements NodeletAdder {
 	 * @param parser the parser
 	 * @param assistant the assistant for Context Builder
 	 */
-	public HttpServiceRuleNodeletAdder(ScanyContextBuilderAssistant assistant) {
+	public RemoteServiceRuleNodeletAdder(ScanyContextBuilderAssistant assistant) {
 		this.assistant = assistant;
 	}
 	
@@ -49,39 +50,44 @@ public class HttpServiceRuleNodeletAdder implements NodeletAdder {
 	 * Process.
 	 */
 	public void process(String xpath, NodeletParser parser) {
-		parser.addNodelet(xpath, "/http", new Nodelet() {
+		parser.addNodelet(xpath, "/remote", new Nodelet() {
 			public void process(Node node, Properties attributes, String text) throws Exception {
-				HttpServiceRule hsr = new HttpServiceRule();
-				assistant.pushObject(hsr);
+				RemoteServiceRule rsr = new RemoteServiceRule();
+				assistant.pushObject(rsr);
 			}
 		});
-		parser.addNodelet(xpath, "/http/schema", new Nodelet() {
+		parser.addNodelet(xpath, "/remote/schema", new Nodelet() {
 			public void process(Node node, Properties attributes, String text) throws Exception {
-				HttpServiceRule hsr = (HttpServiceRule)assistant.peekObject();
-				hsr.setSchemaConfigLocation(text);
+				RemoteServiceRule rsr = (RemoteServiceRule)assistant.peekObject();
+				rsr.setSchemaConfigLocation(text);
 			}
 		});
-		parser.addNodelet(xpath, "/http/characterEncoding", new Nodelet() {
+		parser.addNodelet(xpath, "/remote/characterEncoding", new Nodelet() {
 			public void process(Node node, Properties attributes, String text) throws Exception {
-				HttpServiceRule hsr = (HttpServiceRule)assistant.peekObject();
-				hsr.setCharacterEncoding(text);
+				RemoteServiceRule rsr = (RemoteServiceRule)assistant.peekObject();
+				rsr.setCharacterEncoding(text);
 			}
 		});
-		parser.addNodelet(xpath, "/http/url", new Nodelet() {
+		parser.addNodelet(xpath, "/remote/connection/host", new Nodelet() {
 			public void process(Node node, Properties attributes, String text) throws Exception {
-				HttpServiceRule hsr = (HttpServiceRule)assistant.peekObject();
-				hsr.setUrl(text);
-			}
-		});
-		parser.addNodelet(xpath, "/http/message", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
-				String format = attributes.getProperty("format");
+				String port = attributes.getProperty("port");
 
-				HttpServiceRule hsr = (HttpServiceRule)assistant.peekObject();
-				hsr.setMessageFormat(MessageFormat.valueOf(format));
+				RemoteServiceRule rsr = (RemoteServiceRule)assistant.peekObject();
+				rsr.setHost(text);
+				
+				if(port != null && port.length() > 0)
+					rsr.setPort(Integer.valueOf(port));
 			}
 		});
-		parser.addNodelet(xpath, "/http/message/keysign", new Nodelet() {
+		parser.addNodelet(xpath, "/remote/connection/timeout", new Nodelet() {
+			public void process(Node node, Properties attributes, String text) throws Exception {
+				if(text != null && text.length() > 0) {
+					RemoteServiceRule rsr = (RemoteServiceRule)assistant.peekObject();
+					rsr.setTimeout(Integer.valueOf(text));
+				}
+			}
+		});
+		parser.addNodelet(xpath, "/remote/message/keysign", new Nodelet() {
 			public void process(Node node, Properties attributes, String text) throws Exception {
 				String encryption = attributes.getProperty("encryption");
 				String compressable = attributes.getProperty("compressable");
@@ -91,11 +97,11 @@ public class HttpServiceRuleNodeletAdder implements NodeletAdder {
 				mr.setCompressable(Boolean.valueOf(compressable));
 				mr.setText(text);
 
-				HttpServiceRule hsr = (HttpServiceRule)assistant.peekObject();
-				hsr.setKeysignMessageRule(mr);
+				RemoteServiceRule rsr = (RemoteServiceRule)assistant.peekObject();
+				rsr.setKeysignMessageRule(mr);
 			}
 		});
-		parser.addNodelet(xpath, "/http/message/body", new Nodelet() {
+		parser.addNodelet(xpath, "/remote/message/body", new Nodelet() {
 			public void process(Node node, Properties attributes, String text) throws Exception {
 				String encryption = attributes.getProperty("encryption");
 				String compressable = attributes.getProperty("compressable");
@@ -104,10 +110,28 @@ public class HttpServiceRuleNodeletAdder implements NodeletAdder {
 				mr.setEncryption(encryption);
 				mr.setCompressable(Boolean.valueOf(compressable));
 
-				HttpServiceRule hsr = (HttpServiceRule)assistant.peekObject();
-				hsr.setBodyMessageRule(mr);
+				RemoteServiceRule rsr = (RemoteServiceRule)assistant.peekObject();
+				rsr.setBodyMessageRule(mr);
 			}
 		});
+
+		if(xpath.endsWith("/scany/client")) {
+			parser.addNodelet(xpath, "/remote/end()", new Nodelet() {
+				public void process(Node node, Properties attributes, String text) throws Exception {
+					RemoteServiceRule lsr = (RemoteServiceRule)assistant.popObject();
+					ClientRule cr = (ClientRule)assistant.peekObject();
+					cr.setAnyServiceRule(lsr);
+				}
+			});
+		} else if(xpath.endsWith("/scany/server")) {
+			parser.addNodelet(xpath, "/remote/end()", new Nodelet() {
+				public void process(Node node, Properties attributes, String text) throws Exception {
+					RemoteServiceRule rsr = (RemoteServiceRule)assistant.popObject();
+					ServerRule sr = (ServerRule)assistant.peekObject();
+					sr.setRemoteServiceRule(rsr);
+				}
+			});
+		}
 	}
 
 }

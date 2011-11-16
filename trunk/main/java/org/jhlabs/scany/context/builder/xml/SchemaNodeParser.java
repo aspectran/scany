@@ -19,8 +19,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import org.jhlabs.scany.context.builder.ScanyContextBuilderAssistant;
-import org.jhlabs.scany.context.rule.ClientRule;
-import org.jhlabs.scany.context.rule.ServerRule;
+import org.jhlabs.scany.engine.entity.Schema;
 import org.jhlabs.scany.util.xml.Nodelet;
 import org.jhlabs.scany.util.xml.NodeletParser;
 import org.w3c.dom.Node;
@@ -30,7 +29,7 @@ import org.w3c.dom.Node;
  * 
  * <p>Created: 2008. 06. 14 오전 4:39:24</p>
  */
-public class ScanyNodeParser {
+public class SchemaNodeParser {
 	
 	private final NodeletParser parser = new NodeletParser();
 
@@ -41,7 +40,7 @@ public class ScanyNodeParser {
 	 * 
 	 * @param assistant the assistant for Context Builder
 	 */
-	public ScanyNodeParser(ScanyContextBuilderAssistant assistant) {
+	public SchemaNodeParser(ScanyContextBuilderAssistant assistant) {
 		//super(log);
 		
 		this.assistant = assistant;
@@ -51,9 +50,9 @@ public class ScanyNodeParser {
 		parser.setEntityResolver(new ScanyDtdResolver());
 
 		addRootNodelets();
-		addLocalNodelets();
-		addClientNodelets();
-		addServerNodelets();
+		addAnalyzersNodelets();
+		addSummarizersNodelets();
+		addRelationNodelets();
 	}
 
 	/**
@@ -69,7 +68,7 @@ public class ScanyNodeParser {
 		try {
 			parser.parse(inputStream);
 		} catch(Exception e) {
-			throw new Exception("Error parsing scany context configuration. Cause: " + e, e);
+			throw new Exception("Error parsing scany schema configuration. Cause: " + e, e);
 		}
 	}
 
@@ -77,52 +76,34 @@ public class ScanyNodeParser {
 	 * Adds the translet map nodelets.
 	 */
 	private void addRootNodelets() {
-		parser.addNodelet("/scany", new Nodelet() {
+		parser.addNodelet("/schema", new Nodelet() {
 			public void process(Node node, Properties attributes, String text) throws Exception {
+				Schema schema = new Schema();
+				assistant.pushObject(schema);
+			}
+		});
+		parser.addNodelet("/schema/end()", new Nodelet() {
+			public void process(Node node, Properties attributes, String text) throws Exception {
+				Schema schema = (Schema)assistant.popObject();
+				assistant.setSchema(schema);
 			}
 		});
 	}
 
-	private void addLocalNodelets() {
-		parser.addNodelet("/scany/local", new LocalServiceRuleNodeletAdder(assistant));
+	private void addAnalyzersNodelets() {
+		parser.addNodelet("/schema", new AnalyzersNodeletAdder(assistant));
 	}
 	
-	private void addClientNodelets() {
-		parser.addNodelet("/scany/client", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
-				ClientRule cr = new ClientRule();
-				assistant.pushObject(cr);
-			}
-		});
-		
-		parser.addNodelet("/scany/client/local", new LocalServiceRuleNodeletAdder(assistant));
+	private void addSummarizersNodelets() {
+		parser.addNodelet("/scany/local", new LocalServiceRuleNodeletAdder(assistant));
 		parser.addNodelet("/scany/client/http", new HttpServiceRuleNodeletAdder(assistant));
 		parser.addNodelet("/scany/client/remote", new HttpServiceRuleNodeletAdder(assistant));
-
-		parser.addNodelet("/scany/client/end()", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
-				ClientRule cr = (ClientRule)assistant.popObject();
-				assistant.setClientRule(cr);
-			}
-		});
 	}
 	
-	private void addServerNodelets() {
-		parser.addNodelet("/scany/server", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
-				ServerRule sr = new ServerRule();
-				assistant.pushObject(sr);
-			}
-		});
-
-		parser.addNodelet("/scany/server/remote", new HttpServiceRuleNodeletAdder(assistant));
-
-		parser.addNodelet("/scany/server/end()", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
-				ServerRule sr = (ServerRule)assistant.popObject();
-				assistant.setServerRule(sr);
-			}
-		});
+	private void addRelationNodelets() {
+		parser.addNodelet("/scany/local", new LocalServiceRuleNodeletAdder(assistant));
+		parser.addNodelet("/scany/client/http", new HttpServiceRuleNodeletAdder(assistant));
+		parser.addNodelet("/scany/client/remote", new HttpServiceRuleNodeletAdder(assistant));
 	}
 
 }

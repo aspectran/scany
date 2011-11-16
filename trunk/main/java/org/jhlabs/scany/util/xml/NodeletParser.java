@@ -204,7 +204,7 @@ public class NodeletParser {
 							sb.append(" ").append(text);
 						}
 						
-						log.debug(sb.toString());
+						log.trace(sb.toString());
 					}
 				} else {
 					attributes = EMPTY_ATTRIBUTES;
