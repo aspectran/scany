@@ -18,6 +18,7 @@ package org.jhlabs.scany.context.builder;
 import org.jhlabs.scany.context.rule.ClientRule;
 import org.jhlabs.scany.context.rule.LocalServiceRule;
 import org.jhlabs.scany.context.rule.ServerRule;
+import org.jhlabs.scany.engine.entity.Schema;
 import org.jhlabs.scany.util.ArrayStack;
 
 /**
@@ -33,6 +34,8 @@ public class ScanyContextBuilderAssistant {
 	private ClientRule clientRule;
 	
 	private ServerRule serverRule;
+	
+	private Schema schema;
 	
 	/**
 	 * Instantiates a new translets config.
@@ -97,6 +100,14 @@ public class ScanyContextBuilderAssistant {
 
 	public void setServerRule(ServerRule serverRule) {
 		this.serverRule = serverRule;
+	}
+
+	public Schema getSchema() {
+		return schema;
+	}
+
+	public void setSchema(Schema schema) {
+		this.schema = schema;
 	}
 	
 }

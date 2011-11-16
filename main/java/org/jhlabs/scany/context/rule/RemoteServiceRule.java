@@ -1,5 +1,6 @@
 package org.jhlabs.scany.context.rule;
 
+import org.jhlabs.scany.context.type.MessageFormat;
 import org.jhlabs.scany.engine.entity.Schema;
 
 public class RemoteServiceRule {
@@ -8,15 +9,19 @@ public class RemoteServiceRule {
 	
 	private String schemaConfigLocation;
 	
+	private String characterEncoding;
+	
 	private String host;
+
+	private Integer port;
 	
-	private int timeout;
+	private Integer timeout;
 	
-	private String authentificationKey;
+	private MessageFormat messageFormat;
 	
-	private String messageEncryption;
-	
-	private Boolean messageCompressable;
+	private MessageRule keysignMessageRule;
+
+	private MessageRule bodyMessageRule;
 
 	public Schema getSchema() {
 		return schema;
@@ -34,6 +39,14 @@ public class RemoteServiceRule {
 		this.schemaConfigLocation = schemaConfigLocation;
 	}
 	
+	public String getCharacterEncoding() {
+		return characterEncoding;
+	}
+
+	public void setCharacterEncoding(String characterEncoding) {
+		this.characterEncoding = characterEncoding;
+	}
+
 	public String getHost() {
 		return host;
 	}
@@ -42,36 +55,44 @@ public class RemoteServiceRule {
 		this.host = host;
 	}
 
-	public int getTimeout() {
+	public Integer getPort() {
+		return port;
+	}
+
+	public void setPort(Integer port) {
+		this.port = port;
+	}
+
+	public Integer getTimeout() {
 		return timeout;
 	}
 
-	public void setTimeout(int timeout) {
+	public void setTimeout(Integer timeout) {
 		this.timeout = timeout;
 	}
 
-	public String getAuthentificationKey() {
-		return authentificationKey;
+	public MessageFormat getMessageFormat() {
+		return messageFormat;
 	}
 
-	public void setAuthentificationKey(String authentificationKey) {
-		this.authentificationKey = authentificationKey;
+	public void setMessageFormat(MessageFormat messageFormat) {
+		this.messageFormat = messageFormat;
 	}
 
-	public String getMessageEncryption() {
-		return messageEncryption;
+	public MessageRule getKeysignMessageRule() {
+		return keysignMessageRule;
 	}
 
-	public void setMessageEncryption(String messageEncryption) {
-		this.messageEncryption = messageEncryption;
+	public void setKeysignMessageRule(MessageRule keysignMessageRule) {
+		this.keysignMessageRule = keysignMessageRule;
 	}
 
-	public Boolean getMessageCompressable() {
-		return messageCompressable;
+	public MessageRule getBodyMessageRule() {
+		return bodyMessageRule;
 	}
 
-	public void setMessageCompressable(Boolean messageCompressable) {
-		this.messageCompressable = messageCompressable;
+	public void setBodyMessageRule(MessageRule bodyMessageRule) {
+		this.bodyMessageRule = bodyMessageRule;
 	}
-	
+
 }

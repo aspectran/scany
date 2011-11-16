@@ -18,6 +18,7 @@ package org.jhlabs.scany.context.builder.xml;
 import java.util.Properties;
 
 import org.jhlabs.scany.context.builder.ScanyContextBuilderAssistant;
+import org.jhlabs.scany.context.rule.ClientRule;
 import org.jhlabs.scany.context.rule.FileSpoolTransactionRule;
 import org.jhlabs.scany.context.rule.LocalServiceRule;
 import org.jhlabs.scany.context.rule.SpoolingRule;
@@ -36,8 +37,6 @@ public class LocalServiceRuleNodeletAdder implements NodeletAdder {
 	
 	protected ScanyContextBuilderAssistant assistant;
 	
-	private String prefixPath;
-
 	/**
 	 * Instantiates a new content nodelet adder.
 	 * 
@@ -46,24 +45,6 @@ public class LocalServiceRuleNodeletAdder implements NodeletAdder {
 	 */
 	public LocalServiceRuleNodeletAdder(ScanyContextBuilderAssistant assistant) {
 		this.assistant = assistant;
-	}
-
-	/**
-	 * Gets the prefix path.
-	 * 
-	 * @return the prefixPath
-	 */
-	public String getPrefixPath() {
-		return prefixPath;
-	}
-
-	/**
-	 * Sets the prefix path.
-	 * 
-	 * @param prefixPath the prefixPath to set
-	 */
-	public void setPrefixPath(String prefixPath) {
-		this.prefixPath = prefixPath;
 	}
 	
 	/**
@@ -119,12 +100,26 @@ public class LocalServiceRuleNodeletAdder implements NodeletAdder {
 				lsr.setSpoolingRule(sr);
 			}
 		});
-		parser.addNodelet(xpath, "/local/end()", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
-				LocalServiceRule lsr = (LocalServiceRule)assistant.popObject();
-				assistant.setLocalServiceRule(lsr);
-			}
-		});
+
+		if(xpath.endsWith("/scany")) {
+			parser.addNodelet(xpath, "/local/end()", new Nodelet() {
+				public void process(Node node, Properties attributes, String text) throws Exception {
+					LocalServiceRule lsr = (LocalServiceRule)assistant.popObject();
+					assistant.setLocalServiceRule(lsr);
+				}
+			});
+		} else if(xpath.endsWith("/scany/client")) {
+			parser.addNodelet(xpath, "/local/end()", new Nodelet() {
+				public void process(Node node, Properties attributes, String text) throws Exception {
+					LocalServiceRule lsr = (LocalServiceRule)assistant.popObject();
+
+					if(lsr.getDirectory() != null || lsr.getDirectory().length() > 0) {
+						ClientRule cr = (ClientRule)assistant.peekObject();
+						cr.setAnyServiceRule(lsr);
+					}
+				}
+			});
+		}
 	}
 
 }

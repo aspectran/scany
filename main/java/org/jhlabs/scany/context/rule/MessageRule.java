@@ -9,6 +9,8 @@ public class MessageRule {
 	private String encryption;
 	
 	private Boolean compressable;
+	
+	private String text;
 
 	public String getEncryption() {
 		return encryption;
@@ -24,6 +26,14 @@ public class MessageRule {
 
 	public void setCompressable(Boolean compressable) {
 		this.compressable = compressable;
+	}
+
+	public String getText() {
+		return text;
+	}
+
+	public void setText(String text) {
+		this.text = text;
 	}
 	
 }
