@@ -22,17 +22,17 @@ import java.util.Properties;
 import org.apache.lucene.analysis.Analyzer;
 import org.jhlabs.scany.context.builder.ScanyContextBuilderAssistant;
 import org.jhlabs.scany.context.rule.LocalServiceRule;
-import org.jhlabs.scany.util.xml.Nodelet;
-import org.jhlabs.scany.util.xml.NodeletAdder;
-import org.jhlabs.scany.util.xml.NodeletParser;
-import org.w3c.dom.Node;
+import org.jhlabs.scany.engine.entity.Schema;
+import org.jhlabs.scany.util.xml.EasyNodelet;
+import org.jhlabs.scany.util.xml.EasyNodeletAdder;
+import org.jhlabs.scany.util.xml.EasyNodeletParser;
 
 /**
  * Translet Map Parser.
  * 
  * <p>Created: 2008. 06. 14 오전 4:39:24</p>
  */
-public class AnalyzersNodeletAdder implements NodeletAdder {
+public class AnalyzersNodeletAdder implements EasyNodeletAdder {
 	
 	protected ScanyContextBuilderAssistant assistant;
 	
@@ -49,28 +49,42 @@ public class AnalyzersNodeletAdder implements NodeletAdder {
 	/**
 	 * Process.
 	 */
-	public void process(String xpath, NodeletParser parser) {
-		parser.addNodelet(xpath, "/analyzers", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
-				Map<String, Analyzer> analyzers = new HashMap<String, Analyzer>(); 
-				assistant.pushObject(analyzers);
+	public void process(String xpath, EasyNodeletParser parser) {
+		parser.addNodelet(xpath, "/analyzers", new EasyNodelet() {
+			public void process(Properties attributes, String text) throws Exception {
+				Map<String, Analyzer> analyzerMap = new HashMap<String, Analyzer>(); 
+				assistant.pushObject(analyzerMap);
 			}
 		});
-		parser.addNodelet(xpath, "/analyzers/analyzer", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
+		parser.addNodelet(xpath, "/analyzers/analyzer", new EasyNodelet() {
+			public void process(Properties attributes, String text) throws Exception {
 				String id = attributes.getProperty("id");
-				String clazz = attributes.getProperty("class");
+				String classType = attributes.getProperty("class");
 				
+				Analyzer analyzer = null;
 				
+				try {
+					Class<?> clazz = Class.forName(classType);
+					analyzer = (Analyzer)clazz.newInstance();
+				} catch(Exception e) {
+					throw new RuntimeException("Error setting Analyzer Class.  Cause: " + e, e);
+				}
+				
+				@SuppressWarnings("unchecked")
+				Map<String, Analyzer> analyzerMap = (Map<String, Analyzer>)assistant.peekObject();
+				analyzerMap.put(id, analyzer);
 				
 				LocalServiceRule lsr = new LocalServiceRule();
 				assistant.pushObject(lsr);
 			}
 		});
-		parser.addNodelet(xpath, "/analyzers/end()", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
-				Map<String, Analyzer> analyzers = new HashMap<String, Analyzer>(); 
-				assistant.pushObject(analyzers);
+		parser.addNodelet(xpath, "/analyzers/end()", new EasyNodelet() {
+			public void process(Properties attributes, String text) throws Exception {
+				@SuppressWarnings("unchecked")
+				Map<String, Analyzer> analyzerMap = (Map<String, Analyzer>)assistant.popObject();
+
+				Schema schema = (Schema)assistant.peekObject();
+				schema.setAnalyzerMap(analyzerMap);
 			}
 		});
 	}

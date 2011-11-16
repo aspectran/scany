@@ -23,17 +23,16 @@ import org.jhlabs.scany.context.rule.FileSpoolTransactionRule;
 import org.jhlabs.scany.context.rule.LocalServiceRule;
 import org.jhlabs.scany.context.rule.SpoolingRule;
 import org.jhlabs.scany.context.type.SpoolingMode;
-import org.jhlabs.scany.util.xml.Nodelet;
-import org.jhlabs.scany.util.xml.NodeletAdder;
-import org.jhlabs.scany.util.xml.NodeletParser;
-import org.w3c.dom.Node;
+import org.jhlabs.scany.util.xml.EasyNodelet;
+import org.jhlabs.scany.util.xml.EasyNodeletAdder;
+import org.jhlabs.scany.util.xml.EasyNodeletParser;
 
 /**
  * Translet Map Parser.
  * 
  * <p>Created: 2008. 06. 14 오전 4:39:24</p>
  */
-public class LocalServiceRuleNodeletAdder implements NodeletAdder {
+public class LocalServiceRuleNodeletAdder implements EasyNodeletAdder {
 	
 	protected ScanyContextBuilderAssistant assistant;
 	
@@ -50,39 +49,39 @@ public class LocalServiceRuleNodeletAdder implements NodeletAdder {
 	/**
 	 * Process.
 	 */
-	public void process(String xpath, NodeletParser parser) {
-		parser.addNodelet(xpath, "/local", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
+	public void process(String xpath, EasyNodeletParser parser) {
+		parser.addNodelet(xpath, "/local", new EasyNodelet() {
+			public void process(Properties attributes, String text) throws Exception {
 				LocalServiceRule lsr = new LocalServiceRule();
 				assistant.pushObject(lsr);
 			}
 		});
-		parser.addNodelet(xpath, "/local/schema", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
+		parser.addNodelet(xpath, "/local/schema", new EasyNodelet() {
+			public void process(Properties attributes, String text) throws Exception {
 				LocalServiceRule lsr = (LocalServiceRule)assistant.peekObject();
 				lsr.setSchemaConfigLocation(text);
 			}
 		});
-		parser.addNodelet(xpath, "/local/directory", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
+		parser.addNodelet(xpath, "/local/directory", new EasyNodelet() {
+			public void process(Properties attributes, String text) throws Exception {
 				LocalServiceRule lsr = (LocalServiceRule)assistant.peekObject();
 				lsr.setDirectory(text);
 			}
 		});
-		parser.addNodelet(xpath, "/local/characterEncoding", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
+		parser.addNodelet(xpath, "/local/characterEncoding", new EasyNodelet() {
+			public void process(Properties attributes, String text) throws Exception {
 				LocalServiceRule lsr = (LocalServiceRule)assistant.peekObject();
 				lsr.setCharacterEncoding(text);
 			}
 		});
-		parser.addNodelet(xpath, "/local/spooling", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
+		parser.addNodelet(xpath, "/local/spooling", new EasyNodelet() {
+			public void process(Properties attributes, String text) throws Exception {
 				SpoolingRule sr = new SpoolingRule();
 				assistant.pushObject(sr);
 			}
 		});
-		parser.addNodelet(xpath, "/local/spooling/directory", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
+		parser.addNodelet(xpath, "/local/spooling/directory", new EasyNodelet() {
+			public void process(Properties attributes, String text) throws Exception {
 				SpoolingRule sr = (SpoolingRule)assistant.peekObject();
 				sr.setSpoolingMode(SpoolingMode.FILE);
 				
@@ -92,8 +91,8 @@ public class LocalServiceRuleNodeletAdder implements NodeletAdder {
 				sr.setSpoolTransactionRule(fstr);
 			}
 		});
-		parser.addNodelet(xpath, "/local/spooling/end()", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
+		parser.addNodelet(xpath, "/local/spooling/end()", new EasyNodelet() {
+			public void process(Properties attributes, String text) throws Exception {
 				SpoolingRule sr = (SpoolingRule)assistant.popObject();
 				LocalServiceRule lsr = (LocalServiceRule)assistant.peekObject();
 				
@@ -102,15 +101,15 @@ public class LocalServiceRuleNodeletAdder implements NodeletAdder {
 		});
 
 		if(xpath.endsWith("/scany")) {
-			parser.addNodelet(xpath, "/local/end()", new Nodelet() {
-				public void process(Node node, Properties attributes, String text) throws Exception {
+			parser.addNodelet(xpath, "/local/end()", new EasyNodelet() {
+				public void process(Properties attributes, String text) throws Exception {
 					LocalServiceRule lsr = (LocalServiceRule)assistant.popObject();
 					assistant.setLocalServiceRule(lsr);
 				}
 			});
 		} else if(xpath.endsWith("/scany/client")) {
-			parser.addNodelet(xpath, "/local/end()", new Nodelet() {
-				public void process(Node node, Properties attributes, String text) throws Exception {
+			parser.addNodelet(xpath, "/local/end()", new EasyNodelet() {
+				public void process(Properties attributes, String text) throws Exception {
 					LocalServiceRule lsr = (LocalServiceRule)assistant.popObject();
 
 					if(lsr.getDirectory() != null || lsr.getDirectory().length() > 0) {

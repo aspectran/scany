@@ -35,11 +35,10 @@ public class NodeletUtils {
 
 	public static Properties parseAttributes(Node n, Properties variables) {
 		NamedNodeMap attributeNodes = n.getAttributes();
+		Properties attributes = new Properties();
 		
 		if(attributeNodes == null)
-			return NodeletParser.EMPTY_ATTRIBUTES;
-
-		Properties attributes = new Properties();
+			return attributes;
 
 		for(int i = 0; i < attributeNodes.getLength(); i++) {
 			Node attribute = attributeNodes.item(i);
@@ -85,7 +84,7 @@ public class NodeletUtils {
 		return newString;
 	}
 	
-	public static String getNodeValue(Node node) {
+	public static String getText(Node node) {
 		NodeList children = node.getChildNodes();
 		int childrenLength = children.getLength();
 		
