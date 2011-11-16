@@ -2,13 +2,11 @@ package org.jhlabs.scany.util.xml;
 
 import java.util.Properties;
 
-import org.w3c.dom.Node;
-
 /**
  * A nodelet is a sort of callback or event handler that can be registered 
  * to handle an XPath event registered with the NodeParser.   
  */
-public interface Nodelet {
+public interface EasyNodelet {
     
     /**
      * For a registered XPath, the NodeletParser will call the Nodelet's 
@@ -26,5 +24,5 @@ public interface Nodelet {
      * </ul>
      *
      */
-    void process (Node node) throws Exception;
+    void process (Properties attributes, String text) throws Exception;
 }

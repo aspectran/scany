@@ -21,17 +21,16 @@ import org.jhlabs.scany.context.builder.ScanyContextBuilderAssistant;
 import org.jhlabs.scany.context.rule.HttpServiceRule;
 import org.jhlabs.scany.context.rule.MessageRule;
 import org.jhlabs.scany.context.type.MessageFormat;
-import org.jhlabs.scany.util.xml.Nodelet;
-import org.jhlabs.scany.util.xml.NodeletAdder;
-import org.jhlabs.scany.util.xml.NodeletParser;
-import org.w3c.dom.Node;
+import org.jhlabs.scany.util.xml.EasyNodelet;
+import org.jhlabs.scany.util.xml.EasyNodeletAdder;
+import org.jhlabs.scany.util.xml.EasyNodeletParser;
 
 /**
  * Translet Map Parser.
  * 
  * <p>Created: 2008. 06. 14 오전 4:39:24</p>
  */
-public class HttpServiceRuleNodeletAdder implements NodeletAdder {
+public class HttpServiceRuleNodeletAdder implements EasyNodeletAdder {
 	
 	protected ScanyContextBuilderAssistant assistant;
 	
@@ -48,41 +47,41 @@ public class HttpServiceRuleNodeletAdder implements NodeletAdder {
 	/**
 	 * Process.
 	 */
-	public void process(String xpath, NodeletParser parser) {
-		parser.addNodelet(xpath, "/http", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
+	public void process(String xpath, EasyNodeletParser parser) {
+		parser.addNodelet(xpath, "/http", new EasyNodelet() {
+			public void process(Properties attributes, String text) throws Exception {
 				HttpServiceRule hsr = new HttpServiceRule();
 				assistant.pushObject(hsr);
 			}
 		});
-		parser.addNodelet(xpath, "/http/schema", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
+		parser.addNodelet(xpath, "/http/schema", new EasyNodelet() {
+			public void process(Properties attributes, String text) throws Exception {
 				HttpServiceRule hsr = (HttpServiceRule)assistant.peekObject();
 				hsr.setSchemaConfigLocation(text);
 			}
 		});
-		parser.addNodelet(xpath, "/http/characterEncoding", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
+		parser.addNodelet(xpath, "/http/characterEncoding", new EasyNodelet() {
+			public void process(Properties attributes, String text) throws Exception {
 				HttpServiceRule hsr = (HttpServiceRule)assistant.peekObject();
 				hsr.setCharacterEncoding(text);
 			}
 		});
-		parser.addNodelet(xpath, "/http/url", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
+		parser.addNodelet(xpath, "/http/url", new EasyNodelet() {
+			public void process(Properties attributes, String text) throws Exception {
 				HttpServiceRule hsr = (HttpServiceRule)assistant.peekObject();
 				hsr.setUrl(text);
 			}
 		});
-		parser.addNodelet(xpath, "/http/message", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
+		parser.addNodelet(xpath, "/http/message", new EasyNodelet() {
+			public void process(Properties attributes, String text) throws Exception {
 				String format = attributes.getProperty("format");
 
 				HttpServiceRule hsr = (HttpServiceRule)assistant.peekObject();
 				hsr.setMessageFormat(MessageFormat.valueOf(format));
 			}
 		});
-		parser.addNodelet(xpath, "/http/message/keysign", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
+		parser.addNodelet(xpath, "/http/message/keysign", new EasyNodelet() {
+			public void process(Properties attributes, String text) throws Exception {
 				String encryption = attributes.getProperty("encryption");
 				String compressable = attributes.getProperty("compressable");
 				
@@ -95,8 +94,8 @@ public class HttpServiceRuleNodeletAdder implements NodeletAdder {
 				hsr.setKeysignMessageRule(mr);
 			}
 		});
-		parser.addNodelet(xpath, "/http/message/body", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
+		parser.addNodelet(xpath, "/http/message/body", new EasyNodelet() {
+			public void process(Properties attributes, String text) throws Exception {
 				String encryption = attributes.getProperty("encryption");
 				String compressable = attributes.getProperty("compressable");
 				

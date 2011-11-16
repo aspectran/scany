@@ -20,9 +20,8 @@ import java.util.Properties;
 
 import org.jhlabs.scany.context.builder.ScanyContextBuilderAssistant;
 import org.jhlabs.scany.engine.entity.Schema;
-import org.jhlabs.scany.util.xml.Nodelet;
-import org.jhlabs.scany.util.xml.NodeletParser;
-import org.w3c.dom.Node;
+import org.jhlabs.scany.util.xml.EasyNodelet;
+import org.jhlabs.scany.util.xml.EasyNodeletParser;
 
 /**
  * Translet Map Parser.
@@ -31,7 +30,7 @@ import org.w3c.dom.Node;
  */
 public class SchemaNodeParser {
 	
-	private final NodeletParser parser = new NodeletParser();
+	private final EasyNodeletParser parser = new EasyNodeletParser();
 
 	private final ScanyContextBuilderAssistant assistant;
 	
@@ -76,14 +75,14 @@ public class SchemaNodeParser {
 	 * Adds the translet map nodelets.
 	 */
 	private void addRootNodelets() {
-		parser.addNodelet("/schema", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
+		parser.addNodelet("/schema", new EasyNodelet() {
+			public void process(Properties attributes, String text) throws Exception {
 				Schema schema = new Schema();
 				assistant.pushObject(schema);
 			}
 		});
-		parser.addNodelet("/schema/end()", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
+		parser.addNodelet("/schema/end()", new EasyNodelet() {
+			public void process(Properties attributes, String text) throws Exception {
 				Schema schema = (Schema)assistant.popObject();
 				assistant.setSchema(schema);
 			}

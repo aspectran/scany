@@ -21,9 +21,8 @@ import java.util.Properties;
 import org.jhlabs.scany.context.builder.ScanyContextBuilderAssistant;
 import org.jhlabs.scany.context.rule.ClientRule;
 import org.jhlabs.scany.context.rule.ServerRule;
-import org.jhlabs.scany.util.xml.Nodelet;
-import org.jhlabs.scany.util.xml.NodeletParser;
-import org.w3c.dom.Node;
+import org.jhlabs.scany.util.xml.EasyNodelet;
+import org.jhlabs.scany.util.xml.EasyNodeletParser;
 
 /**
  * Translet Map Parser.
@@ -32,7 +31,7 @@ import org.w3c.dom.Node;
  */
 public class ScanyNodeParser {
 	
-	private final NodeletParser parser = new NodeletParser();
+	private final EasyNodeletParser parser = new EasyNodeletParser();
 
 	private final ScanyContextBuilderAssistant assistant;
 	
@@ -77,8 +76,8 @@ public class ScanyNodeParser {
 	 * Adds the translet map nodelets.
 	 */
 	private void addRootNodelets() {
-		parser.addNodelet("/scany", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
+		parser.addNodelet("/scany", new EasyNodelet() {
+			public void process(Properties attributes, String text) throws Exception {
 			}
 		});
 	}
@@ -88,8 +87,8 @@ public class ScanyNodeParser {
 	}
 	
 	private void addClientNodelets() {
-		parser.addNodelet("/scany/client", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
+		parser.addNodelet("/scany/client", new EasyNodelet() {
+			public void process(Properties attributes, String text) throws Exception {
 				ClientRule cr = new ClientRule();
 				assistant.pushObject(cr);
 			}
@@ -99,8 +98,8 @@ public class ScanyNodeParser {
 		parser.addNodelet("/scany/client/http", new HttpServiceRuleNodeletAdder(assistant));
 		parser.addNodelet("/scany/client/remote", new HttpServiceRuleNodeletAdder(assistant));
 
-		parser.addNodelet("/scany/client/end()", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
+		parser.addNodelet("/scany/client/end()", new EasyNodelet() {
+			public void process(Properties attributes, String text) throws Exception {
 				ClientRule cr = (ClientRule)assistant.popObject();
 				assistant.setClientRule(cr);
 			}
@@ -108,8 +107,8 @@ public class ScanyNodeParser {
 	}
 	
 	private void addServerNodelets() {
-		parser.addNodelet("/scany/server", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
+		parser.addNodelet("/scany/server", new EasyNodelet() {
+			public void process(Properties attributes, String text) throws Exception {
 				ServerRule sr = new ServerRule();
 				assistant.pushObject(sr);
 			}
@@ -117,8 +116,8 @@ public class ScanyNodeParser {
 
 		parser.addNodelet("/scany/server/remote", new HttpServiceRuleNodeletAdder(assistant));
 
-		parser.addNodelet("/scany/server/end()", new Nodelet() {
-			public void process(Node node, Properties attributes, String text) throws Exception {
+		parser.addNodelet("/scany/server/end()", new EasyNodelet() {
+			public void process(Properties attributes, String text) throws Exception {
 				ServerRule sr = (ServerRule)assistant.popObject();
 				assistant.setServerRule(sr);
 			}
