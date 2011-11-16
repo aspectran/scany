@@ -94,15 +94,10 @@ public class SchemaNodeParser {
 	}
 	
 	private void addSummarizersNodelets() {
-		parser.addNodelet("/scany/local", new LocalServiceRuleNodeletAdder(assistant));
-		parser.addNodelet("/scany/client/http", new HttpServiceRuleNodeletAdder(assistant));
-		parser.addNodelet("/scany/client/remote", new HttpServiceRuleNodeletAdder(assistant));
+		parser.addNodelet("/schema", new SummarizersNodeletAdder(assistant));
 	}
 	
 	private void addRelationNodelets() {
-		parser.addNodelet("/scany/local", new LocalServiceRuleNodeletAdder(assistant));
-		parser.addNodelet("/scany/client/http", new HttpServiceRuleNodeletAdder(assistant));
-		parser.addNodelet("/scany/client/remote", new HttpServiceRuleNodeletAdder(assistant));
 	}
 
 }

@@ -9,7 +9,7 @@ public class Schema {
 
 	private Map<String, Analyzer> analyzerMap;
 	
-	private Map<String, Summarizer> summerizerMap;
+	private Map<String, Summarizer> summarizerMap;
 	
 	private Map<String, Relation> relationMap;
 
@@ -21,12 +21,12 @@ public class Schema {
 		this.analyzerMap = analyzerMap;
 	}
 
-	public Map<String, Summarizer> getSummerizerMap() {
-		return summerizerMap;
+	public Map<String, Summarizer> getSummarizerMap() {
+		return summarizerMap;
 	}
 
-	public void setSummerizerMap(Map<String, Summarizer> summerizerMap) {
-		this.summerizerMap = summerizerMap;
+	public void setSummarizerMap(Map<String, Summarizer> summarizerMap) {
+		this.summarizerMap = summarizerMap;
 	}
 
 	public Map<String, Relation> getRelationMap() {
@@ -45,10 +45,10 @@ public class Schema {
 	}
 	
 	public Summarizer getSummarizer(String summarizerId) {
-		if(summerizerMap == null)
+		if(summarizerMap == null)
 			return null;
 		
-		return summerizerMap.get(summarizerId);
+		return summarizerMap.get(summarizerId);
 	}
 	
 	public Relation getRelation(String relationId) {
