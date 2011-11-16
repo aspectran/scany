@@ -28,7 +28,7 @@ import org.jhlabs.scany.util.xml.EasyNodeletParser;
  * 
  * <p>Created: 2008. 06. 14 오전 4:39:24</p>
  */
-public class PropertiesNodeletAdder implements EasyNodeletAdder {
+public class PropertyNodeletAdder implements EasyNodeletAdder {
 	
 	protected ScanyContextBuilderAssistant assistant;
 	
@@ -38,7 +38,7 @@ public class PropertiesNodeletAdder implements EasyNodeletAdder {
 	 * @param parser the parser
 	 * @param assistant the assistant for Context Builder
 	 */
-	public PropertiesNodeletAdder(ScanyContextBuilderAssistant assistant) {
+	public PropertyNodeletAdder(ScanyContextBuilderAssistant assistant) {
 		this.assistant = assistant;
 	}
 

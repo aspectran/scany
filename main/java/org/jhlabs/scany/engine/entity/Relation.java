@@ -29,13 +29,17 @@ public class Relation {
 	
 	private String description;
 
-	private Attribute[] attributes;
+	private AttributeMap attributeMap;
 	
 	private Analyzer analyzer;
 	
 	private int mergeFactor;
 	
 	private int maxMergeDocs;
+
+	public Relation() {
+		attributeMap = new AttributeMap();
+	}
 	
 	public RecordKey newRecordKey() {
 		return new RecordKey(recordKeyPattern);
@@ -53,31 +57,23 @@ public class Relation {
 	 * @return
 	 */
 	public Attribute getAttribute(String attributeName) {
-		if(attributes == null)
-			return null;
-		
-		for(int i = 0; i < attributes.length; i++) {
-			if(attributeName.equalsIgnoreCase(attributes[i].getName()))
-				return attributes[i];
-		}
-		
-		return null;
+		return attributeMap.get(attributeName);
 	}
 	
 	/**
 	 * 컬럼을 반환한다.
 	 * @return the columns
 	 */
-	public Attribute[] getAttributes() {
-		return attributes;
+	public AttributeMap getAttributeMap() {
+		return attributeMap;
 	}
 
 	/**
 	 * 컬럼을 지정한다.
 	 * @param columns the columns to set
 	 */
-	public void setAttributes(Attribute[] columns) {
-		this.attributes = columns;
+	public void setAttributeMap(AttributeMap attributeMap) {
+		this.attributeMap = attributeMap;
 	}
 
 	/**
@@ -115,15 +111,15 @@ public class Relation {
 	/**
 	 * @return the repository
 	 */
-	public String getRepository() {
+	public String getDirectory() {
 		return directory;
 	}
 
 	/**
-	 * @param repository the repository to set
+	 * @param directory the repository to set
 	 */
-	public void setRepository(String repository) {
-		this.directory = repository;
+	public void setDirectory(String directory) {
+		this.directory = directory;
 	}
 
 	/**
