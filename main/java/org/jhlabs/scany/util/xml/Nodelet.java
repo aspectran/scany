@@ -1,7 +1,5 @@
 package org.jhlabs.scany.util.xml;
 
-import java.util.Properties;
-
 import org.w3c.dom.Node;
 
 /**
