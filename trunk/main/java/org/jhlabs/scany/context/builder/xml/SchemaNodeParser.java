@@ -19,6 +19,9 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import org.jhlabs.scany.context.builder.ScanyContextBuilderAssistant;
+import org.jhlabs.scany.context.rule.LocalServiceRule;
+import org.jhlabs.scany.engine.entity.RecordKeyPattern;
+import org.jhlabs.scany.engine.entity.Relation;
 import org.jhlabs.scany.engine.entity.Schema;
 import org.jhlabs.scany.util.xml.EasyNodelet;
 import org.jhlabs.scany.util.xml.EasyNodeletParser;
@@ -98,6 +101,69 @@ public class SchemaNodeParser {
 	}
 	
 	private void addRelationNodelets() {
+		parser.addNodelet("/schema/relation", new EasyNodelet() {
+			public void process(Properties attributes, String text) throws Exception {
+				String id = attributes.getProperty("id");
+				String analyzer = attributes.getProperty("analyzer");
+
+				Relation relation = new Relation();
+				relation.setRelationId(id);
+				relation.setAnalyzer(analyzer);
+				
+				assistant.pushObject(relation);
+			}
+		});
+		parser.addNodelet("/schema/relation/description", new EasyNodelet() {
+			public void process(Properties attributes, String text) throws Exception {
+				Relation relation = (Relation)assistant.peekObject();
+				relation.setDescription(text);
+			}
+		});
+		parser.addNodelet("/schema/relation/directory", new EasyNodelet() {
+			public void process(Properties attributes, String text) throws Exception {
+				String relative = attributes.getProperty("relative");
+				Boolean relativeDirectory = Boolean.valueOf(relative);
+				
+				Relation relation = (Relation)assistant.peekObject();
+
+				if(relativeDirectory == Boolean.TRUE) {
+					LocalServiceRule lsr = assistant.getLocalServiceRule();
+					String rootDirectory = lsr.getDirectory();
+					String directory = rootDirectory + "/" + text;
+					relation.setDirectory(directory);
+				} else{
+					relation.setDirectory(text);
+				}
+			}
+		});
+		parser.addNodelet("/schema/relation/recordKeyPattern", new EasyNodelet() {
+			public void process(Properties attributes, String text) throws Exception {
+				String separator = attributes.getProperty("separator");
+				
+				RecordKeyPattern recordKeyPattern = new RecordKeyPattern();
+				recordKeyPattern.setSeparator(separator);
+				recordKeyPattern.setPattern(text);
+				
+				Relation relation = (Relation)assistant.peekObject();
+				relation.setRecordKeyPattern(recordKeyPattern);
+			}
+		});
+		parser.addNodelet("/schema/relation/attributes", new EasyNodelet() {
+			public void process(Properties attributes, String text) throws Exception {
+			}
+		});
+		parser.addNodelet("/schema/relation/attributes/attribute", new EasyNodelet() {
+			public void process(Properties attributes, String text) throws Exception {
+			}
+		});
+		parser.addNodelet("/schema/relation/attributes/end()", new EasyNodelet() {
+			public void process(Properties attributes, String text) throws Exception {
+			}
+		});
+		parser.addNodelet("/schema/relation/end()", new EasyNodelet() {
+			public void process(Properties attributes, String text) throws Exception {
+			}
+		});
 	}
 
 }

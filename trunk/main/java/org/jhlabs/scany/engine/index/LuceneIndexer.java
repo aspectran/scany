@@ -12,6 +12,7 @@ package org.jhlabs.scany.engine.index;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -26,8 +27,8 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.jhlabs.scany.context.builder.ScanyContextBuilder;
 import org.jhlabs.scany.engine.entity.Attribute;
+import org.jhlabs.scany.engine.entity.AttributeMap;
 import org.jhlabs.scany.engine.entity.Record;
 import org.jhlabs.scany.engine.entity.RecordKey;
 import org.jhlabs.scany.engine.entity.Relation;
@@ -40,7 +41,7 @@ import org.jhlabs.scany.util.StringUtils;
  */
 public class LuceneIndexer implements AnyIndexer {
 
-	private Relation schema;
+	private Relation relation;
 
 	private Directory directory;
 
@@ -53,12 +54,12 @@ public class LuceneIndexer implements AnyIndexer {
 	 * @throws MultipartRequestzException
 	 */
 	public LuceneIndexer(Relation schema) throws AnyIndexException {
-		this.schema = schema;
+		this.relation = schema;
 		initialize(false);
 	}
 
 	public Relation getSchema() throws AnyIndexException {
-		return schema;
+		return relation;
 	}
 
 	/**
@@ -69,12 +70,12 @@ public class LuceneIndexer implements AnyIndexer {
 	 */
 	private void initialize(boolean rebuild) throws AnyIndexException {
 		try {
-			if(schema == null)
+			if(relation == null)
 				throw new AnyIndexException("등록된 스키마가 아닙니다.(Schema is null)");
 			
 			boolean create = true;
 
-			File repository = new File(schema.getRepository());
+			File repository = new File(relation.getDirectory());
 
 			// 색인 디렉토리 생성되어 있지 않거나, 비어 있으면 새로 만든다.
 			if(!rebuild && repository.exists()) {
@@ -89,11 +90,11 @@ public class LuceneIndexer implements AnyIndexer {
 				indexWriter = null;
 			}
 
-			indexWriter = new IndexWriter(directory, schema.getAnalyzer(), create);
+			indexWriter = new IndexWriter(directory, relation.getAnalyzer(), create);
 
 			// Performance 설정
-			indexWriter.setMergeFactor(schema.getMergeFactor());
-			indexWriter.setMaxMergeDocs(schema.getMaxMergeDocs());
+			indexWriter.setMergeFactor(relation.getMergeFactor());
+			indexWriter.setMaxMergeDocs(relation.getMaxMergeDocs());
 
 		} catch(IOException e) {
 			throw new AnyIndexException("색인기(AnyIndexer)를 초기화할 수 없습니다.", e);
@@ -323,9 +324,9 @@ public class LuceneIndexer implements AnyIndexer {
 	private Document recordToDocument(Record record) throws AnyIndexException {
 		try {
 			// 컬럼속성
-			Attribute[] columns = schema.getAttributes();
+			AttributeMap attributeMap = relation.getAttributeMap();
 
-			if(columns.length == 0)
+			if(attributeMap.size() == 0)
 				throw new IllegalArgumentException("Column 속성이 정의되어 있지 않습니다.");
 
 			Document document = new Document();
@@ -339,29 +340,31 @@ public class LuceneIndexer implements AnyIndexer {
 			document.add(field);
 
 			// 일반 필드 분석
-			for(int i = 0; i < columns.length; i++) {
-				String attributeName = columns[i].getName();
-				String columnValue = record.getValue(attributeName);
+			Iterator<Attribute> iter = attributeMap.values().iterator();
 
-				if(columnValue == null)
-					throw new IllegalArgumentException("[" + attributeName + "] Column의 값이 지정되어 있지 않습니다.");
+			while(iter.hasNext()) {
+				Attribute attribute = iter.next();
+				String value = record.getValue(attribute.getName());
+
+				if(value == null)
+					throw new IllegalArgumentException("[" + attribute.getName() + "] Column의 값이 지정되어 있지 않습니다.");
 
 				// 긴 내용 또는 바이너리 데이터의 압축 여부
-				if(columns[i].isCompressable())
+				if(attribute.isCompressable())
 					store = Field.Store.COMPRESS;
 				else
-					store = columns[i].isStorable() ? Field.Store.YES : Field.Store.NO;
+					store = attribute.isStorable() ? Field.Store.YES : Field.Store.NO;
 
 				// 색인여부, 토큰분리 여부
-				if(columns[i].isTokenizable())
+				if(attribute.isTokenizable())
 					index = Field.Index.TOKENIZED;
 				else
-					index = columns[i].isIndexable() ? Field.Index.UN_TOKENIZED : Field.Index.NO;
+					index = attribute.isIndexable() ? Field.Index.UN_TOKENIZED : Field.Index.NO;
 
-				field = new Field(attributeName, columnValue, store, index);
+				field = new Field(attribute.getName(), value, store, index);
 				
 				// boost factor
-				field.setBoost(columns[i].getBoost());
+				field.setBoost(attribute.getBoost());
 
 				document.add(field);
 			}

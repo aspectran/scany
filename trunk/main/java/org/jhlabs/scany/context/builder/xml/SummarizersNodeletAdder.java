@@ -71,17 +71,17 @@ public class SummarizersNodeletAdder implements EasyNodeletAdder {
 					throw new RuntimeException("Error setting Summarizer Class.  Cause: " + e, e);
 				}
 				
-				assistant.pushObject(id);
 				assistant.pushObject(summarizer);
+				assistant.pushObject(id);
 			}
 		});
 
-		parser.addNodelet(xpath + "/summarizers/summarizer/properties", new PropertiesNodeletAdder(assistant));
+		parser.addNodelet(xpath + "/summarizers/summarizer/properties", new PropertyNodeletAdder(assistant));
 		
 		parser.addNodelet(xpath, "/summarizers/summarizer/end()", new EasyNodelet() {
 			public void process(Properties attributes, String text) throws Exception {
-				Summarizer summarizer = (Summarizer)assistant.popObject();
 				String id = (String)assistant.popObject();
+				Summarizer summarizer = (Summarizer)assistant.popObject();
 				
 				@SuppressWarnings("unchecked")
 				Map<String, Summarizer> summarizerMap = (Map<String, Summarizer>)assistant.peekObject();

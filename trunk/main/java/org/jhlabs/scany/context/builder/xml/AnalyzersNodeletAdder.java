@@ -69,17 +69,17 @@ public class AnalyzersNodeletAdder implements EasyNodeletAdder {
 					throw new RuntimeException("Error setting Analyzer Class.  Cause: " + e, e);
 				}
 				
-				assistant.pushObject(id);
 				assistant.pushObject(analyzer);
+				assistant.pushObject(id);
 			}
 		});
 
-		parser.addNodelet(xpath + "/analyzers/analyzer/properties", new LocalServiceRuleNodeletAdder(assistant));
+		parser.addNodelet(xpath + "/analyzers/analyzer/properties", new PropertyNodeletAdder(assistant));
 
 		parser.addNodelet(xpath, "/analyzers/analyzer/end()", new EasyNodelet() {
 			public void process(Properties attributes, String text) throws Exception {
-				Analyzer analyzer = (Analyzer)assistant.popObject();
 				String id = (String)assistant.popObject();
+				Analyzer analyzer = (Analyzer)assistant.popObject();
 				
 				@SuppressWarnings("unchecked")
 				Map<String, Analyzer> analyzerMap = (Map<String, Analyzer>)assistant.peekObject();
