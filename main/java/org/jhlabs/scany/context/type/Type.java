@@ -20,21 +20,25 @@ package org.jhlabs.scany.context.type;
  */
 public abstract class Type {
 
-	private final String type;
+	private final Object type;
 	
 	/**
 	 * Instantiates a new type.
 	 * 
 	 * @param type the type
 	 */
-	protected Type(String type) {
+	protected Type(Object type) {
 		this.type = type;
+	}
+	
+	public Object getType() {
+		return type;
 	}
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return type;
+		return type.toString();
 	}
 }

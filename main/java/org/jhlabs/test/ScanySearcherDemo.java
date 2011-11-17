@@ -17,7 +17,7 @@ import org.jhlabs.scany.context.builder.ScanyContextBuilder;
 import org.jhlabs.scany.engine.entity.RecordKey;
 import org.jhlabs.scany.engine.entity.Record;
 import org.jhlabs.scany.engine.search.AnySearcher;
-import org.jhlabs.scany.engine.search.SortingAttributes;
+import org.jhlabs.scany.engine.search.SortAttributes;
 import org.jhlabs.scany.engine.search.summarize.SimpleFragmentSummarizer;
 
 import java.io.File;
@@ -99,11 +99,11 @@ public class ScanySearcherDemo {
 			primaryKey.setKeyValue("articleNo", "*");
 			
 			// 정렬컬럼 생성
-			SortingAttributes sortColumn = new SortingAttributes();
-			sortColumn.addColumn(ScanyContextBuilder.PRIMARY_KEY, SortingAttributes.AUTO, true);
-			sortColumn.addColumn("date", SortingAttributes.STRING, true);
+			SortAttributes sortColumn = new SortAttributes();
+			sortColumn.addAttribute(ScanyContextBuilder.PRIMARY_KEY, SortAttributes.AUTO, true);
+			sortColumn.addAttribute("date", SortAttributes.STRING, true);
 
-			searcher.setSortColumn(sortColumn);
+			searcher.setSortAttributes(sortColumn);
 			
 			searcher.addFilterColumn(primaryKey);
 	    	

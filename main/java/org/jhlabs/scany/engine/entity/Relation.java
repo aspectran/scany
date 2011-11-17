@@ -38,7 +38,6 @@ public class Relation {
 	private int maxMergeDocs;
 
 	public Relation() {
-		attributeMap = new AttributeMap();
 	}
 	
 	public RecordKey newRecordKey() {

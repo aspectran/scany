@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.jhlabs.scany.engine.search;
 
+import org.jhlabs.scany.engine.ScanyEngineException;
+
 
 /**
  * 
@@ -18,7 +20,7 @@ package org.jhlabs.scany.engine.search;
  * @author Gulendol
  * 
  */
-public class AnySearchException extends Exception {
+public class AnySearcherException extends ScanyEngineException {
 
 	/** @serial */
 	static final long serialVersionUID = -241434267075688699L;
@@ -26,7 +28,7 @@ public class AnySearchException extends Exception {
 	/**
 	 * Simple constructor
 	 */
-	public AnySearchException() {
+	public AnySearcherException() {
 	}
 
 	/**
@@ -35,7 +37,7 @@ public class AnySearchException extends Exception {
 	 * @param msg
 	 *            A message to associate with the exception
 	 */
-	public AnySearchException(String msg) {
+	public AnySearcherException(String msg) {
 		super(msg);
 	}
 
@@ -45,7 +47,7 @@ public class AnySearchException extends Exception {
 	 * @param cause
 	 *            The real cause of the exception
 	 */
-	public AnySearchException(Throwable cause) {
+	public AnySearcherException(Throwable cause) {
 		super(cause);
 	}
 
@@ -58,7 +60,7 @@ public class AnySearchException extends Exception {
 	 * @param cause
 	 *            The real cause of the exception
 	 */
-	public AnySearchException(String msg, Throwable cause) {
+	public AnySearcherException(String msg, Throwable cause) {
 		super(msg, cause);
 	}
 }

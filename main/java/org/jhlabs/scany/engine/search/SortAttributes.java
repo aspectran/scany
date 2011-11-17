@@ -24,33 +24,21 @@ import org.apache.lucene.search.SortField;
  * @author Gulendol
  *
  */
-public class SortingAttributes {
+public class SortAttributes {
 
-	public final int SCORE = SortField.SCORE;
-	
-	public static final int DOC = SortField.DOC;
-	
-	public static final int AUTO = SortField.AUTO;
-	
-	public static final int STRING = SortField.STRING;
-
-	public static final int INT = SortField.INT;
-
-	public static final int FLOAT = SortField.FLOAT;
-	
-	private List sortFields;
+	private List<SortField> sortFieldList;
 
 	/**
 	 * 정렬 컬럼을 추가한다.
-	 * @param columnName 컬럼명
+	 * @param attributeName 컬럼명
 	 * @param type 정렬 컬럼 타입
 	 * @param reverse 역정렬 여부
 	 */
-	public void addColumn(String columnName, int type, boolean reverse) {		
-		if(sortFields == null)
-			sortFields = new ArrayList();
+	public void addAttribute(String attributeName, SortFieldType sortFieldType, boolean reverse) {		
+		if(sortFieldList == null)
+			sortFieldList = new ArrayList<SortField>();
 		
-		sortFields.add(new SortField(columnName, type, reverse));
+		sortFieldList.add(new SortField(attributeName, (Integer)sortFieldType.getType(), reverse));
 	}
 
 	/**
@@ -58,10 +46,10 @@ public class SortingAttributes {
 	 * @return
 	 */
 	public Sort getSort() {
-		if(sortFields == null || sortFields.size() == 0)
+		if(sortFieldList == null || sortFieldList.size() == 0)
 			return new Sort();
 
-		SortField[] sf = (SortField[])sortFields.toArray(new SortField[sortFields.size()]);
+		SortField[] sf = (SortField[])sortFieldList.toArray(new SortField[sortFieldList.size()]);
 		Sort sort = new Sort(sf); 
 		
 		return sort;
@@ -71,16 +59,16 @@ public class SortingAttributes {
 	 * 정렬 컬럼명들을 반환한다.
 	 * @return
 	 */
-	public String[] getColumnNames() {
-		String[] columnNames = new String[sortFields.size()];
+	public String[] getAttributeNames() {
+		String[] attributeNames = new String[sortFieldList.size()];
 		
-		for(int i = 0; i < columnNames.length; i++) {
-			SortField sortField = (SortField)sortFields.get(i);
+		for(int i = 0; i < attributeNames.length; i++) {
+			SortField sortField = (SortField)sortFieldList.get(i);
 			
-			columnNames[i] = sortField.getField();
+			attributeNames[i] = sortField.getField();
 		}
 		
-		return columnNames;
+		return attributeNames;
 	}
 	
 }

@@ -33,9 +33,9 @@ public interface AnySearcher {
 	/**
 	 * 스키마를 지정한다.
 	 * @param schema Schema Schema
-	 * @throws AnySearchException
+	 * @throws AnySearcherException
 	 */
-	public void setSchema(Relation schema) throws AnySearchException;
+	public void setSchema(Relation schema) throws AnySearcherException;
 	
 	/**
 	 * 레코드(Document)의 총 개수를 반환한다.
@@ -73,7 +73,7 @@ public interface AnySearcher {
 	 * 검색범위를 
 	 * @return the primaryKey
 	 */
-	public RecordKey getPrimaryKey();
+	public RecordKey getRecordKey();
 
 	/**
 	 * PrimaryKey를 지정하여 검색범위를 줄인다.<pre>
@@ -83,7 +83,7 @@ public interface AnySearcher {
 	 *     "site" 그룹의 "notice" 게시판의 모든 글에서 검색할 것이다.
 	 * @param primaryKey the primaryKey to set
 	 */
-	public void setPrimaryKey(RecordKey primaryKey);
+	public void setRecordKey(RecordKey primaryKey);
 	
 	/**
 	 * Query Parser Syntax 문법의 종류
@@ -102,9 +102,9 @@ public interface AnySearcher {
 	 *     IsIndexed 옵션이 false 인 경우도 정렬이 될 수 없다.</pre>
 	 * @param columnName 컬럼명
 	 * @param reverse 역순 정렬 여부
-	 * @throws AnySearchException
+	 * @throws AnySearcherException
 	 */
-	public void setSortColumn(SortingAttributes sortColumn) throws AnySearchException;
+	public void setSortAttributes(SortAttributes sortColumn) throws AnySearcherException;
 	
 	/**
 	 * 질의 가능 대상 컬럼을 추가한다.
@@ -112,9 +112,9 @@ public interface AnySearcher {
 	 * 기본 질의 컬럼 외에 별도로 특정 컬럼의 값을 검색할때 별도로 컬럼을 추가한다.
 	 * 별도로 컬럼을 추가할시 기본 질의 컬럼은 무시된다.
 	 * @param columnName 컬럼명
-	 * @throws AnySearchException
+	 * @throws AnySearcherException
 	 */
-	public void addQueryColumn(String columnName) throws AnySearchException;
+	public void addQueryColumn(String columnName) throws AnySearcherException;
 	
 	/**
 	 * 필터 컬럼을 추가한다.<pre>
@@ -122,28 +122,28 @@ public interface AnySearcher {
 	 * - 색인컬럼(Indexed)
 	 * - 토큰분리컬럼(Tokened)<pre>
 	 * @param columnName 컬럼명
-	 * @throws AnySearchException
+	 * @throws AnySearcherException
 	 */
 	public void addFilterColumn(String columnName, String keyword, boolean isEssentialClause)
-	throws AnySearchException;
+	throws AnySearcherException;
 
 	/**
 	 * PrimaryKey를 필터 컬럼으로 추가한다.
 	 * PrimaryKey는 필수조건이 된다.
 	 * @param primaryKey PrimaryKey
-	 * @throws AnySearchException
+	 * @throws AnySearcherException
 	 */
 	public void addFilterColumn(RecordKey primaryKey)
-	throws AnySearchException;
+	throws AnySearcherException;
 
 	/**
 	 * 컬럼별 Summarizer 지정한다.
 	 * @param columnName 컬럼명
 	 * @param summarizer
-	 * @throws AnySearchException
+	 * @throws AnySearcherException
 	 */
 	public void addSummarizer(String columnName, Summarizer summarizer)
-	throws AnySearchException;
+	throws AnySearcherException;
 	
 	/**
 	 * 질의 컬럼을 모두 해제한다.
@@ -168,18 +168,18 @@ public interface AnySearcher {
 	 * 별도로 페이지 번호를 지정하지 않으면 1 페이지를 반환한다. 
 	 * @param queryString
 	 * @return
-	 * @throws AnySearchException
+	 * @throws AnySearcherException
 	 */
-	 public Record[] search(String queryString) throws AnySearchException;
+	 public Record[] search(String queryString) throws AnySearcherException;
 	
 	/**
 	 * 질의문을 의한 검색을 수행한다.
 	 * 필터 컬럼만 지정했을 경우 사용한다.
 	 * @param queryString
 	 * @return
-	 * @throws AnySearchException
+	 * @throws AnySearcherException
 	 */
-	public Record[] search(int pageNo) throws AnySearchException;
+	public Record[] search(int pageNo) throws AnySearcherException;
 	
 	/**
 	 * 질의문을 의한 검색을 수행한다.
@@ -190,18 +190,18 @@ public interface AnySearcher {
 	 * @param queryString 사용자가 입력한 질의문
 	 * @param pageNo 페이지 번호
 	 * @return hitsPerPage 개수 만큼의 Record를 반환한다.
-	 * @throws AnySearchException
+	 * @throws AnySearcherException
 	 */
-	public Record[] search(String queryString, int pageNo) throws AnySearchException;
+	public Record[] search(String queryString, int pageNo) throws AnySearcherException;
 	
 	/**
 	 * 최근 레코드 또는 랜덤 레코드를 검색한다.
 	 * 검색 범위를 한정하기 위해서는 필터컬럼을 추가해야 한다.
 	 * 검색 범위를 한정하지 않으면 모든 레코드에 대해 검색한다.
 	 * @return hitsPerPage 개의 레코드
-	 * @throws AnySearchException
+	 * @throws AnySearcherException
 	 */
-	public Record[] random() throws AnySearchException;
+	public Record[] random() throws AnySearcherException;
 	
 	/**
 	 * 최근 레코드 또는 랜덤 레코드를 검색한다.
@@ -211,9 +211,9 @@ public interface AnySearcher {
 	 * 빈 디렉토리 즉, 디렉토리 내에 세그먼트 파일이 존재하지 않으면 예외를 발생한다. 
 	 * @param queryString 질의문
 	 * @return hitsPerPage 개의 레코드
-	 * @throws AnySearchException
+	 * @throws AnySearcherException
 	 */
-	public Record[] random(String queryString) throws AnySearchException;
+	public Record[] random(String queryString) throws AnySearcherException;
 
 	/**
 	 * 등록된 순서에 따라 도큐먼트를 페이징 한다.
@@ -224,8 +224,8 @@ public interface AnySearcher {
 	 * @param maxRecords 레코드 개수
 	 * @param reverse 역정렬 여부
 	 * @return
-	 * @throws AnySearchException
+	 * @throws AnySearcherException
 	 */
-	public Record[] seek(int start, int maxRecords, boolean reverse) throws AnySearchException;
+	public Record[] seek(int start, int maxRecords, boolean reverse) throws AnySearcherException;
 	
 }

@@ -18,7 +18,7 @@ package org.jhlabs.scany.engine.index;
  * @author Gulendol
  * 
  */
-public class AnyIndexException extends Exception {
+public class AnyIndexerException extends Exception {
 
 	/** @serial */
 	static final long serialVersionUID = 6834919771549843895L;
@@ -26,7 +26,7 @@ public class AnyIndexException extends Exception {
 	/**
 	 * Simple constructor
 	 */
-	public AnyIndexException() {
+	public AnyIndexerException() {
 	}
 
 	/**
@@ -35,7 +35,7 @@ public class AnyIndexException extends Exception {
 	 * @param msg
 	 *            A message to associate with the exception
 	 */
-	public AnyIndexException(String msg) {
+	public AnyIndexerException(String msg) {
 		super(msg);
 	}
 
@@ -45,7 +45,7 @@ public class AnyIndexException extends Exception {
 	 * @param cause
 	 *            The real cause of the exception
 	 */
-	public AnyIndexException(Throwable cause) {
+	public AnyIndexerException(Throwable cause) {
 		super(cause);
 	}
 
@@ -58,7 +58,7 @@ public class AnyIndexException extends Exception {
 	 * @param cause
 	 *            The real cause of the exception
 	 */
-	public AnyIndexException(String msg, Throwable cause) {
+	public AnyIndexerException(String msg, Throwable cause) {
 		super(msg, cause);
 	}
 }

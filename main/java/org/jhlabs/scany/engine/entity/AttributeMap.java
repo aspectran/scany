@@ -30,4 +30,8 @@ public class AttributeMap extends LinkedHashMap<String, Attribute> {
 		return put(attribute.getName(), attribute);
 	}
 	
+	public String[] getAttributeNames() {
+		return keySet().toArray(new String[size()]);
+	}
+	
 }
