@@ -115,7 +115,7 @@ public class LuceneSearcher extends AnySearcherModel implements AnySearcher {
 				searcher = new IndexSearcher(schema.getRepository());
 			} catch(Exception e) {
 				throw new CorruptIndexException("색인 저장소에 세그먼트 파일이 존재하지 않습니다. (Schema ID: " +
-						schema.getRelationId() + ")");
+						schema.getId() + ")");
 			}
 
 			Analyzer analyzer = schema.getAnalyzer();
@@ -205,7 +205,7 @@ public class LuceneSearcher extends AnySearcherModel implements AnySearcher {
 				searcher = new IndexSearcher(schema.getRepository());
 			} catch(Exception e) {
 				throw new CorruptIndexException("색인 저장소에 세그먼트 파일이 존재하지 않습니다. (Schema ID: " +
-						schema.getRelationId() + ")");
+						schema.getId() + ")");
 			}
 			
 			List recordList = new ArrayList();
@@ -357,7 +357,7 @@ public class LuceneSearcher extends AnySearcherModel implements AnySearcher {
 				reader = IndexReader.open(schema.getRepository());
 			} catch(Exception e) {
 				throw new CorruptIndexException("색인 저장소에 세그먼트 파일이 존재하지 않습니다. (Schema ID: " +
-						schema.getRelationId() + ")");
+						schema.getId() + ")");
 			}
 			
 			List records = new ArrayList();

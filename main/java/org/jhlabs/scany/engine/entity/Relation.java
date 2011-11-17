@@ -96,7 +96,7 @@ public class Relation {
 	 * 스키마 ID를 반환한다.
 	 * @return the schemaId
 	 */
-	public String getRelationId() {
+	public String getId() {
 		return id;
 	}
 
@@ -104,7 +104,7 @@ public class Relation {
 	 * 스키마 ID를 지정한다.
 	 * @param id the schemaId to set
 	 */
-	public void setRelationId(String id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

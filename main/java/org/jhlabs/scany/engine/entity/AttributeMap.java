@@ -26,4 +26,8 @@ public class AttributeMap extends LinkedHashMap<String, Attribute> {
 	/** @serial */
 	private static final long serialVersionUID = 5793481770995089479L;
 	
+	public Attribute put(Attribute attribute) {
+		return put(attribute.getName(), attribute);
+	}
+	
 }
