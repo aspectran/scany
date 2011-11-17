@@ -40,9 +40,7 @@ public class SearchModel {
 
 	protected Relation relation;
 
-	protected RecordKey recordKey;
-
-	private List<Attribute> queryAttributeList;
+	private List<String> queryAttributeList;
 
 	private List<FilterAttribute> filterAttributeList;
 
@@ -52,16 +50,6 @@ public class SearchModel {
 
 	protected int hitsPerPage = 10;
 
-	protected int summaryLength = 200;
-	
-	protected Map summarizers;
-	
-	/**
-	 * 생성자 검색하기 전에 반드시 Schema를 지정해야 한다.
-	 */
-	public SearchModel() {
-	}
-
 	/**
 	 * 생성자
 	 * 
@@ -69,7 +57,7 @@ public class SearchModel {
 	 * @throws ScanySearchException
 	 */
 	public SearchModel(Relation relation) throws AnySearcherException {
-		setSchema(relation);
+		this.relation = relation;
 	}
 
 	/**
@@ -77,24 +65,8 @@ public class SearchModel {
 	 * 
 	 * @return Schema
 	 */
-	public Relation getSchema() {
+	protected Relation getSchema() {
 		return relation;
-	}
-
-	/**
-	 * 스키마를 지정한다.
-	 * 
-	 * @param schema Schema Schema
-	 * @throws AnySearcherException
-	 */
-	public void setSchema(Relation schema) throws AnySearcherException {
-		this.relation = schema;
-
-		this.recordKey = null;
-		this.queryAttributeList = null;
-		this.sortAttributes = null;
-
-		asureSchema();
 	}
 
 	/**
@@ -104,24 +76,6 @@ public class SearchModel {
 	 */
 	public int getTotalRecords() {
 		return this.totalRecords;
-	}
-
-	/**
-	 * 요약문의 최대 길이를 반환한다.
-	 * 
-	 * @return the summaryLength 요약문 최대 길이
-	 */
-	public int getSummaryLength() {
-		return summaryLength;
-	}
-
-	/**
-	 * 요약문의 최대 길이를 설정한다.
-	 * 
-	 * @param summaryLength 요약문 최대 길이
-	 */
-	public void setSummaryLength(int summaryLength) {
-		this.summaryLength = summaryLength;
 	}
 
 	/**
@@ -142,32 +96,146 @@ public class SearchModel {
 		this.hitsPerPage = hitsPerPage;
 	}
 
-	/**
-	 * PrimaryKey를 반환한다.
-	 * 와일드카드('*', '?')가 사용된 PrimaryKey를 사용할 수 있다.
-	 * 
-	 * @return the primaryKey
-	 */
-	public RecordKey getRecordKey() {
-		return recordKey;
+	public List<String> getQueryAttributeList() {
+		return queryAttributeList;
+	}
+
+	public void setQueryAttributeList(List<String> queryAttributeList) {
+		Iterator<String> iter = queryAttributeList.iterator();
+		
+		while(iter.hasNext()) {
+			String attributeName = iter.next();
+			addQueryAttribute(attributeName);
+		}
 	}
 
 	/**
-	 * PrimaryKey를 지정하여 검색범위를 줄인다.
+	 * 질의 가능 대상 컬럼을 수동으로 추가한다.
+	 * 기본 질의 대상 컬럼을 관계없이 별도의 컬럼을 지정하여 검색하기 위함이다. 
+	 * 이 메쏘드를 이용해서 별도로 컬럼을 지정하지 않으면 기본 질의 대상 컬럼으로 검색한다.
+	 * 
+	 * @param columnName 컬럼명
+	 * @throws AnySearcherException
+	 */
+	public void addQueryAttribute(String attributeName) {
+		if(relation.getAttributeMap().get(attributeName) == null)
+			throw new InvalidAttributeException(attributeName);
+
+		if(queryAttributeList == null)
+			queryAttributeList = new ArrayList<String>();
+
+		queryAttributeList.add(attributeName);
+	}
+	
+	public List<FilterAttribute> getFilterAttributeList() {
+		return filterAttributeList;
+	}
+
+	public void setFilterAttributeList(List<FilterAttribute> filterAttributeList) {
+		Iterator<FilterAttribute> iter = filterAttributeList.iterator();
+		
+		while(iter.hasNext()) {
+			FilterAttribute filterAttribute = iter.next();
+			addFilterAttribute(filterAttribute);
+		}
+	}
+
+	public void addFilterAttribute(String attributeName, String keyword, boolean essential) {
+		addFilterAttribute(new FilterAttribute(attributeName, keyword, essential));
+	}
+
+	/**
+	 * 필터 컬럼을 추가한다.
 	 * 
 	 * <pre>
-	 * 와일드카드('*', '?')가 사용된 PrimaryKey를 사용할 수 있다.
-	 * KeyPattern이 &quot;groupId:boardId:articleNo&quot; 일 경우
-	 *     PrimaryKey 값으로 &quot;site:notice:*&quot; 지정하면
-	 *     &quot;site&quot; 그룹의 &quot;notice&quot; 게시판의 모든 글에서 검색할 것이다.
+	 * 필터 컬럼으로 지정할 수 있는 컬럼은 다음 조건을 충족해야 한다.
+	 * - 색인컬럼(Indexed)
+	 * - 토큰분리컬럼(Tokenized)
 	 * </pre>
-	 * @param recordKey the primaryKey to set
+	 * @param columnName 컬럼명
+	 * @throws AnySearcherException
 	 * 
 	 */
-	public void setRecordKey(RecordKey recordKey) {
-		this.recordKey = recordKey;
+	public void addFilterAttribute(FilterAttribute filterAttribute) {
+		if(!RecordKey.RECORD_KEY.equals(filterAttribute.getAttributeName())) {
+			Attribute attribute = relation.getAttributeMap().get(filterAttribute.getAttributeName());
+
+			if(attribute == null)
+				throw new InvalidAttributeException(filterAttribute.getAttributeName());
+			
+			if(!attribute.isIndexable() || !attribute.isTokenizable()) {
+				throw new InvalidAttributeException(filterAttribute.getAttributeName(), "색인화 또는 토큰화된 속성이어야 합니다.");
+			}
+		}
+		
+		if(filterAttributeList == null)
+			filterAttributeList = new ArrayList<FilterAttribute>();
+		
+		filterAttributeList.add(filterAttribute);
+	}
+	
+	public List<SortAttribute> getSortAttributeList() {
+		return sortAttributeList;
 	}
 
+	public void setSortAttributeList(List<SortAttribute> sortAttributeList) {
+		Iterator<SortAttribute> iter = sortAttributeList.iterator();
+		
+		while(iter.hasNext()) {
+			SortAttribute sortAttribute = iter.next();
+			addSortAttribute(sortAttribute);
+		}
+	}
+	
+	public void addSortAttribute(String attributeName, SortFieldType sortFieldType, boolean reverse) {
+		addSortAttribute(new SortAttribute(attributeName, sortFieldType, reverse));
+	}
+	
+	/**
+	 * 정렬 컬럼을 지정한다. 해제할때는 null을 입력하자.
+	 * 
+	 * <pre>
+	 * 주의사항
+	 *     컬럼의 속성에서 IsTokenized 옵션이 true 인 경우
+	 *     즉, tokenized fields인 경우는 정렬이 될 수 없음을 기억하자.
+	 *     IsIndexed 옵션이 false 인 경우도 정렬이 될 수 없다.
+	 * </pre>
+	 * 
+	 * @param columnName 컬럼명
+	 * @param reverse 역순 정렬 여부
+	 * @throws AnySearcherException
+	 */
+	public void addSortAttribute(SortAttribute sortAttribute) {
+		if(!RecordKey.RECORD_KEY.equals(sortAttribute.getAttributeName())) {
+			Attribute attribute = relation.getAttributeMap().get(sortAttribute.getAttributeName());
+
+			if(attribute == null)
+				throw new InvalidAttributeException(sortAttribute.getAttributeName());
+			
+			if(!attribute.isIndexable() || !attribute.isTokenizable()) {
+				throw new InvalidAttributeException(sortAttribute.getAttributeName(), "색인화 또는 토큰화된 속성이어야 합니다.");
+			}
+		}
+
+		if(sortAttributeList == null)
+			sortAttributeList = new ArrayList<SortAttribute>();
+		
+		sortAttributeList.add(sortAttribute);
+	}
+	
+	public void clearQueryAttribute() {
+		queryAttributeList = null;
+	}
+	
+	public void clearFilterAttribute() {
+		filterAttributeList = null;
+	}
+	
+	public void clearSortAttribute() {
+		sortAttributeList = null;
+	}
+	
+	
 	/**
 	 * 정렬 컬럼을 지정한다. 해제할때는 null을 입력하자.
 	 * 
