@@ -19,32 +19,32 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public final class ServiceMode extends Type {
+public final class RemoteMode extends Type {
 
-	public static final ServiceMode LOCAL;
+	public static final RemoteMode TCP;
 
-	public static final ServiceMode HTTP;
+	public static final RemoteMode HTTP;
 	
-	public static final ServiceMode REMOTE;
+	public static final RemoteMode RMI;
 	
-	private static final Map<String, ServiceMode> types;
+	private static final Map<String, RemoteMode> types;
 	
 	static {
-		LOCAL = new ServiceMode("local");
-		HTTP = new ServiceMode("http");
-		REMOTE = new ServiceMode("remote");
+		TCP = new RemoteMode("tcp");
+		HTTP = new RemoteMode("http");
+		RMI = new RemoteMode("rmi");
 
-		types = new HashMap<String, ServiceMode>();
-		types.put(LOCAL.toString(), LOCAL);
+		types = new HashMap<String, RemoteMode>();
+		types.put(TCP.toString(), TCP);
 		types.put(HTTP.toString(), HTTP);
-		types.put(REMOTE.toString(), REMOTE);
+		types.put(RMI.toString(), RMI);
 	}
 
-	private ServiceMode(String type) {
+	private RemoteMode(String type) {
 		super(type);
 	}
 
-	public static ServiceMode valueOf(String type) {
+	public static RemoteMode valueOf(String type) {
 		if(type == null)
 			return null;
 		

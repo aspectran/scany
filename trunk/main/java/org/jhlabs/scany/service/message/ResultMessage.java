@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.jhlabs.scany.context.message;
+package org.jhlabs.scany.service.message;
 
 import java.io.Serializable;
 

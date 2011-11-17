@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.jhlabs.scany.context.message;
+package org.jhlabs.scany.service.message;
 
 /**
  *
@@ -10,6 +10,7 @@ package org.jhlabs.scany.context.message;
  * <p>Created: 2011. 11. 15. 오후 6:37:32</p>
  *
  */
-public class MessageInterpreter {
+public interface Message {
 
+	
 }
