@@ -21,20 +21,10 @@ encryption CDATA #IMPLIED
 <!ELEMENT jdbc (#PCDATA)>
 <!ELEMENT jndi (#PCDATA)>
 
-<!ELEMENT client (local? | http? | remote?)>
+<!ELEMENT client (local | remote)>
+<!ELEMENT remote (tcp? | http?)>
 
-<!ELEMENT http (characterEncoding?, url, parameters)>
-<!ELEMENT url (#PCDATA)>
-<!ELEMENT parameters (parameter*)>
-
-<!ELEMENT parameter (#PCDATA)*>
-<!ATTLIST typeAlias
-name CDATA #REQUIRED
-encryption (true, false) #IMPLIED
-compressable (true, false) #IMPLIED
->
-
-<!ELEMENT remote (connection, authentificationKey?, message?)>
+<!ELEMENT tcp (connection, message?)>
 
 <!ELEMENT connection (host, timeout)>
 <!ELEMENT host (#PCDATA)>
@@ -43,12 +33,26 @@ port CDATA #REQUIRED
 >
 <!ELEMENT timeout (#PCDATA)>
 
-<!ELEMENT authentificationKey (#PCDATA)>
-<!ELEMENT message EMPTY>
+<!ELEMENT message (keysign, body?)>
 <!ATTLIST message
+format (xml, json, binary) #IMPLIED
+encoding CDATA #IMPLIED
+>
+
+<!ELEMENT keysign (#PCDATA)>
+<!ATTLIST keysign
 encryption (true, false) #IMPLIED
 compressable (true, false) #IMPLIED
 >
+
+<!ELEMENT body EMPTY>
+<!ATTLIST body
+encryption (true, false) #IMPLIED
+compressable (true, false) #IMPLIED
+>
+
+<!ELEMENT http (url, timeout?, message)>
+<!ELEMENT url (#PCDATA)>
 
 <!ELEMENT server (remote, optimizing?)>
 <!ELEMENT optimizing (#PCDATA)>
