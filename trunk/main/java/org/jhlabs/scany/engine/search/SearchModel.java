@@ -36,7 +36,7 @@ import org.jhlabs.scany.util.StringUtils;
  * 
  * @author Gulendol
  */
-public class AnySearcherModel {
+public class SearchModel {
 
 	protected Relation relation;
 
@@ -59,7 +59,7 @@ public class AnySearcherModel {
 	/**
 	 * 생성자 검색하기 전에 반드시 Schema를 지정해야 한다.
 	 */
-	public AnySearcherModel() {
+	public SearchModel() {
 	}
 
 	/**
@@ -68,7 +68,7 @@ public class AnySearcherModel {
 	 * @param relation Schema
 	 * @throws ScanySearchException
 	 */
-	public AnySearcherModel(Relation relation) throws AnySearcherException {
+	public SearchModel(Relation relation) throws AnySearcherException {
 		setSchema(relation);
 	}
 

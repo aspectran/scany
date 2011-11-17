@@ -53,12 +53,12 @@ public class LuceneIndexer implements AnyIndexer {
 	 * @param schema Schema
 	 * @throws MultipartRequestzException
 	 */
-	public LuceneIndexer(Relation schema) throws AnyIndexException {
+	public LuceneIndexer(Relation schema) throws AnyIndexerException {
 		this.relation = schema;
 		initialize(false);
 	}
 
-	public Relation getSchema() throws AnyIndexException {
+	public Relation getSchema() throws AnyIndexerException {
 		return relation;
 	}
 
@@ -66,12 +66,12 @@ public class LuceneIndexer implements AnyIndexer {
 	 * 초기화
 	 * 
 	 * @param rebuild 색인DB 초기화 여부
-	 * @throws AnyIndexException
+	 * @throws AnyIndexerException
 	 */
-	private void initialize(boolean rebuild) throws AnyIndexException {
+	private void initialize(boolean rebuild) throws AnyIndexerException {
 		try {
 			if(relation == null)
-				throw new AnyIndexException("등록된 스키마가 아닙니다.(Schema is null)");
+				throw new AnyIndexerException("등록된 스키마가 아닙니다.(Schema is null)");
 			
 			boolean create = true;
 
@@ -97,7 +97,7 @@ public class LuceneIndexer implements AnyIndexer {
 			indexWriter.setMaxMergeDocs(relation.getMaxMergeDocs());
 
 		} catch(IOException e) {
-			throw new AnyIndexException("색인기(AnyIndexer)를 초기화할 수 없습니다.", e);
+			throw new AnyIndexerException("색인기(AnyIndexer)를 초기화할 수 없습니다.", e);
 		}
 	}
 
@@ -105,11 +105,11 @@ public class LuceneIndexer implements AnyIndexer {
 	 * 색인등록
 	 * 
 	 * @param record
-	 * @throws AnyIndexException
+	 * @throws AnyIndexerException
 	 */
-	public void insert(Record record) throws AnyIndexException {
+	public void insert(Record record) throws AnyIndexerException {
 		if(exists(record.getRecordKey()))
-			throw new AnyIndexException("동일한 Primary Key를 가진 레코드(Record)가 이미 존재합니다.");
+			throw new AnyIndexerException("동일한 Primary Key를 가진 레코드(Record)가 이미 존재합니다.");
 
 		try {
 			// Primary Key 생성
@@ -123,11 +123,11 @@ public class LuceneIndexer implements AnyIndexer {
 			indexWriter.addDocument(document);
 
 		} catch(Exception e) {
-			throw new AnyIndexException("색인 등록(insert)에 실패했습니다.", e);
+			throw new AnyIndexerException("색인 등록(insert)에 실패했습니다.", e);
 		}
 	}
 
-	public void merge(Record record) throws AnyIndexException {
+	public void merge(Record record) throws AnyIndexerException {
 		if(exists(record.getRecordKey()))
 			update(record);
 		else
@@ -138,11 +138,11 @@ public class LuceneIndexer implements AnyIndexer {
 	 * 색인수정.
 	 * primaryKey에 해당하는 레코드를 삭제하고, 새로운 record를 insert한다.
 	 * 
-	 * @param primaryKey 갱신 대상 레코드의 키
+	 * @param recordKey 갱신 대상 레코드의 키
 	 * @param record 수정 대상 레코드
-	 * @throws AnyIndexException
+	 * @throws AnyIndexerException
 	 */
-	public void update(Record record) throws AnyIndexException {
+	public void update(Record record) throws AnyIndexerException {
 		try {
 			if(record.getRecordKey().hasWildcard())
 				throw new IllegalArgumentException("PrimaryKey가 와일드카드 문자를 포함하고 있습니다.");
@@ -152,7 +152,7 @@ public class LuceneIndexer implements AnyIndexer {
 
 			indexWriter.updateDocument(term, document);
 		} catch(Exception e) {
-			throw new AnyIndexException("색인 수정(update)에 실패했습니다.", e);
+			throw new AnyIndexerException("색인 수정(update)에 실패했습니다.", e);
 		}
 	}
 
@@ -161,9 +161,9 @@ public class LuceneIndexer implements AnyIndexer {
 	 * 
 	 * @param recordKey 삭제 대상 레코드의 키
 	 * @param isAutoOptimizeOff Auto Optimize 기능을 강제로 끌지 여부.
-	 * @throws AnyIndexException
+	 * @throws AnyIndexerException
 	 */
-	public void delete(RecordKey recordKey) throws AnyIndexException {
+	public void delete(RecordKey recordKey) throws AnyIndexerException {
 		Searcher searcher = null;
 
 		try {
@@ -235,7 +235,7 @@ public class LuceneIndexer implements AnyIndexer {
 			}
 
 		} catch(Exception e) {
-			throw new AnyIndexException("색인 삭제(delete)에 실패했습니다.", e);
+			throw new AnyIndexerException("색인 삭제(delete)에 실패했습니다.", e);
 		} finally {
 			try {
 				if(searcher != null)
@@ -249,31 +249,31 @@ public class LuceneIndexer implements AnyIndexer {
 	/**
 	 * 발생한 트랜잭션에 대해 Optimize를 수행한다.
 	 */
-	public void optimize() throws AnyIndexException {
+	public void optimize() throws AnyIndexerException {
 		try {
 			indexWriter.optimize();
 		} catch(IOException e) {
-			throw new AnyIndexException("색인 최적화(optimize) 작업에 실패했습니다.", e);
+			throw new AnyIndexerException("색인 최적화(optimize) 작업에 실패했습니다.", e);
 		}
 	}
 
 	/**
 	 * 색인DB를 완전히 삭제한다.
 	 * 
-	 * @throws AnyIndexException
+	 * @throws AnyIndexerException
 	 */
-	public void destroy() throws AnyIndexException {
+	public void destroy() throws AnyIndexerException {
 		initialize(true);
 	}
 	
 	/**
 	 * 색인 작업을 종료한다.
 	 */
-	public void close() throws AnyIndexException {
+	public void close() throws AnyIndexerException {
 		try {
 			indexWriter.close();
 		} catch(IOException e) {
-			throw new AnyIndexException("색인 작업 종료에 실패했습니다.", e);
+			throw new AnyIndexerException("색인 작업 종료에 실패했습니다.", e);
 		}
 	}
 
@@ -283,9 +283,9 @@ public class LuceneIndexer implements AnyIndexer {
 	 * 
 	 * @param recordKey 레코드의 키
 	 * @return
-	 * @throws AnyIndexException
+	 * @throws AnyIndexerException
 	 */
-	public boolean exists(RecordKey recordKey) throws AnyIndexException {
+	public boolean exists(RecordKey recordKey) throws AnyIndexerException {
 		IndexSearcher searcher = null;
 
 		try {
@@ -304,7 +304,7 @@ public class LuceneIndexer implements AnyIndexer {
 			return (hitsLength > 0);
 
 		} catch(Exception e) {
-			throw new AnyIndexException("색인 존재여부 확인에 실패했습니다.", e);
+			throw new AnyIndexerException("색인 존재여부 확인에 실패했습니다.", e);
 		} finally {
 			try {
 				if(searcher != null)
@@ -319,9 +319,9 @@ public class LuceneIndexer implements AnyIndexer {
 	 * 레코드(Record)를 도큐먼트(Document)로 전환 후 반환한다.
 	 * @param record
 	 * @return Record
-	 * @throws AnyIndexException
+	 * @throws AnyIndexerException
 	 */
-	private Document recordToDocument(Record record) throws AnyIndexException {
+	private Document recordToDocument(Record record) throws AnyIndexerException {
 		try {
 			// 컬럼속성
 			AttributeMap attributeMap = relation.getAttributeMap();
@@ -371,7 +371,7 @@ public class LuceneIndexer implements AnyIndexer {
 
 			return document;
 		} catch(Exception e) {
-			throw new AnyIndexException("레코드(Record) 생성에 실패했습니다.", e);
+			throw new AnyIndexerException("레코드(Record) 생성에 실패했습니다.", e);
 		}
 	}
 }

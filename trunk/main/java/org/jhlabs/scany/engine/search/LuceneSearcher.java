@@ -62,7 +62,7 @@ public class LuceneSearcher extends AnySearcherModel implements AnySearcher {
 	 * @param schema 스키마
 	 * @throws ScanySearchException
 	 */
-	public LuceneSearcher(Relation schema) throws AnySearchException {
+	public LuceneSearcher(Relation schema) throws AnySearcherException {
 		super(schema);
 	}
 	
@@ -71,9 +71,9 @@ public class LuceneSearcher extends AnySearcherModel implements AnySearcher {
 	 * 별도로 페이지 번호를 지정하지 않으면 1 페이지를 반환한다. 
 	 * @param queryString
 	 * @return
-	 * @throws AnySearchException
+	 * @throws AnySearcherException
 	 */
-	public Record[] search(String queryString) throws AnySearchException {
+	public Record[] search(String queryString) throws AnySearcherException {
 		return search(queryString, 1);
 	}
 	
@@ -82,9 +82,9 @@ public class LuceneSearcher extends AnySearcherModel implements AnySearcher {
 	 * 필터 컬럼만 지정했을 경우 사용한다.
 	 * @param queryString
 	 * @return
-	 * @throws AnySearchException
+	 * @throws AnySearcherException
 	 */
-	public Record[] search(int pageNo) throws AnySearchException {
+	public Record[] search(int pageNo) throws AnySearcherException {
 		return search(null, pageNo);
 	}
 	
@@ -97,28 +97,28 @@ public class LuceneSearcher extends AnySearcherModel implements AnySearcher {
 	 * @param queryString 사용자가 입력한 질의문
 	 * @param pageNo 페이지 번호
 	 * @return hitsPerPage 개수 만큼의 Record를 반환한다.
-	 * @throws AnySearchException
+	 * @throws AnySearcherException
 	 */
-	public Record[] search(String queryString, int pageNo) throws AnySearchException {
+	public Record[] search(String queryString, int pageNo) throws AnySearcherException {
 		Searcher searcher = null;
 		
 		try {
 			if(pageNo <= 0)
 				return null;
 
-			File file = new File(schema.getRepository());
+			File file = new File(relation.getRepository());
 			
 			if(!file.exists())
 				return null;
 			
 			try {
-				searcher = new IndexSearcher(schema.getRepository());
+				searcher = new IndexSearcher(relation.getRepository());
 			} catch(Exception e) {
 				throw new CorruptIndexException("색인 저장소에 세그먼트 파일이 존재하지 않습니다. (Schema ID: " +
-						schema.getId() + ")");
+						relation.getId() + ")");
 			}
 
-			Analyzer analyzer = schema.getAnalyzer();
+			Analyzer analyzer = relation.getAnalyzer();
 			
 			LuceneQueryBuilder queryBuilder = new LuceneQueryBuilder(analyzer);
 			queryBuilder.setFilterColumns(getFilterColumns());
@@ -132,8 +132,8 @@ public class LuceneSearcher extends AnySearcherModel implements AnySearcher {
 
 			Hits hits = null;
 			
-			if(sortColumn != null)
-				hits = searcher.search(query, sortColumn.getSort());
+			if(sortAttributes != null)
+				hits = searcher.search(query, sortAttributes.getSort());
 			else
 				hits = searcher.search(query);			
 			
@@ -159,7 +159,7 @@ public class LuceneSearcher extends AnySearcherModel implements AnySearcher {
 			return records;
 
 		} catch(Exception e) {
-			throw new AnySearchException("검색 과정에서 오류가 발생했습니다.", e);
+			throw new AnySearcherException("검색 과정에서 오류가 발생했습니다.", e);
 
 		} finally {
 			try {
@@ -176,9 +176,9 @@ public class LuceneSearcher extends AnySearcherModel implements AnySearcher {
 	 * 검색 범위를 한정하기 위해서는 필터컬럼을 추가해야 한다.
 	 * 검색 범위를 한정하지 않으면 모든 레코드에 대해 검색한다.
 	 * @return hitsPerPage 개의 레코드
-	 * @throws AnySearchException
+	 * @throws AnySearcherException
 	 */
-	public Record[] random() throws AnySearchException {
+	public Record[] random() throws AnySearcherException {
 		return random(null);
 	}
 	
@@ -190,27 +190,27 @@ public class LuceneSearcher extends AnySearcherModel implements AnySearcher {
 	 * 빈 디렉토리 즉, 디렉토리 내에 세그먼트 파일이 존재하지 않으면 예외를 발생한다. 
 	 * @param queryString 질의문
 	 * @return hitsPerPage 개의 레코드
-	 * @throws AnySearchException
+	 * @throws AnySearcherException
 	 */
-	public Record[] random(String queryString) throws AnySearchException {
+	public Record[] random(String queryString) throws AnySearcherException {
 		Searcher searcher = null;
 
 		try {
-			File file = new File(schema.getRepository());
+			File file = new File(relation.getRepository());
 			
 			if(!file.exists())
 				return null;
 			
 			try {
-				searcher = new IndexSearcher(schema.getRepository());
+				searcher = new IndexSearcher(relation.getRepository());
 			} catch(Exception e) {
 				throw new CorruptIndexException("색인 저장소에 세그먼트 파일이 존재하지 않습니다. (Schema ID: " +
-						schema.getId() + ")");
+						relation.getId() + ")");
 			}
 			
 			List recordList = new ArrayList();
 
-			LuceneQueryBuilder queryBuilder = new LuceneQueryBuilder(schema.getAnalyzer());
+			LuceneQueryBuilder queryBuilder = new LuceneQueryBuilder(relation.getAnalyzer());
 			queryBuilder.setFilterColumns(getFilterColumns());
 			queryBuilder.setQeuryColumns(getQueryColumns());
 			
@@ -220,8 +220,8 @@ public class LuceneSearcher extends AnySearcherModel implements AnySearcher {
 
 			Hits hits = null;
 			
-			if(sortColumn != null)
-				hits = searcher.search(query, sortColumn.getSort());
+			if(sortAttributes != null)
+				hits = searcher.search(query, sortAttributes.getSort());
 			else
 				hits = searcher.search(query);
 			
@@ -235,7 +235,7 @@ public class LuceneSearcher extends AnySearcherModel implements AnySearcher {
 					if(docs[i] == -1)
 						continue;
 					
-					Record record = documentToRecord(hits.doc(docs[i]), schema);
+					Record record = documentToRecord(hits.doc(docs[i]), relation);
 					recordList.add(record);
 				}
 				
@@ -244,9 +244,9 @@ public class LuceneSearcher extends AnySearcherModel implements AnySearcher {
 				//System.out.println("미달");
 
 				// SortColumn이 지정되었을 경우 0번부터 차례대로
-				if(sortColumn != null) {
+				if(sortAttributes != null) {
 					for(int i = 0; i < totalRecords; i++) {							
-						Record record = documentToRecord(hits.doc(i), schema);
+						Record record = documentToRecord(hits.doc(i), relation);
 						recordList.add(record);
 					}
 					
@@ -254,7 +254,7 @@ public class LuceneSearcher extends AnySearcherModel implements AnySearcher {
 				// 즉 최신 데이터를 먼저 내 보낸다.
 				} else {
 					for(int i = totalRecords - 1; i >= 0; i--) {
-						Record record = documentToRecord(hits.doc(i), schema);
+						Record record = documentToRecord(hits.doc(i), relation);
 						recordList.add(record);
 					}
 				}
@@ -268,7 +268,7 @@ public class LuceneSearcher extends AnySearcherModel implements AnySearcher {
 			return records;
 
 		} catch(Exception e) {
-			throw new AnySearchException("Scany(RandomSearcher) 검색 과정에서 오류가 발생했습니다.", e);
+			throw new AnySearcherException("Scany(RandomSearcher) 검색 과정에서 오류가 발생했습니다.", e);
 
 		} finally {
 			try {
@@ -339,25 +339,25 @@ public class LuceneSearcher extends AnySearcherModel implements AnySearcher {
 	 * @param maxRecords 레코드 개수
 	 * @param reverse 역정렬 여부
 	 * @return
-	 * @throws AnySearchException
+	 * @throws AnySearcherException
 	 */
-	public Record[] seek(int start, int maxRecords, boolean reverse) throws AnySearchException {
+	public Record[] seek(int start, int maxRecords, boolean reverse) throws AnySearcherException {
 		IndexReader reader = null;
 
 		try {
 			if(start < 0)
 				return null;
 			
-			File file = new File(schema.getRepository());
+			File file = new File(relation.getRepository());
 			
 			if(!file.exists())
 				return null;
 			
 			try {
-				reader = IndexReader.open(schema.getRepository());
+				reader = IndexReader.open(relation.getRepository());
 			} catch(Exception e) {
 				throw new CorruptIndexException("색인 저장소에 세그먼트 파일이 존재하지 않습니다. (Schema ID: " +
-						schema.getId() + ")");
+						relation.getId() + ")");
 			}
 			
 			List records = new ArrayList();
@@ -369,7 +369,7 @@ public class LuceneSearcher extends AnySearcherModel implements AnySearcher {
 				for(int i = reader.maxDoc() - 1; i >= 0; i--) {
 					if(!reader.isDeleted(i)) {					
 						if(n >= start && n < end) {
-							records.add(AnySearcherModel.documentToRecord(reader.document(i), schema));
+							records.add(AnySearcherModel.documentToRecord(reader.document(i), relation));
 						}
 						
 						n++;
@@ -379,7 +379,7 @@ public class LuceneSearcher extends AnySearcherModel implements AnySearcher {
 				for(int i = 0; i < reader.maxDoc(); i++) {
 					if(!reader.isDeleted(i)) {					
 						if(n >= start && n < end) {
-							records.add(AnySearcherModel.documentToRecord(reader.document(i), schema));
+							records.add(AnySearcherModel.documentToRecord(reader.document(i), relation));
 						}
 						
 						n++;
@@ -393,7 +393,7 @@ public class LuceneSearcher extends AnySearcherModel implements AnySearcher {
 			return (Record[])records.toArray(new Record[records.size()]);
 
 		} catch(Exception e) {
-			throw new AnySearchException("순차 검색 과정에서 오류가 발생했습니다.", e);
+			throw new AnySearcherException("순차 검색 과정에서 오류가 발생했습니다.", e);
 
 		} finally {
 			try {

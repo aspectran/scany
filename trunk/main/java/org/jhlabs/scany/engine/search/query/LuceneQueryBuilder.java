@@ -24,7 +24,7 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.WildcardQuery;
 import org.jhlabs.scany.engine.entity.Attribute;
 import org.jhlabs.scany.engine.entity.RecordKey;
-import org.jhlabs.scany.engine.search.FilteringAttributes;
+import org.jhlabs.scany.engine.search.FilterAttribute;
 import org.jhlabs.scany.util.StringUtils;
 
 /**
@@ -49,7 +49,7 @@ public class LuceneQueryBuilder {
 	/**
 	 * 필터 대상 컬럼
 	 */
-	private FilteringAttributes[] filterColumns;
+	private FilterAttribute[] filterColumns;
 
 	/**
 	 * 질의 대상 컬럼
@@ -72,7 +72,7 @@ public class LuceneQueryBuilder {
 	 * 
 	 * @param filterColumns
 	 */
-	public void setFilterColumns(FilteringAttributes[] filterColumns) {
+	public void setFilterColumns(FilterAttribute[] filterColumns) {
 		this.filterColumns = filterColumns;
 	}
 

@@ -10,43 +10,44 @@
  ******************************************************************************/
 package org.jhlabs.scany.engine.search;
 
+
 /**
- * 하나의 필터컬럼 정보를 담고 있다.
+ * 하나의 필터컬럼 정보를 담는다.
  * 
  * <p>Created: 2007. 01. 22 오전 3:07:50</p>
  * 
  * @author Gulendol
  *
  */
-public class FilteringAttributes {
+public class FilterAttribute {
 	
-	private String columnName;
+	private String attributeName;
 	
 	private String keyword;
 	
 	/**
 	 * 반드시 발생해야 하는 필수항목 여부
 	 */
-	private boolean isEssentialClause = true;
+	private boolean essential = true;
 	
 	/**
 	 * FilterColumn을 생성한다.
 	 * @param columnName 컬럼명
 	 * @param keyword 키워드
-	 * @param isEssentialClause 필수항목 여부
+	 * @param essential 필수항목 여부
 	 */
-	public FilteringAttributes(String columnName, String keyword, boolean isEssentialClause) {
-		this.columnName = columnName;
+	public FilterAttribute(String attributeName, String keyword, boolean essential) {
+		this.attributeName = attributeName;
 		this.keyword = keyword;
-		this.isEssentialClause = isEssentialClause;
+		this.essential = essential;
 	}
 	
 	/**
 	 * 컬럼명을 반환한다.
 	 * @return the columnName
 	 */
-	public String getColumnName() {
-		return columnName;
+	public String getAttributeName() {
+		return attributeName;
 	}
 
 	/**
@@ -61,8 +62,8 @@ public class FilteringAttributes {
 	 * 필수항목인지 여부를 반환한다.
 	 * @return the isEssentialClause
 	 */
-	public boolean isEssentialClause() {
-		return isEssentialClause;
+	public boolean isEssential() {
+		return essential;
 	}
 	
 }
