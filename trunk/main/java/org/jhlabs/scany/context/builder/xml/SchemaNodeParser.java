@@ -16,13 +16,18 @@
 package org.jhlabs.scany.context.builder.xml;
 
 import java.io.InputStream;
+import java.util.Map;
 import java.util.Properties;
 
+import org.apache.lucene.analysis.Analyzer;
 import org.jhlabs.scany.context.builder.ScanyContextBuilderAssistant;
 import org.jhlabs.scany.context.rule.LocalServiceRule;
+import org.jhlabs.scany.engine.entity.Attribute;
+import org.jhlabs.scany.engine.entity.AttributeMap;
 import org.jhlabs.scany.engine.entity.RecordKeyPattern;
 import org.jhlabs.scany.engine.entity.Relation;
 import org.jhlabs.scany.engine.entity.Schema;
+import org.jhlabs.scany.engine.search.summarize.Summarizer;
 import org.jhlabs.scany.util.xml.EasyNodelet;
 import org.jhlabs.scany.util.xml.EasyNodeletParser;
 
@@ -81,13 +86,11 @@ public class SchemaNodeParser {
 		parser.addNodelet("/schema", new EasyNodelet() {
 			public void process(Properties attributes, String text) throws Exception {
 				Schema schema = new Schema();
-				assistant.pushObject(schema);
+				assistant.setSchema(schema);
 			}
 		});
 		parser.addNodelet("/schema/end()", new EasyNodelet() {
 			public void process(Properties attributes, String text) throws Exception {
-				Schema schema = (Schema)assistant.popObject();
-				assistant.setSchema(schema);
 			}
 		});
 	}
@@ -104,10 +107,16 @@ public class SchemaNodeParser {
 		parser.addNodelet("/schema/relation", new EasyNodelet() {
 			public void process(Properties attributes, String text) throws Exception {
 				String id = attributes.getProperty("id");
-				String analyzer = attributes.getProperty("analyzer");
+				String analyzerId = attributes.getProperty("analyzer");
 
+				Schema schema = assistant.getSchema();
+				Analyzer analyzer = schema.getAnalyzer(analyzerId);
+				
+				if(analyzer == null)
+					throw new IllegalArgumentException("Could not set analyzer '" + analyzerId + "' on relation '" + id + "'.");
+				
 				Relation relation = new Relation();
-				relation.setRelationId(id);
+				relation.setId(id);
 				relation.setAnalyzer(analyzer);
 				
 				assistant.pushObject(relation);
@@ -150,18 +159,72 @@ public class SchemaNodeParser {
 		});
 		parser.addNodelet("/schema/relation/attributes", new EasyNodelet() {
 			public void process(Properties attributes, String text) throws Exception {
+				AttributeMap attributeMap = new AttributeMap();
+				assistant.pushObject(attributeMap);
 			}
 		});
 		parser.addNodelet("/schema/relation/attributes/attribute", new EasyNodelet() {
 			public void process(Properties attributes, String text) throws Exception {
+				String name = attributes.getProperty("name");
+				Boolean storable = Boolean.valueOf(attributes.getProperty("storable"));
+				Boolean indexable = Boolean.valueOf(attributes.getProperty("indexable"));
+				Boolean queryable = Boolean.valueOf(attributes.getProperty("queryable"));
+				String analyzerId = attributes.getProperty("analyzer");
+				String summarizerId = attributes.getProperty("summarizer");
+				String boost = attributes.getProperty("boost");
+
+				Attribute attribute = new Attribute();
+				attribute.setName(name);
+				attribute.setDescription(text);
+				attribute.setStorable(storable);
+				attribute.setIndexable(indexable);
+				attribute.setQueryable(queryable);
+				
+				Schema schema = assistant.getSchema();
+
+				if(analyzerId != null && analyzerId.length() > 0) {
+					Analyzer analyzer = schema.getAnalyzer(analyzerId);
+					
+					if(analyzer == null)
+						throw new IllegalArgumentException("Could not set analyzer '" + analyzerId + "' on attribute '" + name + "'.");
+
+					attribute.setAnalyzer(analyzer);
+				}
+				
+				if(summarizerId != null && summarizerId.length() > 0) {
+					Summarizer summarizer = schema.getSummarizer(summarizerId);
+					
+					if(summarizer == null)
+						throw new IllegalArgumentException("Could not set summarizer '" + summarizerId + "' on attribute '" + name + "'.");
+
+					attribute.setSummarizer(summarizer);
+				}
+				
+				if(boost != null && boost.length() > 0) {
+					try {
+						attribute.setBoost(Float.valueOf(boost));
+					} catch(NumberFormatException e) {
+						throw new IllegalArgumentException("Check the boost value '" + boost + "' on attribute '" + name + "'.");
+					}
+				}
+				
+				AttributeMap attributeMap = (AttributeMap)assistant.peekObject();
+				attributeMap.put(name, attribute);
 			}
 		});
 		parser.addNodelet("/schema/relation/attributes/end()", new EasyNodelet() {
 			public void process(Properties attributes, String text) throws Exception {
+				AttributeMap attributeMap = (AttributeMap)assistant.popObject();
+				Relation relation = (Relation)assistant.peekObject();
+				relation.setAttributeMap(attributeMap);
 			}
 		});
 		parser.addNodelet("/schema/relation/end()", new EasyNodelet() {
 			public void process(Properties attributes, String text) throws Exception {
+				Relation relation = (Relation)assistant.popObject();
+				Schema schema = (Schema)assistant.peekObject();
+				Map<String, Relation> relationMap = schema.getRelationMap();
+				relationMap.put(relation.getId(), relation);
 			}
 		});
 	}
