@@ -10,12 +10,6 @@
  ******************************************************************************/
 package org.jhlabs.scany.engine.search;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.apache.lucene.search.Sort;
-import org.apache.lucene.search.SortField;
 
 /**
  * 정렬 컬럼을 지정하는 역할을 한다. 
@@ -49,25 +43,6 @@ public class SortAttribute {
 
 	public boolean isReverse() {
 		return reverse;
-	}
-
-	public static Sort makeSort(List<SortAttribute> sortAttributeList) {
-		List<SortField> sortFieldList = new ArrayList<SortField>();
-		
-		Iterator<SortAttribute> iter = sortAttributeList.iterator();
-		
-		while(iter.hasNext()) {
-			SortAttribute sortAttribute = iter.next();
-			
-			SortField sortFiled = new SortField(sortAttribute.getAttributeName(), (Integer)sortAttribute.getSortFieldType().getType(), sortAttribute.isReverse());
-			
-			sortFieldList.add(sortFiled);
-		}
-		
-		SortField[] sortFileds = (SortField[])sortFieldList.toArray(new SortField[sortFieldList.size()]);
-		Sort sort = new Sort(sortFileds);
-
-		return sort;
 	}
 	
 }
