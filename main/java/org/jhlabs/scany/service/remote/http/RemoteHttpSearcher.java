@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.jhlabs.scany.service.http;
+package org.jhlabs.scany.service.remote.http;
 
 import org.jhlabs.scany.engine.entity.Record;
 import org.jhlabs.scany.engine.search.AnySearchException;
@@ -15,7 +15,7 @@ import org.jhlabs.scany.engine.search.AnySearcherModel;
  * <p>Created: 2011. 11. 6. 오후 4:46:36</p>
  *
  */
-public class HttpSearcher extends AnySearcherModel implements AnySearcher {
+public class RemoteHttpSearcher extends AnySearcherModel implements AnySearcher {
 
 	public Record[] search(String queryString) throws AnySearchException {
 		return null;

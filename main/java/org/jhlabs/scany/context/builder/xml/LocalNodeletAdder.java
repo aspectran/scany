@@ -22,6 +22,7 @@ import org.jhlabs.scany.context.rule.ClientRule;
 import org.jhlabs.scany.context.rule.FileSpoolTransactionRule;
 import org.jhlabs.scany.context.rule.LocalServiceRule;
 import org.jhlabs.scany.context.rule.SpoolingRule;
+import org.jhlabs.scany.context.type.ServiceMode;
 import org.jhlabs.scany.context.type.SpoolingMode;
 import org.jhlabs.scany.util.xml.EasyNodelet;
 import org.jhlabs.scany.util.xml.EasyNodeletAdder;
@@ -32,7 +33,7 @@ import org.jhlabs.scany.util.xml.EasyNodeletParser;
  * 
  * <p>Created: 2008. 06. 14 오전 4:39:24</p>
  */
-public class LocalServiceRuleNodeletAdder implements EasyNodeletAdder {
+public class LocalNodeletAdder implements EasyNodeletAdder {
 	
 	protected ScanyContextBuilderAssistant assistant;
 	
@@ -42,7 +43,7 @@ public class LocalServiceRuleNodeletAdder implements EasyNodeletAdder {
 	 * @param parser the parser
 	 * @param assistant the assistant for Context Builder
 	 */
-	public LocalServiceRuleNodeletAdder(ScanyContextBuilderAssistant assistant) {
+	public LocalNodeletAdder(ScanyContextBuilderAssistant assistant) {
 		this.assistant = assistant;
 	}
 	
@@ -114,6 +115,7 @@ public class LocalServiceRuleNodeletAdder implements EasyNodeletAdder {
 
 					if(lsr.getDirectory() != null || lsr.getDirectory().length() > 0) {
 						ClientRule cr = (ClientRule)assistant.peekObject();
+						cr.setServiceMode(ServiceMode.LOCAL);
 						cr.setAnyServiceRule(lsr);
 					}
 				}

@@ -5,12 +5,22 @@ public class MessageRule {
 	public static final String KEYSIGN = "keysign";
 	
 	public static final String BODY = "body";
-	
+
+	private String characterEncoding;
+
 	private String encryption;
 	
 	private Boolean compressable;
 	
 	private String text;
+
+	public String getCharacterEncoding() {
+		return characterEncoding;
+	}
+
+	public void setCharacterEncoding(String characterEncoding) {
+		this.characterEncoding = characterEncoding;
+	}
 
 	public String getEncryption() {
 		return encryption;

@@ -83,7 +83,7 @@ public class ScanyNodeParser {
 	}
 
 	private void addLocalNodelets() {
-		parser.addNodelet("/scany/local", new LocalServiceRuleNodeletAdder(assistant));
+		parser.addNodelet("/scany/local", new LocalNodeletAdder(assistant));
 	}
 	
 	private void addClientNodelets() {
@@ -94,9 +94,9 @@ public class ScanyNodeParser {
 			}
 		});
 		
-		parser.addNodelet("/scany/client/local", new LocalServiceRuleNodeletAdder(assistant));
-		parser.addNodelet("/scany/client/http", new HttpServiceRuleNodeletAdder(assistant));
-		parser.addNodelet("/scany/client/remote", new HttpServiceRuleNodeletAdder(assistant));
+		parser.addNodelet("/scany/client", new LocalNodeletAdder(assistant));
+		parser.addNodelet("/scany/client", new RemoteTcpNodeletAdder(assistant));
+		parser.addNodelet("/scany/client", new RemoteHttpNodeletAdder(assistant));
 
 		parser.addNodelet("/scany/client/end()", new EasyNodelet() {
 			public void process(Properties attributes, String text) throws Exception {
@@ -114,7 +114,7 @@ public class ScanyNodeParser {
 			}
 		});
 
-		parser.addNodelet("/scany/server/remote", new HttpServiceRuleNodeletAdder(assistant));
+		parser.addNodelet("/scany/server", new RemoteTcpNodeletAdder(assistant));
 
 		parser.addNodelet("/scany/server/end()", new EasyNodelet() {
 			public void process(Properties attributes, String text) throws Exception {

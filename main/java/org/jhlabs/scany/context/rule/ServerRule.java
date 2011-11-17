@@ -1,17 +1,18 @@
 package org.jhlabs.scany.context.rule;
 
+
 public class ServerRule {
 
-	private RemoteServiceRule remoteServiceRule;
+	private RemoteTcpServiceRule remoteTcpServiceRule;
 	
 	private OptimizingRule optimizingRule;
 
-	public RemoteServiceRule getRemoteServiceRule() {
-		return remoteServiceRule;
+	public RemoteTcpServiceRule getRemoteTcpServiceRule() {
+		return remoteTcpServiceRule;
 	}
 
-	public void setRemoteServiceRule(RemoteServiceRule remoteServiceRule) {
-		this.remoteServiceRule = remoteServiceRule;
+	public void setRemoteTcpServiceRule(RemoteTcpServiceRule remoteServiceRule) {
+		this.remoteTcpServiceRule = remoteServiceRule;
 	}
 
 	public OptimizingRule getOptimizingRule() {

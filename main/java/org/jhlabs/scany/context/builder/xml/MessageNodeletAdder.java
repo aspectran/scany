@@ -18,8 +18,9 @@ package org.jhlabs.scany.context.builder.xml;
 import java.util.Properties;
 
 import org.jhlabs.scany.context.builder.ScanyContextBuilderAssistant;
-import org.jhlabs.scany.context.rule.HttpServiceRule;
 import org.jhlabs.scany.context.rule.MessageRule;
+import org.jhlabs.scany.context.rule.RemoteHttpServiceRule;
+import org.jhlabs.scany.context.rule.RemoteTcpServiceRule;
 import org.jhlabs.scany.context.type.MessageFormat;
 import org.jhlabs.scany.util.xml.EasyNodelet;
 import org.jhlabs.scany.util.xml.EasyNodeletAdder;
@@ -30,7 +31,7 @@ import org.jhlabs.scany.util.xml.EasyNodeletParser;
  * 
  * <p>Created: 2008. 06. 14 오전 4:39:24</p>
  */
-public class HttpServiceRuleNodeletAdder implements EasyNodeletAdder {
+public class MessageNodeletAdder implements EasyNodeletAdder {
 	
 	protected ScanyContextBuilderAssistant assistant;
 	
@@ -40,7 +41,7 @@ public class HttpServiceRuleNodeletAdder implements EasyNodeletAdder {
 	 * @param parser the parser
 	 * @param assistant the assistant for Context Builder
 	 */
-	public HttpServiceRuleNodeletAdder(ScanyContextBuilderAssistant assistant) {
+	public MessageNodeletAdder(ScanyContextBuilderAssistant assistant) {
 		this.assistant = assistant;
 	}
 	
@@ -48,53 +49,46 @@ public class HttpServiceRuleNodeletAdder implements EasyNodeletAdder {
 	 * Process.
 	 */
 	public void process(String xpath, EasyNodeletParser parser) {
-		parser.addNodelet(xpath, "/http", new EasyNodelet() {
-			public void process(Properties attributes, String text) throws Exception {
-				HttpServiceRule hsr = new HttpServiceRule();
-				assistant.pushObject(hsr);
-			}
-		});
-		parser.addNodelet(xpath, "/http/schema", new EasyNodelet() {
-			public void process(Properties attributes, String text) throws Exception {
-				HttpServiceRule hsr = (HttpServiceRule)assistant.peekObject();
-				hsr.setSchemaConfigLocation(text);
-			}
-		});
-		parser.addNodelet(xpath, "/http/characterEncoding", new EasyNodelet() {
-			public void process(Properties attributes, String text) throws Exception {
-				HttpServiceRule hsr = (HttpServiceRule)assistant.peekObject();
-				hsr.setCharacterEncoding(text);
-			}
-		});
-		parser.addNodelet(xpath, "/http/url", new EasyNodelet() {
-			public void process(Properties attributes, String text) throws Exception {
-				HttpServiceRule hsr = (HttpServiceRule)assistant.peekObject();
-				hsr.setUrl(text);
-			}
-		});
-		parser.addNodelet(xpath, "/http/message", new EasyNodelet() {
+		parser.addNodelet(xpath, "/message", new EasyNodelet() {
 			public void process(Properties attributes, String text) throws Exception {
 				String format = attributes.getProperty("format");
+				String encoding = attributes.getProperty("encoding");
 
-				HttpServiceRule hsr = (HttpServiceRule)assistant.peekObject();
-				hsr.setMessageFormat(MessageFormat.valueOf(format));
+				Object anyServiceRule = assistant.peekObject();
+				
+				if(anyServiceRule instanceof RemoteTcpServiceRule) {
+					RemoteTcpServiceRule rtsr = (RemoteTcpServiceRule)anyServiceRule;
+					rtsr.setMessageFormat(MessageFormat.valueOf(format));
+					rtsr.setCharacterEncoding(encoding);
+				} else if(anyServiceRule instanceof RemoteHttpServiceRule) {
+					RemoteHttpServiceRule rhsr = (RemoteHttpServiceRule)assistant.peekObject();
+					rhsr.setMessageFormat(MessageFormat.valueOf(format));
+					rhsr.setCharacterEncoding(encoding);
+				}
 			}
 		});
-		parser.addNodelet(xpath, "/http/message/keysign", new EasyNodelet() {
+		parser.addNodelet(xpath, "/message/keysign", new EasyNodelet() {
 			public void process(Properties attributes, String text) throws Exception {
 				String encryption = attributes.getProperty("encryption");
 				String compressable = attributes.getProperty("compressable");
-				
+
 				MessageRule mr = new MessageRule();
 				mr.setEncryption(encryption);
 				mr.setCompressable(Boolean.valueOf(compressable));
 				mr.setText(text);
 
-				HttpServiceRule hsr = (HttpServiceRule)assistant.peekObject();
-				hsr.setKeysignMessageRule(mr);
+				Object anyServiceRule = assistant.peekObject();
+				
+				if(anyServiceRule instanceof RemoteTcpServiceRule) {
+					RemoteTcpServiceRule rtsr = (RemoteTcpServiceRule)anyServiceRule;
+					rtsr.setKeysignMessageRule(mr);
+				} else if(anyServiceRule instanceof RemoteHttpServiceRule) {
+					RemoteHttpServiceRule hsr = (RemoteHttpServiceRule)anyServiceRule;
+					hsr.setKeysignMessageRule(mr);
+				}
 			}
 		});
-		parser.addNodelet(xpath, "/http/message/body", new EasyNodelet() {
+		parser.addNodelet(xpath, "/message/body", new EasyNodelet() {
 			public void process(Properties attributes, String text) throws Exception {
 				String encryption = attributes.getProperty("encryption");
 				String compressable = attributes.getProperty("compressable");
@@ -103,8 +97,15 @@ public class HttpServiceRuleNodeletAdder implements EasyNodeletAdder {
 				mr.setEncryption(encryption);
 				mr.setCompressable(Boolean.valueOf(compressable));
 
-				HttpServiceRule hsr = (HttpServiceRule)assistant.peekObject();
-				hsr.setBodyMessageRule(mr);
+				Object anyServiceRule = assistant.peekObject();
+				
+				if(anyServiceRule instanceof RemoteTcpServiceRule) {
+					RemoteTcpServiceRule hsr = (RemoteTcpServiceRule)assistant.peekObject();
+					hsr.setBodyMessageRule(mr);
+				} else if(anyServiceRule instanceof RemoteHttpServiceRule) {
+					RemoteHttpServiceRule hsr = (RemoteHttpServiceRule)anyServiceRule;
+					hsr.setBodyMessageRule(mr);
+				}
 			}
 		});
 	}

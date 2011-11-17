@@ -3,22 +3,26 @@ package org.jhlabs.scany.context.rule;
 import org.jhlabs.scany.context.type.MessageFormat;
 import org.jhlabs.scany.engine.entity.Schema;
 
-public class HttpServiceRule {
+public class RemoteTcpServiceRule {
 
 	private Schema schema;
-
+	
 	private String schemaConfigLocation;
-
+	
 	private String characterEncoding;
 	
-	private String url;
+	private String host;
+
+	private Integer port;
+	
+	private Integer timeout;
 	
 	private MessageFormat messageFormat;
 	
 	private MessageRule keysignMessageRule;
 
 	private MessageRule bodyMessageRule;
-	
+
 	public Schema getSchema() {
 		return schema;
 	}
@@ -43,12 +47,28 @@ public class HttpServiceRule {
 		this.characterEncoding = characterEncoding;
 	}
 
-	public String getUrl() {
-		return url;
+	public String getHost() {
+		return host;
 	}
 
-	public void setUrl(String url) {
-		this.url = url;
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	public Integer getPort() {
+		return port;
+	}
+
+	public void setPort(Integer port) {
+		this.port = port;
+	}
+
+	public Integer getTimeout() {
+		return timeout;
+	}
+
+	public void setTimeout(Integer timeout) {
+		this.timeout = timeout;
 	}
 
 	public MessageFormat getMessageFormat() {
@@ -74,5 +94,5 @@ public class HttpServiceRule {
 	public void setBodyMessageRule(MessageRule bodyMessageRule) {
 		this.bodyMessageRule = bodyMessageRule;
 	}
-	
+
 }
