@@ -24,19 +24,19 @@
 		<recordKeyPattern separator="$">boardId$articleNo</recordKeyPattern>
 		<attributes>
 			<attribute name="boardId"
-				storable="yes" indexable="no" queryable="no"
+				storable="true" indexable="false" queryable="false"
 				>게시판ID</attribute>
 			<attribute name="articleId"
-				storable="yes" indexable="no" queryable="no"
+				storable="true" indexable="false" queryable="false"
 				>글ID</attribute>
 			<attribute name="group"
-				storable="yes" indexable="yes" queryable="no"
+				storable="true" indexable="true" queryable="false"
 				>게시판그룹</attribute>
 			<attribute name="category"
-				storable="yes" indexable="yes" queryable="no"
+				storable="true" indexable="true" queryable="false"
 				>분류</attribute>
 			<attribute name="title"
-				storable="yes" indexable="tokenize" queryable="prefix"
+				storable="true" indexable="tokenize" queryable="prefix"
 				boost="1.1"
 				>제목</attribute>
 			<attribute name="content"
@@ -44,18 +44,18 @@
 				boost="1.0"
 				>내용</attribute>
 			<attribute name="tag"
-				storable="yes" indexable="tokenize" queryable="yes"
+				storable="true" indexable="tokenize" queryable="true"
 				boost="1.2"
 				analyzer="csv"
 				>태그</attribute>
 			<attribute name="writer"
-				storable="yes" indexable="yes" queryable="no"
+				storable="true" indexable="true" queryable="false"
 				>작성자</attribute>
 			<attribute name="date"
-				storable="yes" indexable="yes" queryable="no"
+				storable="true" indexable="true" queryable="false"
 				>등록일자</attribute>
 			<attribute name="url"
-				storable="yes" indexable="no" queryable="no"
+				storable="true" indexable="false" queryable="false"
 				>URL</attribute>
 		</attributes>
 	</relation>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE scany PUBLIC "-//JHLabs.org//DTD scany 1.0//EN"
+<!DOCTYPE scany PUBLIC "-//JHLabs.org//DTD scany 2.0//EN"
                            "./dtd/scany-2.0.dtd">
 
 <scany>
@@ -14,26 +14,29 @@
 	</local>
 
 	<client>
-		<http>
-			<characterEncoding>utf-8</characterEncoding>
-			<url>http://</url>
-			<message format="json">
-				<keysign encryption="none">1234</keysign>
-				<body compressable="true"/>
-			</message>
-		</http>
+		<remote>
+			<http>
+				<url>http://</url>
+				<message format="json" encoding="utf-8">
+					<keysign encryption="none">1234</keysign>
+					<body compressable="true"/>
+				</message>
+			</http>
+		</remote>
 	</client>
 
 	<server>
 		<remote>
-			<connection>
-				<host port=""/>
-				<timeout>2000</timeout>
-			</connection>
-			<message format="xml">
-				<keysign encryption="none">1234</keysign>
-				<body compressable="true"/>
-			</message>
+			<tcp>
+				<connection>
+					<host port=""/>
+					<timeout>2000</timeout>
+				</connection>
+				<message format="xml" encoding="utf-8">
+					<keysign encryption="none">1234</keysign>
+					<body compressable="true"/>
+				</message>
+			</tcp>
 		</remote>
 		<optimizing>
 			
