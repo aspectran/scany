@@ -223,6 +223,7 @@ public class SchemaNodeParser {
 			public void process(Properties attributes, String text) throws Exception {
 				Relation relation = (Relation)assistant.popObject();
 				Schema schema = (Schema)assistant.peekObject();
+				relation.setSchema(schema);
 				Map<String, Relation> relationMap = schema.getRelationMap();
 				relationMap.put(relation.getId(), relation);
 			}

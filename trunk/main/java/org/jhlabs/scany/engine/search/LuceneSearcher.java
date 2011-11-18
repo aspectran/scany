@@ -47,23 +47,15 @@ import org.jhlabs.scany.engine.search.query.QueryStringParser;
  * @author Gulendol
  *
  */
-public class LuceneSearcher extends AnySearcherModel implements AnySearcher {
+public class LuceneSearcher extends SearchModel implements AnySearcher {
 	
 	/**
 	 * 생성자
-	 * 검색하기 전에 반드시 스키마를 지정해야 한다.
-	 */
-	public LuceneSearcher() {
-		super();
-	}
-
-	/**
-	 * 생성자
-	 * @param schema 스키마
+	 * @param relation 스키마
 	 * @throws ScanySearchException
 	 */
-	public LuceneSearcher(Relation schema) throws AnySearcherException {
-		super(schema);
+	public LuceneSearcher(Relation relation) throws AnySearcherException {
+		super(relation);
 	}
 	
 	/**
@@ -106,19 +98,19 @@ public class LuceneSearcher extends AnySearcherModel implements AnySearcher {
 			if(pageNo <= 0)
 				return null;
 
-			File file = new File(relation.getRepository());
+			File file = new File(getRelation().getDirectory());
 			
 			if(!file.exists())
 				return null;
 			
 			try {
-				searcher = new IndexSearcher(relation.getRepository());
+				searcher = new IndexSearcher(getRelation().getDirectory());
 			} catch(Exception e) {
 				throw new CorruptIndexException("색인 저장소에 세그먼트 파일이 존재하지 않습니다. (Schema ID: " +
-						relation.getId() + ")");
+						getRelation().getId() + ")");
 			}
 
-			Analyzer analyzer = relation.getAnalyzer();
+			Analyzer analyzer = getRelation().getAnalyzer();
 			
 			LuceneQueryBuilder queryBuilder = new LuceneQueryBuilder(analyzer);
 			queryBuilder.setFilterColumns(getFilterColumns());
@@ -196,21 +188,21 @@ public class LuceneSearcher extends AnySearcherModel implements AnySearcher {
 		Searcher searcher = null;
 
 		try {
-			File file = new File(relation.getRepository());
+			File file = new File(getRelation().getDirectory());
 			
 			if(!file.exists())
 				return null;
 			
 			try {
-				searcher = new IndexSearcher(relation.getRepository());
+				searcher = new IndexSearcher(getRelation().getDirectory());
 			} catch(Exception e) {
 				throw new CorruptIndexException("색인 저장소에 세그먼트 파일이 존재하지 않습니다. (Schema ID: " +
-						relation.getId() + ")");
+						getRelation().getId() + ")");
 			}
 			
 			List recordList = new ArrayList();
 
-			LuceneQueryBuilder queryBuilder = new LuceneQueryBuilder(relation.getAnalyzer());
+			LuceneQueryBuilder queryBuilder = new LuceneQueryBuilder(getRelation().getAnalyzer());
 			queryBuilder.setFilterColumns(getFilterColumns());
 			queryBuilder.setQeuryColumns(getQueryColumns());
 			
@@ -348,16 +340,16 @@ public class LuceneSearcher extends AnySearcherModel implements AnySearcher {
 			if(start < 0)
 				return null;
 			
-			File file = new File(relation.getRepository());
+			File file = new File(getRelation().getDirectory());
 			
 			if(!file.exists())
 				return null;
 			
 			try {
-				reader = IndexReader.open(relation.getRepository());
+				reader = IndexReader.open(getRelation().getDirectory());
 			} catch(Exception e) {
 				throw new CorruptIndexException("색인 저장소에 세그먼트 파일이 존재하지 않습니다. (Schema ID: " +
-						relation.getId() + ")");
+						getRelation().getId() + ")");
 			}
 			
 			List records = new ArrayList();

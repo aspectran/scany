@@ -21,6 +21,8 @@ import org.apache.lucene.analysis.Analyzer;
  */
 public class Relation {
 
+	private Schema schema;
+
 	private String id;
 	
 	private RecordKeyPattern recordKeyPattern;
@@ -38,16 +40,6 @@ public class Relation {
 	private int maxMergeDocs;
 
 	public Relation() {
-	}
-	
-	public RecordKey newRecordKey() {
-		return new RecordKey(recordKeyPattern);
-	}
-	
-	public RecordKey newRecordKey(String recordKeyString) throws RecordKeyException {
-		RecordKey recordKey = new RecordKey(recordKeyPattern);
-		recordKey.setRecordKeyString(recordKeyString);
-		return recordKey;
 	}
 	
 	/**
@@ -170,11 +162,29 @@ public class Relation {
 		return maxMergeDocs;
 	}
 
+	public Schema getSchema() {
+		return schema;
+	}
+
+	public void setSchema(Schema schema) {
+		this.schema = schema;
+	}
+
 	/**
 	 * @param maxMergeDocs the maxMergeDocs to set
 	 */
 	public void setMaxMergeDocs(int maxMergeDocs) {
 		this.maxMergeDocs = maxMergeDocs;
 	}
+
+	public RecordKey newRecordKey() {
+		return new RecordKey(recordKeyPattern);
+	}
 	
+	public RecordKey newRecordKey(String recordKeyString) throws RecordKeyException {
+		RecordKey recordKey = new RecordKey(recordKeyPattern);
+		recordKey.setRecordKeyString(recordKeyString);
+		return recordKey;
+	}
+
 }
