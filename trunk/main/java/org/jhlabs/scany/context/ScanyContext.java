@@ -3,6 +3,7 @@
  */
 package org.jhlabs.scany.context;
 
+import org.apache.lucene.util.Version;
 import org.jhlabs.scany.context.rule.ClientRule;
 import org.jhlabs.scany.context.rule.LocalServiceRule;
 import org.jhlabs.scany.context.rule.ServerRule;
@@ -17,6 +18,8 @@ import org.jhlabs.scany.service.AnyService;
  */
 public class ScanyContext {
 
+	public static final Version LUCENE_VERSION = Version.LUCENE_34;
+	
 	private LocalServiceRule localServiceRule;
 	
 	private ClientRule clientRule;

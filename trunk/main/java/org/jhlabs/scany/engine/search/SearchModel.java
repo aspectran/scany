@@ -317,16 +317,6 @@ public class SearchModel {
 	}
 
 	/**
-	 * 스키마가 지정되어 있는지를 검증한다.
-	 * 
-	 * @throws AnySearcherException
-	 */
-	private void asureSchema() throws AnySearcherException {
-		if(relation == null)
-			throw new AnySearcherException("스키마를 지정하세요.(Schema is null)");
-	}
-
-	/**
 	 * Document를 Record로 반환
 	 * 
 	 * @param document

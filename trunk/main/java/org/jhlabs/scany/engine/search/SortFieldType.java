@@ -27,8 +27,6 @@ public final class SortFieldType extends Type {
 
 	public static final SortFieldType DOC;
 	
-	public static final SortFieldType AUTO;
-	
 	public static final SortFieldType STRING;
 	
 	public static final SortFieldType INT;
@@ -40,7 +38,6 @@ public final class SortFieldType extends Type {
 	static {
 		SCORE = new SortFieldType(SortField.SCORE);
 		DOC = new SortFieldType(SortField.DOC);
-		AUTO = new SortFieldType(SortField.AUTO);
 		STRING = new SortFieldType(SortField.STRING);
 		INT = new SortFieldType(SortField.INT);
 		FLOAT = new SortFieldType(SortField.FLOAT);
@@ -48,7 +45,6 @@ public final class SortFieldType extends Type {
 		types = new HashMap<Object, SortFieldType>();
 		types.put(SCORE.getType(), SCORE);
 		types.put(DOC.getType(), DOC);
-		types.put(AUTO.getType(), AUTO);
 		types.put(STRING.getType(), STRING);
 		types.put(INT.getType(), INT);
 		types.put(FLOAT.getType(), FLOAT);

@@ -116,7 +116,7 @@ public class LuceneSearcher extends SearchModel implements AnySearcher {
 			queryBuilder.setFilterColumns(getFilterColumns());
 			queryBuilder.setQeuryColumns(getQueryColumns());
 			
-			QueryStringParser parser = new QueryStringParser(getQueryColumns());
+			QueryStringParser parser = new QueryStringParser(getQueryAttributeList());
 
 			Query query = queryBuilder.getQuery(parser.parse(queryString));
 			

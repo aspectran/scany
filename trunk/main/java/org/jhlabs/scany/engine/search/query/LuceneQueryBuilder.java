@@ -10,7 +10,7 @@
  ******************************************************************************/
 package org.jhlabs.scany.engine.search.query;
 
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -22,10 +22,9 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.WildcardQuery;
-import org.jhlabs.scany.engine.entity.Attribute;
+import org.jhlabs.scany.context.ScanyContext;
 import org.jhlabs.scany.engine.entity.RecordKey;
 import org.jhlabs.scany.engine.search.FilterAttribute;
-import org.jhlabs.scany.util.StringUtils;
 
 /**
  * 검색 조항을 모두 조합한 후 하나의 Query를 반환한다.
@@ -44,45 +43,9 @@ import org.jhlabs.scany.util.StringUtils;
  */
 public class LuceneQueryBuilder {
 
-	private Analyzer analyzer;
+	private List<Query> queryList;
 	
-	/**
-	 * 필터 대상 컬럼
-	 */
-	private FilterAttribute[] filterColumns;
-
-	/**
-	 * 질의 대상 컬럼
-	 */
-	private Attribute[] queryColumns;
-
-	//private String queryString;
-
-	/**
-	 * Constructs
-	 * @param analyzer 분석기
-	 * @param isExpertQueryMode 전문가용 질의문법 사용여부
-	 */
-	public LuceneQueryBuilder(Analyzer analyzer) {
-		this.analyzer = analyzer;
-	}
-
-	/**
-	 * 필터컬럼을 지정한다.
-	 * 
-	 * @param filterColumns
-	 */
-	public void setFilterColumns(FilterAttribute[] filterColumns) {
-		this.filterColumns = filterColumns;
-	}
-
-	/**
-	 * 쿼리컬럼과 질의문을 지정한다.
-	 * 
-	 * @param queryColumns 질의 대상 컬럼
-	 */
-	public void setQeuryColumns(Attribute[] queryColumns) {
-		this.queryColumns = queryColumns;
+	public LuceneQueryBuilder() {
 	}
 
 	/**
@@ -92,45 +55,26 @@ public class LuceneQueryBuilder {
 	 * @return
 	 * @throws MultipartRequestzException
 	 */
-	public Query getQuery(String queryString) throws QueryBuilderException {
-
+	public Query build() throws QueryBuilderException {
 		try {
-			List queries = new ArrayList();
-
-			// 필터쿼리
-			Query filterQuery = getFilterQuery();
-
-			if(filterQuery != null)
-				queries.add(filterQuery);
-
-			// 컬럼쿼리
-			if(!StringUtils.isEmpty(queryString)) {
-				Query parsedQuery = stringToQuery(queryString);
-
-				if(parsedQuery != null)
-					queries.add(parsedQuery);
-			}
-
-			if(queries.size() == 0)
-				throw new IllegalArgumentException("지정된 검색 조건이 없습니다. 검색 조건을 지정하세요.");
-
-			if(queries.size() == 1) {
-				// System.out.println(queries.toString());
-				return (Query)queries.get(0);
-			}
-
+			if(queryList.size() == 0)
+				throw new IllegalArgumentException("no Query.");
+			
+			if(queryList.size() == 1)
+				return queryList.get(0);
+			
+			Iterator<Query> iter = queryList.iterator();
 			BooleanQuery booleanQuery = new BooleanQuery();
-
-			for(int i = 0; i < queries.size(); i++) {
-				booleanQuery.add((Query)queries.get(i), BooleanClause.Occur.MUST);
+			
+			while(iter.hasNext()) {
+				Query query = iter.next();
+				
+				booleanQuery.add(query, BooleanClause.Occur.MUST);
 			}
-
-			//System.out.println(booleanQuery.toString());
 
 			return booleanQuery;
-
 		} catch(Exception e) {
-			throw new QueryBuilderException("질의 조합에 실패했습니다.", e);
+			throw new QueryBuilderException("Cannot build query.", e);
 		}
 	}
 
@@ -142,82 +86,72 @@ public class LuceneQueryBuilder {
 	 * @param queryString
 	 * @return
 	 */
-	private Query getFilterQuery() {
-		if(filterColumns == null)
-			return null;
-
-		List queries = new ArrayList();
-
-		Query query = null;
-		Term term = null;
-
-		for(int i = 0; i < filterColumns.length; i++) {
-			String columnName = filterColumns[i].getColumnName();
-			String keyword = filterColumns[i].getKeyword();
-
-			term = new Term(columnName, keyword);
-
-			if(keyword.indexOf('?') != -1 || keyword.indexOf('*') != -1) {
-				query = new WildcardQuery(term);
-			} else {
-				query = new TermQuery(term);
-			}
-
-			queries.add(query);
+	public void addQuery(List<FilterAttribute> filterAttributeList) {
+		if(filterAttributeList == null || filterAttributeList.size() == 0)
+			return;
+		
+		if(filterAttributeList.size() == 1) {
+			queryList.add(makeQuery((FilterAttribute)filterAttributeList.get(0)));
+			return;
 		}
 		
-		if(queries.size() == 1)
-			return (Query)queries.get(0);
+		Iterator<FilterAttribute> iter = filterAttributeList.iterator();
+		BooleanQuery booleanQuery = new BooleanQuery();
+		
+		while(iter.hasNext()) {
+			FilterAttribute filterAttribute = iter.next();
+			Query query = makeQuery(filterAttribute);
 
-		if(queries.size() > 1) {
-			BooleanQuery booleanQuery = new BooleanQuery();
-
-			BooleanClause.Occur occur = null;
-			
-			for(int i = 0; i < queries.size(); i++) {
-				if(filterColumns[i].isEssentialClause())
-					occur = BooleanClause.Occur.MUST;
-				else
-					occur = BooleanClause.Occur.SHOULD;
-				
-				booleanQuery.add((Query)queries.get(i), occur);
-			}
-
-			return booleanQuery;
+			if(filterAttribute.isEssential())
+				booleanQuery.add(query, BooleanClause.Occur.MUST);
+			else
+				booleanQuery.add(query, BooleanClause.Occur.SHOULD);
 		}
-
-		return null;
+		
+		queryList.add(booleanQuery);
 	}
 
+	private Query makeQuery(FilterAttribute filterAttribute) {
+		String attributeName = filterAttribute.getAttributeName();
+		String keyword = filterAttribute.getKeyword();
+
+		Query query = null;
+		Term term = new Term(attributeName, keyword);
+
+		if(keyword.indexOf('?') != -1 || keyword.indexOf('*') != -1) {
+			query = new WildcardQuery(term);
+		} else {
+			query = new TermQuery(term);
+		}
+		
+		return query;
+	}
+	
 	/**
 	 * 토큰화된 컬럼을 검색하기 위한 질의를 만든다.
 	 * 
 	 * @param queryString
 	 * @return
+	 * @throws QueryBuilderException 
 	 * @throws MultipartRequestzException
 	 */
-	private Query stringToQuery(String queryString) throws QueryBuilderException {
+	public void addQuery(String queryString, List<String> queryAttributeList, Analyzer analyzer) throws QueryBuilderException {
 		String typicalColumnName;
 		
-		if(queryColumns == null || queryColumns.length == 0)
+		if(queryAttributeList == null || queryAttributeList.size() == 0)
 			typicalColumnName = RecordKey.RECORD_KEY;
 		else
-			typicalColumnName = queryColumns[0].getName();
+			typicalColumnName = (String)queryAttributeList.get(0);
 		
-		Query query = null;
-
 		try {
-			QueryParser queryParser = new QueryParser(typicalColumnName, analyzer);
+			QueryParser queryParser = new QueryParser(ScanyContext.LUCENE_VERSION, typicalColumnName, analyzer);
 			queryParser.setDefaultOperator(QueryParser.AND_OPERATOR);
 
-			query = queryParser.parse(queryString);
-			
-			System.out.println(query);
+			Query query = queryParser.parse(queryString);
+			queryList.add(query);
 		} catch(ParseException e) {
-			throw new QueryBuilderException("질의문을 분석할 수 없습니다.", e);
+			throw new QueryBuilderException("Cannot add a Query.", e);
 		}
-
-		return query;
 	}
 	
 }
