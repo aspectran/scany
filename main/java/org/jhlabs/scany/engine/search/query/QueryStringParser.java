@@ -241,7 +241,7 @@ public class QueryStringParser {
 		}
 
 		StringTokenizer st = new StringTokenizer(queryString, DELIMITERS);
-		List tokens = new ArrayList();
+		List<String> tokens = new ArrayList<String>();
 		
 		String token;
 		boolean prevOp = true;
