@@ -10,9 +10,11 @@
  ******************************************************************************/
 package org.jhlabs.scany.engine.search;
 
-import org.jhlabs.scany.engine.entity.RecordKey;
+import java.util.List;
+import java.util.Map;
+
 import org.jhlabs.scany.engine.entity.Record;
-import org.jhlabs.scany.engine.entity.Relation;
+import org.jhlabs.scany.engine.entity.RecordKey;
 import org.jhlabs.scany.engine.search.summarize.Summarizer;
 
 /**
@@ -25,143 +27,99 @@ import org.jhlabs.scany.engine.search.summarize.Summarizer;
 public interface AnySearcher {
 	
 	/**
-	 * 현재 스키마를 반환한다.
-	 * @return Schema
-	 */
-	public Relation getSchema();
-
-	/**
-	 * 스키마를 지정한다.
-	 * @param schema Schema Schema
-	 * @throws AnySearcherException
-	 */
-	public void setSchema(Relation schema) throws AnySearcherException;
-	
-	/**
 	 * 레코드(Document)의 총 개수를 반환한다.
+	 * 
 	 * @return
 	 */
 	public int getTotalRecords();
 
 	/**
-	 * 요약문의 최대 길이를 반환한다.
-	 * @return the summaryLength 요약문 최대 길이
-	 */
-	public int getSummaryLength();
-
-	/**
-	 * 요약문의 최대 길이를 설정한다.
-	 * @param summaryLength 요약문 최대 길이
-	 */
-	public void setSummaryLength(int summaryLength);
-
-	/**
 	 * 한 페이지 당 출력하는 레코드의 개수를 반환한다.
+	 * 
 	 * @return the hitsPerPage
 	 */
 	public int getHitsPerPage();
 
 	/**
 	 * 한 페이지 당 출력하는 레코드의 개수를 설정한다.
+	 * 
 	 * @param hitsPerPage 레코드의 개수
 	 */
 	public void setHitsPerPage(int hitsPerPage);
 
-	/**
-	 * PrimaryKey를 반환한다.
-	 * 와일드카드('*', '?')가 사용된 PrimaryKey를 사용할 수 있다.
-	 * 검색범위를 
-	 * @return the primaryKey
-	 */
-	public RecordKey getRecordKey();
+	public List<String> getQueryAttributeList();
+
+	public void setQueryAttributeList(List<String> queryAttributeList);
 
 	/**
-	 * PrimaryKey를 지정하여 검색범위를 줄인다.<pre>
-	 * 와일드카드('*', '?')가 사용된 PrimaryKey를 사용할 수 있다.
-	 * KeyPattern이 "groupId:boardId:articleNo" 일 경우
-	 *     PrimaryKey 값으로 "site:notice:*" 지정하면
-	 *     "site" 그룹의 "notice" 게시판의 모든 글에서 검색할 것이다.
-	 * @param primaryKey the primaryKey to set
+	 * 질의 가능 대상 컬럼을 수동으로 추가한다.
+	 * 기본 질의 대상 컬럼을 관계없이 별도의 컬럼을 지정하여 검색하기 위함이다. 
+	 * 이 메쏘드를 이용해서 별도로 컬럼을 지정하지 않으면 기본 질의 대상 컬럼으로 검색한다.
+	 * 
+	 * @param columnName 컬럼명
+	 * @throws AnySearcherException
 	 */
-	public void setRecordKey(RecordKey primaryKey);
+	public void addQueryAttribute(String attributeName);
 	
-	/**
-	 * Query Parser Syntax 문법의 종류
-	 * amateur: 질의문에 기본 연산자(AND, OR, NOT)만 사용이 가능
-	 * expert: 루씬에서 제공하는 Query Parser Syntax 문법을 사용
-	 * @param expertQueryMode the isExpertQueryMode to set
-	 */
-	//public void setExpertQueryMode(boolean expertQueryMode);
+	public List<FilterAttribute> getFilterAttributeList();
+
+	public void setFilterAttributeList(List<FilterAttribute> filterAttributeList);
+
+	public void addFilterAttribute(String attributeName, String keyword, boolean essential);
+
+	public void addFilterAttribute(RecordKey recordKey);
 
 	/**
-	 * 정렬 컬럼을 지정한다.
-	 * 해제할때는 null을 입력하자.<pre>
+	 * 필터 컬럼을 추가한다.
+	 * 
+	 * <pre>
+	 * 필터 컬럼으로 지정할 수 있는 컬럼은 다음 조건을 충족해야 한다.
+	 * - 색인컬럼(Indexed)
+	 * - 토큰분리컬럼(Tokenized)
+	 * </pre>
+	 * @param columnName 컬럼명
+	 * @throws AnySearcherException
+	 * 
+	 */
+	public void addFilterAttribute(FilterAttribute filterAttribute);
+	
+	public List<SortAttribute> getSortAttributeList();
+
+	public void setSortAttributeList(List<SortAttribute> sortAttributeList);
+	
+	public void addSortAttribute(String attributeName, SortFieldType sortFieldType, boolean reverse);
+
+	/**
+	 * 정렬 컬럼을 지정한다. 해제할때는 null을 입력하자.
+	 * 
+	 * <pre>
 	 * 주의사항
 	 *     컬럼의 속성에서 IsTokenized 옵션이 true 인 경우
 	 *     즉, tokenized fields인 경우는 정렬이 될 수 없음을 기억하자.
-	 *     IsIndexed 옵션이 false 인 경우도 정렬이 될 수 없다.</pre>
+	 *     IsIndexed 옵션이 false 인 경우도 정렬이 될 수 없다.
+	 * </pre>
+	 * 
 	 * @param columnName 컬럼명
 	 * @param reverse 역순 정렬 여부
 	 * @throws AnySearcherException
 	 */
-	public void setSortAttributes(SortAttributes sortColumn) throws AnySearcherException;
-	
-	/**
-	 * 질의 가능 대상 컬럼을 추가한다.
-	 * 별도로 지정하지 않을 경우 기본 질의 컬럼에서 검색한다.
-	 * 기본 질의 컬럼 외에 별도로 특정 컬럼의 값을 검색할때 별도로 컬럼을 추가한다.
-	 * 별도로 컬럼을 추가할시 기본 질의 컬럼은 무시된다.
-	 * @param columnName 컬럼명
-	 * @throws AnySearcherException
-	 */
-	public void addQueryColumn(String columnName) throws AnySearcherException;
-	
-	/**
-	 * 필터 컬럼을 추가한다.<pre>
-	 * 필터 컬럼으로 지정할 수 있는 컬럼은 다음 조건을 충족해야 한다.
-	 * - 색인컬럼(Indexed)
-	 * - 토큰분리컬럼(Tokened)<pre>
-	 * @param columnName 컬럼명
-	 * @throws AnySearcherException
-	 */
-	public void addFilterColumn(String columnName, String keyword, boolean isEssentialClause)
-	throws AnySearcherException;
+	public void addSortAttribute(SortAttribute sortAttribute);
 
-	/**
-	 * PrimaryKey를 필터 컬럼으로 추가한다.
-	 * PrimaryKey는 필수조건이 된다.
-	 * @param primaryKey PrimaryKey
-	 * @throws AnySearcherException
-	 */
-	public void addFilterColumn(RecordKey primaryKey)
-	throws AnySearcherException;
+	public Map<String, Summarizer> getSummarizerMap();
 
-	/**
-	 * 컬럼별 Summarizer 지정한다.
-	 * @param columnName 컬럼명
-	 * @param summarizer
-	 * @throws AnySearcherException
-	 */
-	public void addSummarizer(String columnName, Summarizer summarizer)
-	throws AnySearcherException;
+	public void setSummarizerMap(Map<String, Summarizer> summarizerMap);
+
+	public void setSummarizer(String attributeName, Summarizer summarizer);
 	
-	/**
-	 * 질의 컬럼을 모두 해제한다.
-	 * 이후부터 기본 질의 컬럼으로 검색된다.
-	 */
-	public void clearQueryColumns();
+	public void setSummarizer(String attributeName, String summarizerId);
 	
-	/**
-	 * 필터 컬럼을 모두 해제한다.
-	 */
-	public void clearFilterColumns();
+	public void clearQueryAttribute();
 	
-	/**
-	 * 컬럼명이 맞는지 조회한다.
-	 * @param columnName 컬럼명
-	 * @return true or false
-	 */
-	public boolean isColumnName(String columnName);
+	public void clearFilterAttribute();
+	
+	public void clearSortAttribute();
+	
+
 
 	/**
 	 * 질의문을 의한 검색을 수행한다.

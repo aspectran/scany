@@ -53,7 +53,7 @@ public class ScanySearcherDemo {
 			
 			
 			// Primary Key 생성
-			RecordKey primaryKey = searcher.getSchema().newRecordKey();
+			RecordKey primaryKey = searcher.getRelation().newRecordKey();
 			primaryKey.setKeyValue("boardId", "java");
 			primaryKey.setKeyValue("articleNo", "*");
 			
@@ -94,7 +94,7 @@ public class ScanySearcherDemo {
 			searcher.setHitsPerPage(10);
 			
 			// Primary Key 생성
-			RecordKey primaryKey = searcher.getSchema().newRecordKey();
+			RecordKey primaryKey = searcher.getRelation().newRecordKey();
 			primaryKey.setKeyValue("boardId", "notice");
 			primaryKey.setKeyValue("articleNo", "*");
 			
