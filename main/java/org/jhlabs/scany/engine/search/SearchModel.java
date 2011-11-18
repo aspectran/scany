@@ -45,6 +45,8 @@ public class SearchModel {
 	private List<FilterAttribute> filterAttributeList;
 
 	protected List<SortAttribute> sortAttributeList;
+	
+	private Map<String, Summarizer> summarizerMap;
 
 	protected int totalRecords = 0;
 
@@ -222,6 +224,34 @@ public class SearchModel {
 		
 		sortAttributeList.add(sortAttribute);
 	}
+
+	public Map<String, Summarizer> getSummarizerMap() {
+		return summarizerMap;
+	}
+
+	public void setSummarizerMap(Map<String, Summarizer> summarizerMap) {
+		this.summarizerMap = summarizerMap;
+	}
+
+	public void addSummarizer(String attributeName, Summarizer summarizer) {
+		if(relation.getAttributeMap().get(attributeName) == null)
+			throw new InvalidAttributeException(attributeName);
+		
+		if(summarizerMap == null)
+			summarizerMap = new HashMap<String, Summarizer>();
+		
+		summarizerMap.put(attributeName, summarizer);
+	}
+	
+	public void addSummarizer(String attributeName, String summarizer) {
+		if(relation.getAttributeMap().get(attributeName) == null)
+			throw new InvalidAttributeException(attributeName);
+		
+		if(summarizerMap == null)
+			summarizerMap = new HashMap<String, Summarizer>();
+		
+		summarizerMap.put(attributeName, summarizer);
+	}
 	
 	public void clearQueryAttribute() {
 		queryAttributeList = null;
@@ -234,7 +264,6 @@ public class SearchModel {
 	public void clearSortAttribute() {
 		sortAttributeList = null;
 	}
-	
 	
 	/**
 	 * 정렬 컬럼을 지정한다. 해제할때는 null을 입력하자.
@@ -430,27 +459,6 @@ public class SearchModel {
 
 		} catch(Exception e) {
 			throw new AnySearcherException("필터컬럼을 추가할 수 없습니다.", e);
-		}
-	}
-
-	/**
-	 * 컬럼별 Summarizer 지정한다.
-	 * @param columnName 컬럼명
-	 * @param summarizer
-	 * @throws AnySearcherException
-	 */
-	public void addSummarizer(String columnName, Summarizer summarizer) throws AnySearcherException {
-		try {
-			if(!isColumnName(columnName))
-				throw new IllegalArgumentException("유효한 컬럼명이 아닙니다. (Column: " + columnName + ")");
-			
-			if(summarizers == null)
-				summarizers = new HashMap();
-			
-			summarizers.put(columnName, summarizer);
-
-		} catch(Exception e) {
-			throw new AnySearcherException("Summarizer를 추가할 수 없습니다.", e);
 		}
 	}
 
