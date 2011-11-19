@@ -40,7 +40,7 @@
 				boost="1.1"
 				>제목</attribute>
 			<attribute name="content"
-				storable="compress" indexable="tokenize" queryable="prefix" summarizer="summarizer"
+				storable="true" indexable="tokenize" queryable="prefix" summarizer="summarizer"
 				boost="1.0"
 				>내용</attribute>
 			<attribute name="tag"
