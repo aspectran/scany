@@ -14,13 +14,15 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Searcher;
+import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.TopFieldDocs;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
+import org.jhlabs.scany.engine.entity.Attribute;
 import org.jhlabs.scany.engine.entity.Record;
 import org.jhlabs.scany.engine.entity.Relation;
 import org.jhlabs.scany.engine.search.query.LuceneQueryBuilder;
@@ -92,42 +94,40 @@ public class LuceneSearcher extends SearchModel implements AnySearcher {
 	 * @throws AnySearcherException
 	 */
 	public Record[] search(String queryString, int pageNo) throws AnySearcherException {
-		Searcher searcher = null;
+		if(pageNo <= 0)
+			return null;
+
+		IndexSearcher indexSearcher = null;
 		
 		try {
-			if(pageNo <= 0)
-				return null;
-
-			File file = new File(getRelation().getDirectory());
+			Directory directory = FSDirectory.open(new File(getRelation().getDirectory()));
+			indexSearcher = new IndexSearcher(directory);
 			
-			if(!file.exists())
-				return null;
+			Attribute[] queryAttributes = SearchModelUtils.extractAttributes(getRelation().getAttributeMap(), getQueryAttributeList());
 			
-			try {
-				searcher = new IndexSearcher(getRelation().getDirectory());
-			} catch(Exception e) {
-				throw new CorruptIndexException("색인 저장소에 세그먼트 파일이 존재하지 않습니다. (Schema ID: " +
-						getRelation().getId() + ")");
-			}
-
-			Analyzer analyzer = getRelation().getAnalyzer();
+			QueryStringParser parser = new QueryStringParser(queryAttributes);
+			String parsedQueryString = parser.parse(queryString);
 			
-			LuceneQueryBuilder queryBuilder = new LuceneQueryBuilder(analyzer);
-			queryBuilder.setFilterColumns(getFilterColumns());
-			queryBuilder.setQeuryColumns(getQueryColumns());
-			
-			QueryStringParser parser = new QueryStringParser(getQueryAttributeList());
-
-			Query query = queryBuilder.getQuery(parser.parse(queryString));
+			LuceneQueryBuilder queryBuilder = new LuceneQueryBuilder();
+			queryBuilder.addQuery(getFilterAttributeList());
+			queryBuilder.addQuery(parsedQueryString, getQueryAttributeList(), getRelation().getAnalyzer());
+			Query query = queryBuilder.build();
 			
 			//System.out.println(query.toString());
+			
+			Sort sort = SearchModelUtils.makeSort(getSortAttributeList());
+			
+			TopFieldDocs docs = indexSearcher.search(query, 10, sort);
+			
+			indexSearcher.doc(docID)
+			
 
 			Hits hits = null;
 			
 			if(sortAttributes != null)
-				hits = searcher.search(query, sortAttributes.getSort());
+				hits = indexSearcher.search(query, sortAttributes.getSort());
 			else
-				hits = searcher.search(query);			
+				hits = indexSearcher.search(query);			
 			
 			// 페이징
 			totalRecords = hits.length();
@@ -151,12 +151,12 @@ public class LuceneSearcher extends SearchModel implements AnySearcher {
 			return records;
 
 		} catch(Exception e) {
-			throw new AnySearcherException("검색 과정에서 오류가 발생했습니다.", e);
+			throw new AnySearcherException("Search failed.", e);
 
 		} finally {
 			try {
-				if(searcher != null)
-					searcher.close();
+				if(indexSearcher != null)
+					indexSearcher.close();
 			} catch(Exception e2) {
 				e2.printStackTrace();
 			}
@@ -185,21 +185,14 @@ public class LuceneSearcher extends SearchModel implements AnySearcher {
 	 * @throws AnySearcherException
 	 */
 	public Record[] random(String queryString) throws AnySearcherException {
-		Searcher searcher = null;
+		IndexSearcher indexSearcher = null;
 
 		try {
-			File file = new File(getRelation().getDirectory());
+			Directory directory = FSDirectory.open(new File(getRelation().getDirectory()));
+			indexSearcher = new IndexSearcher(directory);
 			
-			if(!file.exists())
-				return null;
-			
-			try {
-				searcher = new IndexSearcher(getRelation().getDirectory());
-			} catch(Exception e) {
-				throw new CorruptIndexException("색인 저장소에 세그먼트 파일이 존재하지 않습니다. (Schema ID: " +
-						getRelation().getId() + ")");
-			}
-			
+			IndexReader indexReader = indexSearcher.getIndexReader();
+
 			List recordList = new ArrayList();
 
 			LuceneQueryBuilder queryBuilder = new LuceneQueryBuilder(getRelation().getAnalyzer());
@@ -213,9 +206,9 @@ public class LuceneSearcher extends SearchModel implements AnySearcher {
 			Hits hits = null;
 			
 			if(sortAttributes != null)
-				hits = searcher.search(query, sortAttributes.getSort());
+				hits = indexSearcher.search(query, sortAttributes.getSort());
 			else
-				hits = searcher.search(query);
+				hits = indexSearcher.search(query);
 			
 			totalRecords = hits.length();
 
@@ -264,8 +257,8 @@ public class LuceneSearcher extends SearchModel implements AnySearcher {
 
 		} finally {
 			try {
-				if(searcher != null)
-					searcher.close();
+				if(indexSearcher != null)
+					indexSearcher.close();
 			} catch(Exception e2) {
 				e2.printStackTrace();
 			}

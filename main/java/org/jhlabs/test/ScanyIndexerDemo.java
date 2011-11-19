@@ -34,7 +34,7 @@ public class ScanyIndexerDemo {
 			
 			anyIndexer = scanyClient.getIndexer("notice");
 
-			Relation schema = anyIndexer.getSchema();
+			Relation schema = anyIndexer.getRelation();
 			
 			// Primary Key 생성
 			RecordKey primaryKey = schema.newRecordKey();

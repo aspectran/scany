@@ -16,17 +16,19 @@ import java.util.Iterator;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.Hits;
+import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Searcher;
-import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.Version;
 import org.jhlabs.scany.engine.entity.Attribute;
 import org.jhlabs.scany.engine.entity.AttributeMap;
 import org.jhlabs.scany.engine.entity.Record;
@@ -50,51 +52,29 @@ public class LuceneIndexer implements AnyIndexer {
 	/**
 	 * 생성자
 	 * 
-	 * @param schema Schema
+	 * @param relation Schema
 	 * @throws MultipartRequestzException
 	 */
-	public LuceneIndexer(Relation schema) throws AnyIndexerException {
-		this.relation = schema;
-		initialize(false);
+	public LuceneIndexer(Relation relation) throws AnyIndexerException {
+		this.relation = relation;
+		initialize();
 	}
 
-	public Relation getSchema() throws AnyIndexerException {
+	public Relation getRelation() {
 		return relation;
 	}
 
-	/**
-	 * 초기화
-	 * 
-	 * @param rebuild 색인DB 초기화 여부
-	 * @throws AnyIndexerException
-	 */
-	private void initialize(boolean rebuild) throws AnyIndexerException {
+	private void initialize() throws AnyIndexerException {
 		try {
-			if(relation == null)
-				throw new AnyIndexerException("등록된 스키마가 아닙니다.(Schema is null)");
+			directory = FSDirectory.open(new File(relation.getDirectory()));
+
+			IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_34, relation.getAnalyzer());  
 			
-			boolean create = true;
-
-			File repository = new File(relation.getDirectory());
-
-			// 색인 디렉토리 생성되어 있지 않거나, 비어 있으면 새로 만든다.
-			if(!rebuild && repository.exists()) {
-				if(repository.list().length > 0)
-					create = false;
-			}
-
-			directory = FSDirectory.getDirectory(repository);
-
-			if(rebuild) {
-				indexWriter.close();
-				indexWriter = null;
-			}
-
-			indexWriter = new IndexWriter(directory, relation.getAnalyzer(), create);
+			indexWriter = new IndexWriter(directory, conf);
 
 			// Performance 설정
-			indexWriter.setMergeFactor(relation.getMergeFactor());
-			indexWriter.setMaxMergeDocs(relation.getMaxMergeDocs());
+			//indexWriter.setMergeFactor(relation.getMergeFactor());
+			//indexWriter.setMaxMergeDocs(relation.getMaxMergeDocs());
 
 		} catch(IOException e) {
 			throw new AnyIndexerException("색인기(AnyIndexer)를 초기화할 수 없습니다.", e);
@@ -109,7 +89,7 @@ public class LuceneIndexer implements AnyIndexer {
 	 */
 	public void insert(Record record) throws AnyIndexerException {
 		if(exists(record.getRecordKey()))
-			throw new AnyIndexerException("동일한 Primary Key를 가진 레코드(Record)가 이미 존재합니다.");
+			throw new RecordAlreadyExistsException("동일한 Primary Key를 가진 레코드(Record)가 이미 존재합니다.");
 
 		try {
 			// Primary Key 생성
@@ -164,7 +144,7 @@ public class LuceneIndexer implements AnyIndexer {
 	 * @throws AnyIndexerException
 	 */
 	public void delete(RecordKey recordKey) throws AnyIndexerException {
-		Searcher searcher = null;
+		IndexSearcher indexSearcher = null;
 
 		try {
 			String rkey = recordKey.getRecordKeyString();
@@ -192,7 +172,6 @@ public class LuceneIndexer implements AnyIndexer {
 
 						// PrefixTerm을 위해 "*" 제거
 						rkey = rkey.substring(0, rkey.length() - 1);
-
 					} else {
 						whatQuery = 2;
 					}
@@ -208,7 +187,7 @@ public class LuceneIndexer implements AnyIndexer {
 
 			} else {
 				synchronized(directory) {
-					searcher = new IndexSearcher(directory);
+					indexSearcher = new IndexSearcher(directory);
 
 					Query query = null;
 
@@ -218,19 +197,17 @@ public class LuceneIndexer implements AnyIndexer {
 						query = new WildcardQuery(term);
 					}
 
-					Hits hits = searcher.search(query);
+					TopDocs docs = indexSearcher.search(query, Integer.MAX_VALUE);
 
-					Document doc = null;
-
-					for(int i = 0; i < hits.length(); i++) {
-						doc = hits.doc(i);
+					for(int i = 0; i < docs.scoreDocs.length; i++) {
+						Document doc = indexSearcher.doc(docs.scoreDocs[i].doc);
 						term = new Term(RecordKey.RECORD_KEY, doc.get(RecordKey.RECORD_KEY));
 
 						indexWriter.deleteDocuments(term);
 					}
 
-					searcher.close();
-					searcher = null;
+					indexSearcher.close();
+					indexSearcher = null;
 				}
 			}
 
@@ -238,8 +215,8 @@ public class LuceneIndexer implements AnyIndexer {
 			throw new AnyIndexerException("색인 삭제(delete)에 실패했습니다.", e);
 		} finally {
 			try {
-				if(searcher != null)
-					searcher.close();
+				if(indexSearcher != null)
+					indexSearcher.close();
 			} catch(Exception e2) {
 				e2.printStackTrace();
 			}
@@ -256,16 +233,16 @@ public class LuceneIndexer implements AnyIndexer {
 			throw new AnyIndexerException("색인 최적화(optimize) 작업에 실패했습니다.", e);
 		}
 	}
-
-	/**
-	 * 색인DB를 완전히 삭제한다.
-	 * 
-	 * @throws AnyIndexerException
-	 */
-	public void destroy() throws AnyIndexerException {
-		initialize(true);
-	}
-	
+//
+//	/**
+//	 * 색인DB를 완전히 삭제한다.
+//	 * 
+//	 * @throws AnyIndexerException
+//	 */
+//	public void destroy() throws AnyIndexerException {
+//		initialize();
+//	}
+//	
 	/**
 	 * 색인 작업을 종료한다.
 	 */
@@ -286,29 +263,23 @@ public class LuceneIndexer implements AnyIndexer {
 	 * @throws AnyIndexerException
 	 */
 	public boolean exists(RecordKey recordKey) throws AnyIndexerException {
-		IndexSearcher searcher = null;
-
+		IndexReader indexReader = null;
+		
 		try {
-			searcher = new IndexSearcher(directory);
-
+			indexReader = IndexReader.open(indexWriter, false);
+			
 			Term term = new Term(RecordKey.RECORD_KEY, recordKey.getRecordKeyString());
-			Query query = new TermQuery(term);
 
-			Hits hits = searcher.search(query);
-
-			int hitsLength = hits.length();
-
-			searcher.close();
-			searcher = null;
-
-			return (hitsLength > 0);
+			TermDocs termDocs = indexReader.termDocs(term);
+			
+			return termDocs.next();
 
 		} catch(Exception e) {
 			throw new AnyIndexerException("색인 존재여부 확인에 실패했습니다.", e);
 		} finally {
 			try {
-				if(searcher != null)
-					searcher.close();
+				if(indexReader != null)
+					indexReader.close();
 			} catch(Exception e2) {
 				e2.printStackTrace();
 			}
@@ -336,7 +307,7 @@ public class LuceneIndexer implements AnyIndexer {
 
 			// Primary Key 필드
 			field = new Field(RecordKey.RECORD_KEY, record.getRecordKey().getRecordKeyString(), Field.Store.YES,
-					Field.Index.UN_TOKENIZED);
+					Field.Index.NOT_ANALYZED);
 			document.add(field);
 
 			// 일반 필드 분석
@@ -349,17 +320,15 @@ public class LuceneIndexer implements AnyIndexer {
 				if(value == null)
 					throw new IllegalArgumentException("[" + attribute.getName() + "] Column의 값이 지정되어 있지 않습니다.");
 
-				// 긴 내용 또는 바이너리 데이터의 압축 여부
-				if(attribute.isCompressable())
-					store = Field.Store.COMPRESS;
-				else
-					store = attribute.isStorable() ? Field.Store.YES : Field.Store.NO;
+				store = attribute.isStorable() ? Field.Store.YES : Field.Store.NO;
 
 				// 색인여부, 토큰분리 여부
-				if(attribute.isTokenizable())
-					index = Field.Index.TOKENIZED;
-				else
-					index = attribute.isIndexable() ? Field.Index.UN_TOKENIZED : Field.Index.NO;
+				if(attribute.isTokenizable()) {
+					index = Field.Index.ANALYZED; //Field.Index.TOKENIZED;
+				} else {
+					//index = attribute.isIndexable() ? Field.Index.UN_TOKENIZED : Field.Index.NO;
+					index = attribute.isIndexable() ? Field.Index.NOT_ANALYZED : Field.Index.NO;
+				}
 
 				field = new Field(attribute.getName(), value, store, index);
 				

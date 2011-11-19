@@ -45,6 +45,7 @@ import java.util.StringTokenizer;
 public class QueryStringParser {
 
 	protected static final String[] OPERATORS = { "AND", "OR", "NOT" };
+
 	protected static final String[] OPERATOR_IMAGES = { "<AND>", "<OR>", "<NOT>" };
 
 	/**
@@ -52,7 +53,7 @@ public class QueryStringParser {
 	 */
 	private static final String DELIMITERS = "*~+-:!^?(){}[]\"'\\<>`=\t\n\r\f;@#$%&/,. ";
 
-	private Attribute[] queryColumns;
+	private Attribute[] queryAttributes;
 	
 	private String[] fields;
 	
@@ -60,13 +61,13 @@ public class QueryStringParser {
 	}
 	
 	public QueryStringParser(Attribute[] queryColumns) {
-		this.queryColumns = queryColumns;
+		this.queryAttributes = queryColumns;
 	}
 	
 	public String parse(String queryString) {
 		strainQueryString(queryString);
 
-		if(queryColumns == null || queryColumns.length == 0)
+		if(queryAttributes == null || queryAttributes.length == 0)
 			return null;
 		
 		StringBuffer sb = new StringBuffer();
@@ -97,16 +98,16 @@ public class QueryStringParser {
 
 			sb.append('(');
 
-			for(int k = 0; k < queryColumns.length; k++) {
+			for(int k = 0; k < queryAttributes.length; k++) {
 				if(k > 0) {
 					sb.append(" OR ");
 				}
 
-				sb.append(queryColumns[k].getName());
+				sb.append(queryAttributes[k].getName());
 				sb.append(':');
 				sb.append(fields[i]);
 				
-				if(queryColumns[k].isPrefixQueryable()) {
+				if(queryAttributes[k].isPrefixQueryable()) {
 					if(isPrefixQueryableToken(fields[i]))
 						sb.append('*');
 				}
