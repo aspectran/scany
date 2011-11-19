@@ -98,4 +98,23 @@ public class SearchModelUtils {
 		return summarizerMap;
 	}
 	
+	public static Attribute[] extractAttributes(AttributeMap attributeMap, List<String> attributeNameList) {
+		List<Attribute> attributeList = new ArrayList<Attribute>();
+		Iterator<String> iter = attributeNameList.iterator();
+		
+		while(iter.hasNext()) {
+			String attributeName = iter.next();
+			Attribute attribute = attributeMap.get(attributeName);
+			
+			if(attribute != null)
+				attributeList.add(attribute);
+		}
+		
+		if(attributeList.size() == 0)
+			return null;
+		
+		return attributeList.toArray(new Attribute[attributeList.size()]);
+	}
+
+	
 }

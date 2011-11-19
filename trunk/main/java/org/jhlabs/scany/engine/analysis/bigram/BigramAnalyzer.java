@@ -11,6 +11,7 @@ import org.apache.lucene.analysis.StopAnalyzer;
 import org.apache.lucene.analysis.StopFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.standard.StandardFilter;
+import org.apache.lucene.util.Version;
 
 /**
  * 한글 분석을 위해 추가된다.
@@ -31,9 +32,9 @@ public final class BigramAnalyzer extends Analyzer {
 	 * "the", "their", "then", "there", "these", "they", "this", "to", "was",
 	 * "will", "with"
 	 */
-	public final static String[] STOP_WORDS = StopAnalyzer.ENGLISH_STOP_WORDS;
+	public final static Set<?> DEFAULT_STOP_WORDS_SET = StopAnalyzer.ENGLISH_STOP_WORDS_SET;
 
-	private Set stopSet;
+	private Set<?> stopSet;
 
 	/** Default maximum allowed token length */
 	public static final int DEFAULT_MAX_TOKEN_LENGTH = 255;
@@ -44,12 +45,12 @@ public final class BigramAnalyzer extends Analyzer {
 	 * Builds an analyzer which removes words in {@link #STOP_WORDS}.
 	 */
 	public BigramAnalyzer() {
-		this(STOP_WORDS);
+		this(DEFAULT_STOP_WORDS_SET);
 	}
 
 	/** Builds an analyzer with the given stop words. */
-	public BigramAnalyzer(Set stopWords) {
-		stopSet = stopWords;
+	public BigramAnalyzer(Set<?> stopSet) {
+		this.stopSet = stopSet;
 	}
 
 	/**
@@ -58,7 +59,7 @@ public final class BigramAnalyzer extends Analyzer {
 	 * @param stopSet stop word array
 	 */
 	public BigramAnalyzer(String[] stopWords) {
-		stopSet = StopFilter.makeStopSet(stopWords);
+		stopSet = StopFilter.makeStopSet(Version.LUCENE_34, stopWords);
 	}
 
 	/**
@@ -70,8 +71,8 @@ public final class BigramAnalyzer extends Analyzer {
 	 */
 	public TokenStream tokenStream(String fieldName, Reader reader) {
 		TokenStream tokenStream = new BigramTokenizer(reader);
-		tokenStream = new StandardFilter(tokenStream);
-		tokenStream = new StopFilter(tokenStream, stopSet);
+		tokenStream = new StandardFilter(Version.LUCENE_34, tokenStream);
+		tokenStream = new StopFilter(Version.LUCENE_34, tokenStream, stopSet);
 		// LowerCaseFilter 적용 불필요함
 
 		return tokenStream;
@@ -84,8 +85,8 @@ public final class BigramAnalyzer extends Analyzer {
 			streams = new SavedStreams();
 			setPreviousTokenStream(streams);
 			streams.tokenStream = new BigramTokenizer(reader);
-			streams.filteredTokenStream = new StandardFilter(streams.tokenStream);
-			streams.filteredTokenStream = new StopFilter(streams.filteredTokenStream, stopSet);
+			streams.filteredTokenStream = new StandardFilter(Version.LUCENE_34, streams.tokenStream);
+			streams.filteredTokenStream = new StopFilter(Version.LUCENE_34, streams.filteredTokenStream, stopSet);
 			// LowerCaseFilter 적용 불필요함
 		} else {
 			streams.tokenStream.reset(reader);

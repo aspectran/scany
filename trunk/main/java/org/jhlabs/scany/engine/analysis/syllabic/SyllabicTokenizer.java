@@ -3,8 +3,12 @@ package org.jhlabs.scany.engine.analysis.syllabic;
 import java.io.IOException;
 import java.io.Reader;
 
-import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.Tokenizer;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
+import org.apache.lucene.util.CharacterUtils;
+import org.apache.lucene.util.CharacterUtils.CharacterBuffer;
+import org.jhlabs.scany.context.ScanyContext;
 
 /**
  * 한글의 초성, 중성, 종성을 분석한다.
@@ -29,39 +33,56 @@ public class SyllabicTokenizer extends Tokenizer {
 
 	private int dataLen = 0;
 
+	  private int finalOffset = 0;
+
+	
 	private static final int MAX_WORD_LEN = 255;
 
 	private static final int IO_BUFFER_SIZE = 1024;
 
-	private final char buffer[] = new char[MAX_WORD_LEN];
+	  private final CharacterBuffer ioBuffer = CharacterUtils.newCharacterBuffer(IO_BUFFER_SIZE);
 
-	private final char ioBuffer[] = new char[IO_BUFFER_SIZE];
+	
+	  private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);;
+	  private final OffsetAttribute offsetAtt = addAttribute(OffsetAttribute.class);
+	  
+	  private final CharacterUtils charUtils;
 
+	
 	public SyllabicTokenizer(Reader input) {
 		super(input);
+		charUtils = CharacterUtils.getInstance(ScanyContext.LUCENE_VERSION);
 	}
 
-	public final Token next() throws IOException {
+	public final boolean incrementToken() throws IOException {
+	    clearAttributes();
+
 		int length = 0;
 		int start = offset;
-		
+		char[] buffer = termAtt.buffer();
+
 		label0:
 		do {
 			do {
-				offset++;
+			      if (bufferIndex >= dataLen) {
+			          offset += dataLen;
+			          if(!charUtils.fill(ioBuffer, input)) { // read supplementary char aware with CharacterUtils
+			            dataLen = 0; // so next offset += dataLen won't decrement offset
+			            if (length > 0) {
+			              break;
+			            } else {
+			              finalOffset = correctOffset(offset);
+			              return false;
+			            }
+			          }
+			          dataLen = ioBuffer.getLength();
+			          bufferIndex = 0;
+			        }
 				
-				if(bufferIndex >= dataLen) {
-					dataLen = input.read(ioBuffer);
-					bufferIndex = 0;
-				}
 				
-				if(dataLen == -1) {
-					if(length <= 0)
-						return null;
-					break;
-				}
-				
-				char c = ioBuffer[bufferIndex++];
+			      // use CharacterUtils here to support < 3.1 UTF-16 code unit behavior if the char based methods are gone
+			      final int c = charUtils.codePointAt(ioBuffer.getBuffer(), bufferIndex);
+			      bufferIndex += Character.charCount(c);
 				
 				if(!isTokenChar(c))
 					continue label0;
@@ -81,28 +102,42 @@ public class SyllabicTokenizer extends Tokenizer {
 						buffer[length++] = chars[k];
 					}
 				} else {
-					buffer[length++] = normalize(c);
+					length += Character.toChars(normalize(c), buffer, length);
 				}
 			} while(length != MAX_WORD_LEN);
 			
 			break;
 		} while(length <= 0);
 
-		Token token = new Token(new String(buffer, 0, length), start, start + length);
-		
-		//System.out.println("Sylabic Token: " + token.toString());
-		
-		return token;
+		offsetAtt.setOffset(correctOffset(start), finalOffset = correctOffset(start + termAtt.length()));
+
+		return true;
 	}
 
-	protected boolean isTokenChar(char c) {
+	  @Override
+	  public final void end() {
+	    // set final offset
+	    offsetAtt.setOffset(finalOffset, finalOffset);
+	  }
+
+	  @Override
+	  public void reset(Reader input) throws IOException {
+	    super.reset(input);
+	    bufferIndex = 0;
+	    offset = 0;
+	    dataLen = 0;
+	    finalOffset = 0;
+	    ioBuffer.reset(); // make sure to reset the IO buffer!!
+	  }
+	
+	protected boolean isTokenChar(int c) {
 		if(c != ' ' && Character.isWhitespace(c))
 			return false;
 		
 		return true;
 	}
 
-	protected char normalize(char c) {
+	protected int normalize(int c) {
 		return Character.toLowerCase(c);
 	}
 
@@ -111,7 +146,7 @@ public class SyllabicTokenizer extends Tokenizer {
 	 * @param c
 	 * @return
 	 */
-	protected static char[] syllabify(char c) {
+	protected static char[] syllabify(int c) {
 		int n, n1, n2, n3;
 		char[] chars = new char[3];
 		
@@ -136,8 +171,8 @@ public class SyllabicTokenizer extends Tokenizer {
 	 * @param c
 	 * @return
 	 */
-	protected boolean isSyllables(char c) {
-		int n = (int)(c & 0xFFFF);
+	protected boolean isSyllables(int c) {
+		int n = c & 0xFFFF;
 		
 		return (n >= 0xAC00 && n <= 0xD7A3);	
 	}

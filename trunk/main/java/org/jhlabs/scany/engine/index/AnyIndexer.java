@@ -26,7 +26,24 @@ public interface AnyIndexer {
 	 * 스키마를 반환한다.
 	 * @throws AnyIndexerException
 	 */
-	public Relation getSchema() throws AnyIndexerException;
+	public Relation getRelation() throws AnyIndexerException;
+
+	/**
+	 * 색인등록
+	 * @param record
+	 * @throws AnyIndexerException
+	 */
+	public void insert(Record record) throws AnyIndexerException;
+
+	/**
+	 * 색인수정.
+	 * primaryKey에 해당하는 레코드를 삭제하고, 새로운 record를 insert한다.
+	 * 
+	 * @param recordKey 갱신 대상 레코드의 키
+	 * @param record 수정 대상 레코드
+	 * @throws AnyIndexerException
+	 */
+	public void update(Record record) throws AnyIndexerException;
 
 	/**
 	 * 색인등록
@@ -35,13 +52,6 @@ public interface AnyIndexer {
 	 * @throws AnyIndexerException
 	 */
 	public void merge(Record record) throws AnyIndexerException;
-	
-	/**
-	 * 색인등록
-	 * @param record
-	 * @throws AnyIndexerException
-	 */
-	public void insert(Record record) throws AnyIndexerException;
 
 	/**
 	 * 색인삭제.
@@ -57,12 +67,12 @@ public interface AnyIndexer {
 	 */
 	public void optimize() throws AnyIndexerException;
 	
-	/**
-	 * 색인DB를 완전히 삭제한다.
-	 * 
-	 * @throws AnyIndexerException
-	 */
-	public void destroy() throws AnyIndexerException;
+//	/**
+//	 * 색인DB를 완전히 삭제한다.
+//	 * 
+//	 * @throws AnyIndexerException
+//	 */
+//	public void destroy() throws AnyIndexerException;
 	
 	/**
 	 * 색인 작업을 종료한다.

@@ -12,6 +12,9 @@ package org.jhlabs.scany.engine.analysis.csv;
 
 import java.io.Reader;
 
+import org.apache.lucene.analysis.CharTokenizer;
+import org.jhlabs.scany.context.ScanyContext;
+
 /**
  * A CSVTokenizer is a tokenizer that divides text at comma character.
  * 
@@ -26,13 +29,13 @@ public class CSVTokenizer extends CharTokenizer {
 	private static final char SPACE = ' ';
 
 	public CSVTokenizer(Reader in) {
-		super(in);
+		super(ScanyContext.LUCENE_VERSION, in);
 	}
 
 	/**
 	 * 소문자로 변환
 	 */
-	protected char normalize(char c) {
+	protected int normalize(int c) {
 		return Character.toLowerCase(c);
 	}
 	
@@ -40,7 +43,7 @@ public class CSVTokenizer extends CharTokenizer {
 	 * Collects only characters which do not satisfy
 	 * {@link Character#isSpaceChar(char)}.
 	 */
-	protected boolean isTokenChar(char c) {
+	protected boolean isTokenChar(int c) {
 		if(c == SEPARATOR)
 			return false;
 		else if(c != SPACE && Character.isSpaceChar(c))
