@@ -10,15 +10,25 @@
  ******************************************************************************/
 package org.jhlabs.scany.engine.search;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.search.ScoreDoc;
 import org.jhlabs.scany.engine.entity.Attribute;
+import org.jhlabs.scany.engine.entity.AttributeMap;
+import org.jhlabs.scany.engine.entity.Record;
 import org.jhlabs.scany.engine.entity.RecordKey;
+import org.jhlabs.scany.engine.entity.RecordKeyException;
+import org.jhlabs.scany.engine.entity.RecordList;
 import org.jhlabs.scany.engine.entity.Relation;
+import org.jhlabs.scany.engine.search.query.QueryStringParser;
 import org.jhlabs.scany.engine.search.summarize.Summarizer;
 
 /**
@@ -40,9 +50,15 @@ public class SearchModel {
 	
 	private Map<String, Summarizer> summarizerMap;
 
-	protected int totalRecords = 0;
+	private int totalRecords = 0;
 
-	protected int hitsPerPage = 10;
+	private int hitsPerPage = 10;
+	
+	private String queryString;
+
+	private String parsedQueryString;
+	
+	private String[] queryKeywords;
 
 	/**
 	 * 생성자
@@ -72,6 +88,10 @@ public class SearchModel {
 		return this.totalRecords;
 	}
 
+	protected void setTotalRecords(int totalRecords) {
+		this.totalRecords = totalRecords;
+	}
+
 	/**
 	 * 한 페이지 당 출력하는 레코드의 개수를 반환한다.
 	 * 
@@ -88,6 +108,28 @@ public class SearchModel {
 	 */
 	public void setHitsPerPage(int hitsPerPage) {
 		this.hitsPerPage = hitsPerPage;
+	}
+
+	public String getQueryString() {
+		return queryString;
+	}
+
+	public String setQueryString(String queryString) {
+		Attribute[] queryAttributes = SearchModelUtils.extractAttributes(getRelation().getAttributeMap(), getQueryAttributeList());
+		
+		QueryStringParser parser = new QueryStringParser(queryAttributes);
+		parsedQueryString = parser.parse(queryString);
+		queryKeywords = parser.getKeywords();
+
+		return parsedQueryString;
+	}
+	
+	public String getParsedQueryString() {
+		return parsedQueryString;
+	}
+
+	public String[] getQueryKeywords() {
+		return queryKeywords;
 	}
 
 	public List<String> getQueryAttributeList() {
@@ -264,6 +306,72 @@ public class SearchModel {
 	
 	public void clearSortAttribute() {
 		sortAttributeList = null;
+	}
+	
+	/**
+	 * 검색결과에서 지정한 범위 Document를 Column 리스트로 반환.
+	 *
+	 * @param reader the reader
+	 * @param docs the docs
+	 * @param start the start
+	 * @param end the end
+	 * @return List
+	 * @throws RecordKeyException the record key exception
+	 * @throws CorruptIndexException the corrupt index exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public RecordList populateRecordList(IndexReader reader, ScoreDoc[] docs, int start, int end) throws RecordKeyException, CorruptIndexException, IOException {
+		RecordList recordList = new RecordList(end - start + 1);
+		
+		for(int i = start; i <= end; i++) {
+			Document document = reader.document(docs[i].doc);
+			Record record = createRecord(document);
+			recordList.add(record);
+			
+			if(queryKeywords != null && summarizerMap != null && summarizerMap.size() > 0) {
+				for(Map.Entry<String, Summarizer> entry : summarizerMap.entrySet()) {
+					String key = entry.getKey();
+					String value = record.getValue(key);
+					
+					if(value != null && value.length() > 0) {
+						Summarizer summarizer = entry.getValue();
+						value = summarizer.summarize(queryKeywords, value);
+						record.setValue(key, value);
+						
+					}
+				}
+			}
+		}
+		
+		return recordList;
+	}
+
+	/**
+	 * Document를 Record로 반환
+	 * 
+	 * @param document
+	 * @param columns
+	 * @return Record
+	 * @throws RecordKeyException 
+	 */
+	public Record createRecord(Document document) throws RecordKeyException {
+		RecordKey recordKey = relation.newRecordKey();
+		recordKey.setRecordKeyString(document.get(RecordKey.RECORD_KEY));
+		
+		Record record = new Record();
+		record.setRecordKey(recordKey);
+		
+		AttributeMap attributeMap = relation.getAttributeMap();
+		
+		if(attributeMap != null) {
+			String[] names = attributeMap.getAttributeNames();
+			
+			for(int i = 0; i < names.length; i++) {
+				record.setValue(names[i], document.get(names[i]));
+			}
+		}
+		
+		return record;
 	}
 
 }

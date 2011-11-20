@@ -18,6 +18,6 @@ public interface Summarizer {
 	 * @param content the content
 	 * @return the string
 	 */
-	public String summarize(String content);
+	public String summarize(String[] keywords, String content);
 
 }

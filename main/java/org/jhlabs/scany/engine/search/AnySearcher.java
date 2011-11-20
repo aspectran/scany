@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.jhlabs.scany.engine.entity.Record;
 import org.jhlabs.scany.engine.entity.RecordKey;
+import org.jhlabs.scany.engine.entity.RecordList;
 import org.jhlabs.scany.engine.search.summarize.Summarizer;
 
 /**
@@ -128,7 +129,7 @@ public interface AnySearcher {
 	 * @return
 	 * @throws AnySearcherException
 	 */
-	 public Record[] search(String queryString) throws AnySearcherException;
+	 public RecordList search(String queryString) throws AnySearcherException;
 	
 	/**
 	 * 질의문을 의한 검색을 수행한다.
@@ -137,7 +138,7 @@ public interface AnySearcher {
 	 * @return
 	 * @throws AnySearcherException
 	 */
-	public Record[] search(int pageNo) throws AnySearcherException;
+	public RecordList search(int pageNo) throws AnySearcherException;
 	
 	/**
 	 * 질의문을 의한 검색을 수행한다.
@@ -150,7 +151,7 @@ public interface AnySearcher {
 	 * @return hitsPerPage 개수 만큼의 Record를 반환한다.
 	 * @throws AnySearcherException
 	 */
-	public Record[] search(String queryString, int pageNo) throws AnySearcherException;
+	public RecordList search(String queryString, int pageNo) throws AnySearcherException;
 	
 	/**
 	 * 최근 레코드 또는 랜덤 레코드를 검색한다.

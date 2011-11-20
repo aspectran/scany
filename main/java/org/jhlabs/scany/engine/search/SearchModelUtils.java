@@ -115,6 +115,5 @@ public class SearchModelUtils {
 		
 		return attributeList.toArray(new Attribute[attributeList.size()]);
 	}
-
 	
 }

@@ -5,6 +5,7 @@ package org.jhlabs.scany.service.local;
 
 import org.jhlabs.scany.context.rule.LocalServiceRule;
 import org.jhlabs.scany.engine.search.AnySearcher;
+import org.jhlabs.scany.engine.search.SearchModel;
 import org.jhlabs.scany.engine.transaction.AnyTransaction;
 import org.jhlabs.scany.service.AbstractService;
 
@@ -28,6 +29,10 @@ public class LocalService extends AbstractService {
 	}
 	
 	public AnySearcher getSercher(String relationId) {
+		return null;
+	}
+	
+	public SearchModel getSearchModel(String relationId) {
 		return null;
 	}
 
