@@ -60,8 +60,8 @@ public class QueryStringParser {
 	public QueryStringParser() {
 	}
 	
-	public QueryStringParser(Attribute[] queryColumns) {
-		this.queryAttributes = queryColumns;
+	public QueryStringParser(Attribute[] queryAttributes) {
+		this.queryAttributes = queryAttributes;
 	}
 	
 	public String parse(String queryString) {

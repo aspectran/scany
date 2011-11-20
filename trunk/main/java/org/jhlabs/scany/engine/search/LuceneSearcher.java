@@ -11,25 +11,23 @@
 package org.jhlabs.scany.engine.search;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TopFieldDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.jhlabs.scany.engine.entity.Attribute;
-import org.jhlabs.scany.engine.entity.AttributeMap;
 import org.jhlabs.scany.engine.entity.Record;
-import org.jhlabs.scany.engine.entity.RecordKey;
-import org.jhlabs.scany.engine.entity.RecordKeyException;
+import org.jhlabs.scany.engine.entity.RecordList;
 import org.jhlabs.scany.engine.entity.Relation;
 import org.jhlabs.scany.engine.search.query.LuceneQueryBuilder;
 import org.jhlabs.scany.engine.search.query.QueryStringParser;
@@ -75,7 +73,7 @@ public class LuceneSearcher extends SearchModel implements AnySearcher {
 	 * @return
 	 * @throws AnySearcherException
 	 */
-	public Record[] search(String queryString) throws AnySearcherException {
+	public RecordList search(String queryString) throws AnySearcherException {
 		return search(queryString, 1);
 	}
 	
@@ -86,7 +84,7 @@ public class LuceneSearcher extends SearchModel implements AnySearcher {
 	 * @return
 	 * @throws AnySearcherException
 	 */
-	public Record[] search(int pageNo) throws AnySearcherException {
+	public RecordList search(int pageNo) throws AnySearcherException {
 		return search(null, pageNo);
 	}
 	
@@ -101,8 +99,8 @@ public class LuceneSearcher extends SearchModel implements AnySearcher {
 	 * @return hitsPerPage 개수 만큼의 Record를 반환한다.
 	 * @throws AnySearcherException
 	 */
-	public Record[] search(String queryString, int pageNo) throws AnySearcherException {
-		if(pageNo <= 0)
+	public RecordList search(String queryString, int page) throws AnySearcherException {
+		if(page <= 0)
 			return null;
 
 		IndexSearcher indexSearcher = null;
@@ -111,52 +109,45 @@ public class LuceneSearcher extends SearchModel implements AnySearcher {
 			Directory directory = FSDirectory.open(new File(getRelation().getDirectory()));
 			indexSearcher = new IndexSearcher(directory);
 			
-			Attribute[] queryAttributes = SearchModelUtils.extractAttributes(getRelation().getAttributeMap(), getQueryAttributeList());
-			
-			QueryStringParser parser = new QueryStringParser(queryAttributes);
-			String parsedQueryString = parser.parse(queryString);
+			setQueryString(queryString);
 			
 			LuceneQueryBuilder queryBuilder = new LuceneQueryBuilder();
 			queryBuilder.addQuery(getFilterAttributeList());
-			queryBuilder.addQuery(parsedQueryString, getQueryAttributeList(), getRelation().getAnalyzer());
+			queryBuilder.addQuery(getParsedQueryString(), getQueryAttributeList(), getRelation().getAnalyzer());
+			
 			Query query = queryBuilder.build();
 			
-			//System.out.println(query.toString());
+			List<SortAttribute> sortAttributeList = getSortAttributeList();
+			Sort sort = null;
 			
-			Sort sort = SearchModelUtils.makeSort(getSortAttributeList());
-			
-			TopFieldDocs docs = indexSearcher.search(query, 10, sort);
-			
-			indexSearcher.doc(docID)
-			
+			if(sortAttributeList != null && sortAttributeList.size() > 0)
+				sort = SearchModelUtils.makeSort(getSortAttributeList());
 
-			Hits hits = null;
+			ScoreDoc[] docs = null;
 			
-			if(sortAttributes != null)
-				hits = indexSearcher.search(query, sortAttributes.getSort());
-			else
-				hits = indexSearcher.search(query);			
-			
-			// 페이징
-			totalRecords = hits.length();
-			
-			int totalPages = (totalRecords <= 0) ? 
-								0 : (int)((totalRecords - 1) / hitsPerPage) + 1;
-			
-			if(totalRecords > 0) {
-				if(pageNo > totalPages)
-					return null;
+			if(sort == null) {
+				TopDocs topDocs = indexSearcher.search(query, getHitsPerPage());
+				docs = topDocs.scoreDocs;
+				setTotalRecords(topDocs.totalHits);
+			} else {
+				TopFieldDocs topFieldDocs = indexSearcher.search(query, getHitsPerPage(), sort);
+				docs = topFieldDocs.scoreDocs;
+				setTotalRecords(topFieldDocs.totalHits);
 			}
-			
-			int startDocNo = hitsPerPage * pageNo - hitsPerPage;
-			int endDocNo = Math.min(startDocNo + hitsPerPage - 1, totalRecords - 1);
 
-			Record[] records = transplantToRecords(hits, startDocNo, endDocNo);
+			RecordList recordList = null;
+
 			
-			if(getSummarizers() != null)
-				records = summarize(parser.getKeywords(), records);
-			
-			return records;
+			if(page == 1) {
+				recordList = populateRecordList(indexSearcher.getIndexReader(), docs, 0, getHitsPerPage());
+			} else {
+				int start = getHitsPerPage() * page - getHitsPerPage();
+				int end = Math.min(start + getHitsPerPage() - 1, getTotalRecords() - 1);
+
+				recordList = populateRecordList(indexSearcher.getIndexReader(), docs, start, end);
+			}
+
+			return recordList;
 
 		} catch(Exception e) {
 			throw new AnySearcherException("Search failed.", e);
@@ -396,76 +387,6 @@ public class LuceneSearcher extends SearchModel implements AnySearcher {
 				e2.printStackTrace();
 			}
 		}
-	}
-	
-	
-
-	/**
-	 * 검색결과에서 지정한 범위 Document를 Column 리스트로 반환
-	 * @param hits
-	 * @param startDocNo
-	 * @param endDocNo
-	 * @return Record 배열
-	 * @throws RecordKeyException 
-	 */
-	protected Record[] populateRecordList(Hits hits, int startDocNo, int endDocNo) throws RecordKeyException {
-		List records = new ArrayList(endDocNo - startDocNo + 1);
-		populateRecordList(records, hits, startDocNo, endDocNo);
-		
-		return (Record[])records.toArray(new Record[records.size()]);
-	}
-	
-	/**
-	 * 검색결과에서 지정한 범위 Document를 Column 리스트로 반환
-	 * 
-	 * @param fields
-	 * @param hits
-	 * @param startDocNo
-	 * @param endDocNo
-	 * @param summarizer
-	 * @return List
-	 * @throws RecordKeyException 
-	 */
-	protected List populateRecordList(List records, Hits hits, int startDocNo, int endDocNo) throws RecordKeyException {
-		try {
-			for(int i = startDocNo; i <= endDocNo; i++) {
-				Record record = documentToRecord(hits.doc(i), relation);
-				records.add(record);
-			}
-			
-		} catch(IOException e) {
-			// e.printStackTrace();
-		}
-
-		return records;
-	}
-
-	/**
-	 * Document를 Record로 반환
-	 * 
-	 * @param document
-	 * @param columns
-	 * @return Record
-	 * @throws RecordKeyException 
-	 */
-	protected static Record documentToRecord(Document document, Relation relation) throws RecordKeyException {
-		RecordKey recordKey = relation.newRecordKey();
-		recordKey.setRecordKeyString(document.get(RecordKey.RECORD_KEY));
-		
-		Record record = new Record();
-		record.setRecordKey(recordKey);
-		
-		AttributeMap attributeMap = relation.getAttributeMap();
-		
-		if(attributeMap != null) {
-			String[] names = attributeMap.getAttributeNames();
-			
-			for(int i = 0; i < names.length; i++) {
-				record.setValue(names[i], document.get(names[i]));
-			}
-		}
-		
-		return record;
 	}
 	
 	/**

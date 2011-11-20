@@ -49,95 +49,10 @@ public class SimpleFragmentSummarizer implements Summarizer {
 	 */
 	private String[] highlightTags = { "<strong>", "</strong>" };
 	
-	private String[] terms;
-	
 	/**
 	 * 생성자
 	 */
 	public SimpleFragmentSummarizer() {
-		this((String[])null, 0, 0);
-	}
-	
-	/**
-	 * 생성자
-	 * @param queryString 질의문
-	 */
-	public SimpleFragmentSummarizer(String[] keywords) {
-		this(keywords, 0, 0);
-	}
-	
-	/**
-	 * 생성자
-	 * @param queryString 질의문
-	 */
-	public SimpleFragmentSummarizer(String queryString) {
-		this(queryString, 0, 0);
-	}
-	
-	/**
-	 * 생성자
-	 * @param queryString 질의문
-	 * @param summarizeLength 요약문의 최대 길이
-	 * @param contextLength
-	 */
-	public SimpleFragmentSummarizer(String queryString, int summarizeLength, int contextLength) {
-		setKeywords(extractKeywords(queryString));
-
-		if(summarizeLength > 0)
-			this.summarizeLength = summarizeLength;
-
-		if(contextLength > 0)
-			this.contextLength = contextLength; 
-	}
-
-	/**
-	 * 생성자
-	 * @param keywords 키워드 배열
-	 * @param summarizeLength 요약문의 최대 길이
-	 * @param contextLength
-	 */
-	public SimpleFragmentSummarizer(String[] keywords, int summarizeLength, int contextLength) {
-		setKeywords(keywords);
-
-		if(summarizeLength > 0)
-			this.summarizeLength = summarizeLength;
-
-		if(contextLength > 0)
-			this.contextLength = contextLength; 
-	}
-
-	/**
-	 * 키워드 배열을 지정한다.
-	 * @param keywords
-	 */
-	public void setKeywords(String[] keywords) {
-		this.terms = keywords;
-		
-		if(this.terms != null) {
-			for(int i = 0; i < terms.length; i++)
-				terms[i] = terms[i].toLowerCase();
-		}
-	}
-	
-	/**
-	 * 질의문을 지정한다.
-	 * 연산자는 제거된다.
-	 * @param queryString
-	 */
-	public void setQueryString(String queryString) {
-		setKeywords(extractKeywords(queryString));
-	}
-	
-	/**
-	 * 질의문에서 키워드를 분리한다.
-	 * @param queryString
-	 * @return
-	 */
-	private String[] extractKeywords(String queryString) {
-		QueryStringParser parser = new QueryStringParser();
-		parser.parse(queryString);
-		
-		return parser.getKeywords();
 	}
 	
 	/**
@@ -225,15 +140,26 @@ public class SimpleFragmentSummarizer implements Summarizer {
 			return 0;
 		}
 	}
+	
+	public String summarize(String queryString, String content) {
+		String[] keywords = extractKeywords(queryString);
+		
+		return summarize(keywords, content);
+	}
 
 	/**
 	 * 하이라이팅 처리된 요약문장을 반환한다.
 	 * @param content 내용
 	 * @return 요약문
 	 */
-	public String summarize(String content) {
+	public String summarize(String[] keywords, String content) {
+		String[] terms = keywords;
+		
 		if(terms != null) {
-			List fragments = fragmentize(content);
+			for(int i = 0; i < terms.length; i++)
+				terms[i] = terms[i].toLowerCase();
+
+			List fragments = fragmentize(terms, content);
 			
 			// Frag Context 조합
 			StringBuffer sb = new StringBuffer();
@@ -270,7 +196,7 @@ public class SimpleFragmentSummarizer implements Summarizer {
 	
 			if(sb.length() > 0) {
 				// Highlight
-				return highlight(sb).toString();
+				return highlight(terms, sb).toString();
 			}
 		}
 		
@@ -293,7 +219,7 @@ public class SimpleFragmentSummarizer implements Summarizer {
 	 * @param content
 	 * @return StringBuffer
 	 */
-	public StringBuffer highlight(StringBuffer content) {
+	protected StringBuffer highlight(String[] terms, StringBuffer content) {
 		if(StringUtils.isEmpty(highlightTags[0]) && StringUtils.isEmpty(highlightTags[1]))
 			return content;
 		
@@ -331,9 +257,9 @@ public class SimpleFragmentSummarizer implements Summarizer {
 	 * @param content 내용
 	 * @return
 	 */
-	public String highlight(String content) {
+	public String highlight(String[] terms, String content) {
 		StringBuffer sb = new StringBuffer(content);
-		return highlight(sb).toString();
+		return highlight(terms, sb).toString();
 	}
 
 	/**
@@ -341,7 +267,7 @@ public class SimpleFragmentSummarizer implements Summarizer {
 	 * @param content
 	 * @return
 	 */
-	private List fragmentize(String content) {
+	private List fragmentize(String[] terms, String content) {
 		String lowercaseContent = content.toLowerCase();
 		
 		int termLength = (terms == null) ? 0 : terms.length;
@@ -519,6 +445,18 @@ public class SimpleFragmentSummarizer implements Summarizer {
 		return contexts;
 	}
 	
+	/**
+	 * 질의문에서 키워드를 분리한다.
+	 * @param queryString
+	 * @return
+	 */
+	private String[] extractKeywords(String queryString) {
+		QueryStringParser parser = new QueryStringParser();
+		parser.parse(queryString);
+		
+		return parser.getKeywords();
+	}
+	
 /*	
 	private String[] getTokens(String text) throws IOException {
 		List result = new ArrayList();
@@ -577,10 +515,10 @@ public class SimpleFragmentSummarizer implements Summarizer {
 //		//System.out.print(s.getSummary(body.toString()));
 //		System.out.print(s.summarize(" abcd 나인 1969년 샘 페킨파(Sam Peckinpah)가 연출하고 윌리엄 홀던(William Holden ), 어네스트 보그나인(Ernest Borgnine), 로버트 라이언(Robert Ryan) 등이 출연하였다. 기존의 서부극이 영웅적인 주인공과 악한의 대결구도를 강조하면서 주인공의 행동을 정당화시키는1969년 샘 페킨파(Sam Peckinpah)가 연출하고 윌리엄 홀던(William Holden ), 어네스트 보그나인(Ernest Borgnine), 로버트 라이언(Robert Ryan) 등이 출연하였다. 기존의 서부극이 영웅적인 주인공과 악한 나인의 대결구도를 강조하면서 주인공의 행동을 정당화시키는"));
 		
-		SimpleFragmentSummarizer s = new SimpleFragmentSummarizer("하이 오리 apple");
+		SimpleFragmentSummarizer s = new SimpleFragmentSummarizer();
 		
 		//System.out.print(s.getSummary(body.toString()));
-		System.out.println(s.summarize("감 오리하이 Apple scany"));
+		System.out.println(s.summarize("하이 오리 apple", "감 오리하이 Apple scany"));
 		
 		
 		//System.out.println("Summary: '" + s.getSummary(body.toString()) + "'");

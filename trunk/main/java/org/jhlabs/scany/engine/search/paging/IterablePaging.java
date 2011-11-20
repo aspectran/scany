@@ -227,7 +227,7 @@ public class IterablePaging implements Iterable<ScoreDoc> {
 		progressRef.skipTo.set(skipTo);
 		for(int i = 0; i < skipTo && iterator.hasNext(); i++) {
 			//eats the hits, and moves the iterator to the desired skip to position.
-			//progressRef.currentHitPosition.set(i);
+			progressRef.currentHitPosition.set(i);
 			iterator.next();
 		}
 		return iterator;

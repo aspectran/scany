@@ -136,6 +136,9 @@ public class LuceneQueryBuilder {
 	 * @throws MultipartRequestzException
 	 */
 	public void addQuery(String queryString, List<String> queryAttributeList, Analyzer analyzer) throws QueryBuilderException {
+		if(queryString == null || queryString.length() == 0)
+			return;
+		
 		String typicalColumnName;
 		
 		if(queryAttributeList == null || queryAttributeList.size() == 0)
