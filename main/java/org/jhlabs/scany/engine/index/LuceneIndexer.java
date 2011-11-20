@@ -98,7 +98,7 @@ public class LuceneIndexer implements AnyIndexer {
 			if(primaryKey.hasWildcard())
 				throw new IllegalArgumentException("PrimaryKey가 와일드카드 문자를 포함하고 있습니다.");
 
-			Document document = recordToDocument(record); 
+			Document document = createDocument(record); 
 			
 			indexWriter.addDocument(document);
 
@@ -127,7 +127,7 @@ public class LuceneIndexer implements AnyIndexer {
 			if(record.getRecordKey().hasWildcard())
 				throw new IllegalArgumentException("PrimaryKey가 와일드카드 문자를 포함하고 있습니다.");
 
-			Document document = recordToDocument(record); 
+			Document document = createDocument(record); 
 			Term term = new Term(RecordKey.RECORD_KEY, record.getRecordKey().getRecordKeyString());
 
 			indexWriter.updateDocument(term, document);
@@ -292,7 +292,7 @@ public class LuceneIndexer implements AnyIndexer {
 	 * @return Record
 	 * @throws AnyIndexerException
 	 */
-	private Document recordToDocument(Record record) throws AnyIndexerException {
+	private Document createDocument(Record record) throws AnyIndexerException {
 		try {
 			// 컬럼속성
 			AttributeMap attributeMap = relation.getAttributeMap();

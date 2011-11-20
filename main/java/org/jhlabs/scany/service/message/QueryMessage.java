@@ -5,7 +5,7 @@ package org.jhlabs.scany.service.message;
 
 import java.io.Serializable;
 
-import org.jhlabs.scany.engine.search.AnySearcherModel;
+import org.jhlabs.scany.engine.search.SearchModel;
 
 /**
  *
@@ -18,10 +18,10 @@ public class QueryMessage extends AbstractMessage implements Message, Serializab
 
 	private static final long serialVersionUID = -1180197750724560282L;
 
-	private AnySearcherModel anySercherModel;
+	private SearchModel searchModel;
 	
-	public QueryMessage(AnySearcherModel anySercherModel) {
-		this.anySercherModel = anySercherModel;
+	public QueryMessage(SearchModel searchModel) {
+		this.searchModel = searchModel;
 	}
 	
 }
