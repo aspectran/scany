@@ -4,9 +4,10 @@
 package org.jhlabs.scany.service.remote.http;
 
 import org.jhlabs.scany.engine.entity.Record;
-import org.jhlabs.scany.engine.search.AnySearcherException;
+import org.jhlabs.scany.engine.entity.Relation;
 import org.jhlabs.scany.engine.search.AnySearcher;
-import org.jhlabs.scany.engine.search.AnySearcherModel;
+import org.jhlabs.scany.engine.search.AnySearcherException;
+import org.jhlabs.scany.engine.search.SearchModel;
 
 /**
  *
@@ -15,7 +16,11 @@ import org.jhlabs.scany.engine.search.AnySearcherModel;
  * <p>Created: 2011. 11. 6. 오후 4:46:36</p>
  *
  */
-public class RemoteHttpSearcher extends AnySearcherModel implements AnySearcher {
+public class RemoteHttpSearcher extends SearchModel implements AnySearcher {
+
+	public RemoteHttpSearcher(Relation relation) throws AnySearcherException {
+		super(relation);
+	}
 
 	public Record[] search(String queryString) throws AnySearcherException {
 		return null;

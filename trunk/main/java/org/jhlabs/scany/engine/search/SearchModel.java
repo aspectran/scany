@@ -10,24 +10,16 @@
  ******************************************************************************/
 package org.jhlabs.scany.engine.search;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.lucene.document.Document;
-import org.apache.lucene.search.Hits;
 import org.jhlabs.scany.engine.entity.Attribute;
-import org.jhlabs.scany.engine.entity.AttributeMap;
-import org.jhlabs.scany.engine.entity.Record;
 import org.jhlabs.scany.engine.entity.RecordKey;
-import org.jhlabs.scany.engine.entity.RecordKeyException;
 import org.jhlabs.scany.engine.entity.Relation;
-import org.jhlabs.scany.engine.search.summarize.SimpleFragmentSummarizer;
 import org.jhlabs.scany.engine.search.summarize.Summarizer;
-import org.jhlabs.scany.util.StringUtils;
 
 /**
  * <p>
@@ -274,100 +266,4 @@ public class SearchModel {
 		sortAttributeList = null;
 	}
 
-	
-
-	/**
-	 * 검색결과에서 지정한 범위 Document를 Column 리스트로 반환
-	 * @param hits
-	 * @param startDocNo
-	 * @param endDocNo
-	 * @return Record 배열
-	 * @throws RecordKeyException 
-	 */
-	protected Record[] transplantToRecords(Hits hits, int startDocNo, int endDocNo) throws RecordKeyException {
-		List records = new ArrayList(endDocNo - startDocNo + 1);
-		transplantToRecords(records, hits, startDocNo, endDocNo);
-		
-		return (Record[])records.toArray(new Record[records.size()]);
-	}
-	
-	/**
-	 * 검색결과에서 지정한 범위 Document를 Column 리스트로 반환
-	 * 
-	 * @param fields
-	 * @param hits
-	 * @param startDocNo
-	 * @param endDocNo
-	 * @param summarizer
-	 * @return List
-	 * @throws RecordKeyException 
-	 */
-	protected List transplantToRecords(List records, Hits hits, int startDocNo, int endDocNo) throws RecordKeyException {
-		try {
-			for(int i = startDocNo; i <= endDocNo; i++) {
-				Record record = documentToRecord(hits.doc(i), relation);
-				records.add(record);
-			}
-			
-		} catch(IOException e) {
-			// e.printStackTrace();
-		}
-
-		return records;
-	}
-
-	/**
-	 * Document를 Record로 반환
-	 * 
-	 * @param document
-	 * @param columns
-	 * @return Record
-	 * @throws RecordKeyException 
-	 */
-	protected static Record documentToRecord(Document document, Relation relation) throws RecordKeyException {
-		RecordKey recordKey = relation.newRecordKey();
-		recordKey.setRecordKeyString(document.get(RecordKey.RECORD_KEY));
-		
-		Record record = new Record();
-		record.setRecordKey(recordKey);
-		
-		AttributeMap attributeMap = relation.getAttributeMap();
-		
-		if(attributeMap != null) {
-			String[] names = attributeMap.getAttributeNames();
-			
-			for(int i = 0; i < names.length; i++) {
-				record.setValue(names[i], document.get(names[i]));
-			}
-		}
-		
-		return record;
-	}
-	
-	/**
-	 * Summarize.
-	 *
-	 * @param keywords the keywords
-	 * @param records the records
-	 * @return the record[]
-	 */
-	protected Record[] summarize(String[] keywords, Record[] records) {
-		Iterator it = (Iterator)summarizers.keySet().iterator();
-		
-		while(it.hasNext()) {
-			String attributenName = (String)it.next();
-			SimpleFragmentSummarizer summarizer = (SimpleFragmentSummarizer)summarizers.get(attributenName);
-			summarizer.setKeywords(keywords);
-			
-			for(int i = 0; i < records.length; i++) {
-				String content = records[i].getValue(attributenName);
-				
-				if(!StringUtils.isEmpty(content)) {
-					records[i].setValue(attributenName, summarizer.summarize(content));
-				}
-			}
-		}
-		
-		return records;
-	}
 }
