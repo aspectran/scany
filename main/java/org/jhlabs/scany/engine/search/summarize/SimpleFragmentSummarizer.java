@@ -110,7 +110,7 @@ public class SimpleFragmentSummarizer implements Summarizer {
 	 * @author Gulendol
 	 *
 	 */
-	private class Fragment implements Comparable {
+	private class Fragment implements Comparable<Fragment> {
 		public int start = 0;
 		public int end = 0;
 		public int score = 1;
@@ -132,8 +132,8 @@ public class SimpleFragmentSummarizer implements Summarizer {
 			}
 		}
 		
-		public int compareTo(Object obj) {
-			Fragment f = (Fragment)obj;
+		public int compareTo(Fragment obj) {
+			Fragment f = obj;
 			
 			if(this.score > f.score) return 1;
 			if(this.score < f.score) return -1;
