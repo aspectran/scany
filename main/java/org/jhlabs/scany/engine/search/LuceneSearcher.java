@@ -187,18 +187,22 @@ public class LuceneSearcher extends SearchModel implements AnySearcher {
 		}
 	}
 	
+	public Iterator<Record> interator(int numHitsToCollect) throws AnySearcherException {
+		return interator(null, numHitsToCollect);
+	}
+	
 	public Iterator<Record> interator(String queryString, int numHitsToCollect) throws AnySearcherException {
 		try {
 			setQueryString(queryString);
-
+			
 			LuceneQueryBuilder queryBuilder = new LuceneQueryBuilder();
 			queryBuilder.addQuery(getFilterAttributeList());
 			queryBuilder.addQuery(getParsedQueryString(), getQueryAttributeList(), getRelation().getAnalyzer());
 			Query query = queryBuilder.build();
 			
 			IterablePaging iter = new IterablePaging((SearchModel)this, query, numHitsToCollect);
-			iter.skipTo(super.getStartRecord());
-			iter.gather(super.getHitsPerPage());
+			iter.skipTo(getStartRecord());
+			iter.gather(getHitsPerPage());
 			
 			return iter.iterator();
 		} catch(Exception e) {
