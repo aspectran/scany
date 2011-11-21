@@ -12,7 +12,6 @@ package org.jhlabs.scany.engine.search;
 
 
 /**
- * 하나의 필터컬럼 정보를 담는다.
  * 
  * <p>Created: 2007. 01. 22 오전 3:07:50</p>
  * 
@@ -21,49 +20,69 @@ package org.jhlabs.scany.engine.search;
  */
 public class FilterAttribute {
 	
+	private FilterType filterType;
+	
 	private String attributeName;
 	
-	private String keyword;
+	private Object equalValue;
 	
-	/**
-	 * 반드시 발생해야 하는 필수항목 여부
-	 */
+	private Object lowerValue;
+	
+	private Object upperValue;
+	
+	private boolean includeLower;
+	
+	private boolean includeUpper;
+	
 	private boolean essential = true;
 	
-	/**
-	 * FilterColumn을 생성한다.
-	 * @param columnName 컬럼명
-	 * @param keyword 키워드
-	 * @param essential 필수항목 여부
-	 */
-	public FilterAttribute(String attributeName, String keyword, boolean essential) {
+	public FilterAttribute(String attributeName, Object equalValue, boolean essential) {
+		this.filterType = FilterType.EQUAL;
 		this.attributeName = attributeName;
-		this.keyword = keyword;
+		this.equalValue = equalValue;
 		this.essential = essential;
 	}
 	
-	/**
-	 * 컬럼명을 반환한다.
-	 * @return the columnName
-	 */
+	public FilterAttribute(FilterType filterType, String attributeName, Object lowerValue, Object upperValue, boolean includeLower, boolean includeUpper, boolean essential) {
+		this.filterType = FilterType.EQUAL;
+		this.attributeName = attributeName;
+		this.lowerValue = lowerValue;
+		this.upperValue = upperValue;
+		this.includeLower = includeLower;
+		this.includeUpper = includeUpper;
+		this.essential = essential;
+	}
+
+	public FilterType getFilterType() {
+		return filterType;
+	}
+
 	public String getAttributeName() {
 		return attributeName;
 	}
 
-	/**
-	 * 키워드를 반환한다.
-	 * @return the keyword
-	 */
-	public String getKeyword() {
-		return keyword;
+	public Object getEqualValue() {
+		return equalValue;
 	}
 
-	/**
-	 * 필수항목인지 여부를 반환한다.
-	 * @return the isEssentialClause
-	 */
+	public Object getLowerValue() {
+		return lowerValue;
+	}
+
+	public Object getUpperValue() {
+		return upperValue;
+	}
+
+	public boolean isIncludeLower() {
+		return includeLower;
+	}
+
+	public boolean isIncludeUpper() {
+		return includeUpper;
+	}
+
 	public boolean isEssential() {
 		return essential;
 	}
-	
+
 }
