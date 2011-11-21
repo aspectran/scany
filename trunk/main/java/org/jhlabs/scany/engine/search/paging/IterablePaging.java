@@ -17,6 +17,7 @@ package org.jhlabs.scany.engine.search.paging;
  * limitations under the License.
  */
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -25,22 +26,26 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
+import org.jhlabs.scany.engine.entity.Record;
+import org.jhlabs.scany.engine.entity.RecordList;
 import org.jhlabs.scany.engine.search.SearchModel;
+import org.jhlabs.scany.engine.search.extract.RecordExtractor;
+import org.jhlabs.scany.engine.search.extract.SequentialRecordExtractor;
 
 /**
  * The {@link IterablePaging} class allows for easy paging through lucene hits.
  * @author Aaron McCurry
  */
-public class IterablePaging implements Iterable<ScoreDoc> {
+public class IterablePaging implements Iterable<Record> {
 
 	private static int DEFAULT_NUMBER_OF_HITS_TO_COLLECT = 1000;
-
-	private IndexSearcher indexSearcher;
 
 	private SearchModel searchModel;
 
 	private Query query;
-
+	
 	private TotalHitsRef totalHitsRef = new TotalHitsRef();
 
 	private ProgressRef progressRef = new ProgressRef();
@@ -51,19 +56,18 @@ public class IterablePaging implements Iterable<ScoreDoc> {
 
 	private int gather = -1;
 
-	public IterablePaging(IndexSearcher indexSearcher, SearchModel searchModel, Query query) throws IOException {
-		this(indexSearcher, query, DEFAULT_NUMBER_OF_HITS_TO_COLLECT, null, null);
+	public IterablePaging(SearchModel searchModel, Query query) throws IOException {
+		this(searchModel, query, DEFAULT_NUMBER_OF_HITS_TO_COLLECT, null, null);
 	}
 
-	public IterablePaging(IndexSearcher indexSearcher, SearchModel searchModel, Query query, int numHitsToCollect)
+	public IterablePaging(SearchModel searchModel, Query query, int numHitsToCollect)
 			throws IOException {
-		this(indexSearcher, query, numHitsToCollect, null, null);
+		this(searchModel, query, numHitsToCollect, null, null);
 	}
 
-	public IterablePaging(IndexSearcher indexSearcher, Query query, int numHitsToCollect, TotalHitsRef totalHitsRef,
+	public IterablePaging(SearchModel searchModel, Query query, int numHitsToCollect, TotalHitsRef totalHitsRef,
 			ProgressRef progressRef) throws IOException {
-		this.query = indexSearcher.rewrite(query);
-		this.indexSearcher = indexSearcher;
+		this.searchModel = searchModel;
 		this.numHitsToCollect = numHitsToCollect;
 		this.totalHitsRef = totalHitsRef == null ? this.totalHitsRef : totalHitsRef;
 		this.progressRef = progressRef == null ? this.progressRef : progressRef;
@@ -158,18 +162,22 @@ public class IterablePaging implements Iterable<ScoreDoc> {
 	/**
 	 * The {@link ScoreDoc} iterator.
 	 */
-	public Iterator<ScoreDoc> iterator() {
+	public Iterator<Record> iterator() {
 		return skipHits(new PagingIterator());
 	}
 
-	class PagingIterator implements Iterator<ScoreDoc> {
+	class PagingIterator implements Iterator<Record> {
 		private PagingCollector collector;
 
 		private ScoreDoc[] scoreDocs;
 
+		private RecordList recordList;
+		
 		private int counter = 0;
 
 		private int offset = 0;
+
+		private int page = 1;
 
 		private int endPosition = gather == -1 ? Integer.MAX_VALUE : skipTo + gather;
 
@@ -187,15 +195,38 @@ public class IterablePaging implements Iterable<ScoreDoc> {
 				collector = new PagingCollector(numHitsToCollect, scoreDocs[scoreDocs.length - 1]);
 			}
 			
+			IndexSearcher indexSearcher = null;
+			
 			try {
+				Directory directory = FSDirectory.open(new File(searchModel.getDirectory()));
+				indexSearcher = new IndexSearcher(directory);
+
+				//query = indexSearcher.rewrite(query);
 				indexSearcher.search(query, collector);
-			} catch(IOException e) {
+
+				totalHitsRef.totalHits.set(collector.getTotalHits());
+				scoreDocs = collector.topDocs().scoreDocs;
+				
+				searchModel.setPage(page++);
+				searchModel.setStartRecord(0);
+				searchModel.setHitsPerPage(gather);
+				searchModel.setTotalRecords(collector.getTotalHits());
+				
+				RecordExtractor recordExtractor = new SequentialRecordExtractor(searchModel);
+				recordExtractor.extract(indexSearcher.getIndexReader(), scoreDocs);
+				recordList = recordExtractor.getRecordList();
+
+			} catch(Exception e) {
 				throw new RuntimeException(e);
+			} finally {
+				try {
+					if(indexSearcher != null)
+						indexSearcher.close();
+				} catch(Exception e2) {
+					e2.printStackTrace();
+				}
 			}
 
-			totalHitsRef.totalHits.set(collector.getTotalHits());
-			scoreDocs = collector.topDocs().scoreDocs;
-			
 			long e = System.currentTimeMillis();
 			progressRef.queryTime.addAndGet(e - s);
 		}
@@ -204,14 +235,14 @@ public class IterablePaging implements Iterable<ScoreDoc> {
 			return counter < totalHitsRef.totalHits() && counter < endPosition ? true : false;
 		}
 
-		public ScoreDoc next() {
+		public Record next() {
 			if(isCurrentCollectorExhausted()) {
 				search();
 				offset = 0;
 			}
 			progressRef.currentHitPosition.set(counter);
 			counter++;
-			return scoreDocs[offset++];
+			return recordList.get(offset++);
 		}
 
 		private boolean isCurrentCollectorExhausted() {
@@ -223,7 +254,7 @@ public class IterablePaging implements Iterable<ScoreDoc> {
 		}
 	}
 
-	private Iterator<ScoreDoc> skipHits(Iterator<ScoreDoc> iterator) {
+	private Iterator<Record> skipHits(Iterator<Record> iterator) {
 		progressRef.skipTo.set(skipTo);
 		for(int i = 0; i < skipTo && iterator.hasNext(); i++) {
 			//eats the hits, and moves the iterator to the desired skip to position.

@@ -11,12 +11,10 @@
 package org.jhlabs.scany.engine.search;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.lucene.index.CorruptIndexException;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
@@ -25,14 +23,17 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TopFieldDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.jhlabs.scany.engine.entity.Attribute;
 import org.jhlabs.scany.engine.entity.Record;
+import org.jhlabs.scany.engine.entity.RecordKeyException;
 import org.jhlabs.scany.engine.entity.RecordList;
 import org.jhlabs.scany.engine.entity.Relation;
+import org.jhlabs.scany.engine.search.extract.PagingRecordExtractor;
+import org.jhlabs.scany.engine.search.extract.RandomRecordExtractor;
+import org.jhlabs.scany.engine.search.extract.RecordExtractor;
+import org.jhlabs.scany.engine.search.extract.SequentialRecordExtractor;
+import org.jhlabs.scany.engine.search.paging.IterablePaging;
 import org.jhlabs.scany.engine.search.query.LuceneQueryBuilder;
-import org.jhlabs.scany.engine.search.query.QueryStringParser;
-import org.jhlabs.scany.engine.search.summarize.SimpleFragmentSummarizer;
-import org.jhlabs.scany.util.StringUtils;
+import org.jhlabs.scany.engine.search.query.QueryBuilderException;
 
 /**
  * 검색기.
@@ -103,62 +104,18 @@ public class LuceneSearcher extends SearchModel implements AnySearcher {
 		if(page <= 0)
 			return null;
 
-		IndexSearcher indexSearcher = null;
-		
 		try {
-			Directory directory = FSDirectory.open(new File(getRelation().getDirectory()));
-			indexSearcher = new IndexSearcher(directory);
-			
 			setQueryString(queryString);
-			
-			LuceneQueryBuilder queryBuilder = new LuceneQueryBuilder();
-			queryBuilder.addQuery(getFilterAttributeList());
-			queryBuilder.addQuery(getParsedQueryString(), getQueryAttributeList(), getRelation().getAnalyzer());
-			
-			Query query = queryBuilder.build();
-			
-			List<SortAttribute> sortAttributeList = getSortAttributeList();
-			Sort sort = null;
-			
-			if(sortAttributeList != null && sortAttributeList.size() > 0)
-				sort = SearchModelUtils.makeSort(getSortAttributeList());
+			setPage(page);
 
-			ScoreDoc[] docs = null;
+			RecordExtractor recordExtractor = new PagingRecordExtractor((SearchModel)this);
 			
-			if(sort == null) {
-				TopDocs topDocs = indexSearcher.search(query, getHitsPerPage());
-				docs = topDocs.scoreDocs;
-				setTotalRecords(topDocs.totalHits);
-			} else {
-				TopFieldDocs topFieldDocs = indexSearcher.search(query, getHitsPerPage(), sort);
-				docs = topFieldDocs.scoreDocs;
-				setTotalRecords(topFieldDocs.totalHits);
-			}
+			search((SearchModel)this, recordExtractor);			
 
-			RecordList recordList = null;
-
-			
-			if(page == 1) {
-				recordList = populateRecordList(indexSearcher.getIndexReader(), docs, 0, getHitsPerPage());
-			} else {
-				int start = getHitsPerPage() * page - getHitsPerPage();
-				int end = Math.min(start + getHitsPerPage() - 1, getTotalRecords() - 1);
-
-				recordList = populateRecordList(indexSearcher.getIndexReader(), docs, start, end);
-			}
-
-			return recordList;
+			return recordExtractor.getRecordList();
 
 		} catch(Exception e) {
 			throw new AnySearcherException("Search failed.", e);
-
-		} finally {
-			try {
-				if(indexSearcher != null)
-					indexSearcher.close();
-			} catch(Exception e2) {
-				e2.printStackTrace();
-			}
 		}
 	}
 	
@@ -169,7 +126,7 @@ public class LuceneSearcher extends SearchModel implements AnySearcher {
 	 * @return hitsPerPage 개의 레코드
 	 * @throws AnySearcherException
 	 */
-	public Record[] random() throws AnySearcherException {
+	public RecordList random() throws AnySearcherException {
 		return random(null);
 	}
 	
@@ -183,135 +140,19 @@ public class LuceneSearcher extends SearchModel implements AnySearcher {
 	 * @return hitsPerPage 개의 레코드
 	 * @throws AnySearcherException
 	 */
-	public Record[] random(String queryString) throws AnySearcherException {
-		IndexSearcher indexSearcher = null;
-
+	public RecordList random(String queryString) throws AnySearcherException {
 		try {
-			Directory directory = FSDirectory.open(new File(getRelation().getDirectory()));
-			indexSearcher = new IndexSearcher(directory);
+			setQueryString(queryString);
 			
-			IndexReader indexReader = indexSearcher.getIndexReader();
+			RecordExtractor recordExtractor = new RandomRecordExtractor((SearchModel)this);
+			
+			search((SearchModel)this, recordExtractor);			
 
-			List recordList = new ArrayList();
-
-			LuceneQueryBuilder queryBuilder = new LuceneQueryBuilder(getRelation().getAnalyzer());
-			queryBuilder.setFilterColumns(getFilterColumns());
-			queryBuilder.setQeuryColumns(getQueryColumns());
-			
-			QueryStringParser parser = new QueryStringParser(getQueryColumns());
-			
-			Query query = queryBuilder.getQuery(parser.parse(queryString));
-
-			Hits hits = null;
-			
-			if(sortAttributes != null)
-				hits = indexSearcher.search(query, sortAttributes.getSort());
-			else
-				hits = indexSearcher.search(query);
-			
-			totalRecords = hits.length();
-
-			// 랜덤
-			if(hitsPerPage < totalRecords) {
-				int[] docs = getRandomDocumentNo(totalRecords, hitsPerPage);
-
-				for(int i = 0; i < docs.length; i++) {
-					if(docs[i] == -1)
-						continue;
-					
-					Record record = documentToRecord(hits.doc(docs[i]), relation);
-					recordList.add(record);
-				}
-				
-				//System.out.println("랜덤");
-			} else {
-				//System.out.println("미달");
-
-				// SortColumn이 지정되었을 경우 0번부터 차례대로
-				if(sortAttributes != null) {
-					for(int i = 0; i < totalRecords; i++) {							
-						Record record = documentToRecord(hits.doc(i), relation);
-						recordList.add(record);
-					}
-					
-				// SortColumn이 지정되지 않았을 경우 document 번호를 역순으로
-				// 즉 최신 데이터를 먼저 내 보낸다.
-				} else {
-					for(int i = totalRecords - 1; i >= 0; i--) {
-						Record record = documentToRecord(hits.doc(i), relation);
-						recordList.add(record);
-					}
-				}
-			}
-			
-			Record[] records = (Record[])recordList.toArray(new Record[recordList.size()]);
-			
-			if(getSummarizers() != null)
-				records = summarize(parser.getKeywords(), records);
-			
-			return records;
+			return recordExtractor.getRecordList();
 
 		} catch(Exception e) {
-			throw new AnySearcherException("Scany(RandomSearcher) 검색 과정에서 오류가 발생했습니다.", e);
-
-		} finally {
-			try {
-				if(indexSearcher != null)
-					indexSearcher.close();
-			} catch(Exception e2) {
-				e2.printStackTrace();
-			}
+			throw new AnySearcherException("Random search failed.", e);
 		}
-	}
-
-	/**
-	 * 전체 Document 개수에서 랜덤하게 maxDocs개 만큼 Document 번호를 반환한다.
-	 * 랜덤 Document 번호가 maxDocs 개에 못 미칠 경우 나머지는 -1로 채워진다.
-	 * @param totalDocs 총 레코드 수
-	 * @param maxDocs 가져올 최대 Document 번호 개수
-	 * @return
-	 */
-	private int[] getRandomDocumentNo(int totalDocs, int maxDocs) {
-		int[] docs = new int[maxDocs];
-		int docNo = -1;
-		int dupCnt = 0;
-		
-		int cnt = 0;
-
-		while(cnt < maxDocs) {
-			if(dupCnt >= maxDocs)
-				break;
-			
-			docNo = (int)(Math.random() * totalDocs);
-			
-			for(int n = 0; n < cnt; n++) {
-				if(docs[n] == docNo) {
-					dupCnt++;					
-					continue;
-				}
-			}
-			
-			docs[cnt++] = docNo;
-		}
-		
-		for(int i = cnt; i < maxDocs; i++) {
-			docs[i] = -1;
-		}
-		
-		// 정렬
-		int buf = 0;
-
-		for(int i = 0; i < docs.length - 1; i++) {
-			for(int j = 1; j < docs.length; j++) {
-				if(docs[i] > docs[j]) {
-					buf = docs[i];
-					docs[i] = docs[j];
-					docs[j] = buf;
-				}
-			}
-		}
-
-		return docs;
 	}
 
 	/**
@@ -325,94 +166,89 @@ public class LuceneSearcher extends SearchModel implements AnySearcher {
 	 * @return
 	 * @throws AnySearcherException
 	 */
-	public Record[] seek(int start, int maxRecords, boolean reverse) throws AnySearcherException {
-		IndexReader reader = null;
+	public RecordList seek(int start, int maxRecords, boolean reverse) throws AnySearcherException {
+		if(start < 0)
+			return null;
 
 		try {
-			if(start < 0)
-				return null;
+			setPage(1);
+			setStartRecord(start);
+			setHitsPerPage(maxRecords);
+			setReverse(reverse);
 			
-			File file = new File(getRelation().getDirectory());
+			RecordExtractor recordExtractor = new SequentialRecordExtractor((SearchModel)this);
 			
-			if(!file.exists())
-				return null;
-			
-			try {
-				reader = IndexReader.open(getRelation().getDirectory());
-			} catch(Exception e) {
-				throw new CorruptIndexException("색인 저장소에 세그먼트 파일이 존재하지 않습니다. (Schema ID: " +
-						getRelation().getId() + ")");
-			}
-			
-			List records = new ArrayList();
+			search((SearchModel)this, recordExtractor);			
 
-			int n = 0;
-			int end = start + maxRecords;
-			
-			if(reverse) {
-				for(int i = reader.maxDoc() - 1; i >= 0; i--) {
-					if(!reader.isDeleted(i)) {					
-						if(n >= start && n < end) {
-							records.add(SearcherModel.documentToRecord(reader.document(i), relation));
-						}
-						
-						n++;
-					}
-				}
-			} else {
-				for(int i = 0; i < reader.maxDoc(); i++) {
-					if(!reader.isDeleted(i)) {					
-						if(n >= start && n < end) {
-							records.add(SearcherModel.documentToRecord(reader.document(i), relation));
-						}
-						
-						n++;
-					}
-				}
-			}
-
-			if(n == 0)
-				return null;
-			
-			return (Record[])records.toArray(new Record[records.size()]);
+			return recordExtractor.getRecordList();
 
 		} catch(Exception e) {
-			throw new AnySearcherException("순차 검색 과정에서 오류가 발생했습니다.", e);
+			throw new AnySearcherException("Sequential search failed.", e);
+		}
+	}
+	
+	public Iterator<Record> interator(String queryString, int numHitsToCollect) throws AnySearcherException {
+		try {
+			setQueryString(queryString);
+
+			LuceneQueryBuilder queryBuilder = new LuceneQueryBuilder();
+			queryBuilder.addQuery(getFilterAttributeList());
+			queryBuilder.addQuery(getParsedQueryString(), getQueryAttributeList(), getRelation().getAnalyzer());
+			Query query = queryBuilder.build();
+			
+			IterablePaging iter = new IterablePaging((SearchModel)this, query, numHitsToCollect);
+			iter.skipTo(super.getStartRecord());
+			iter.gather(super.getHitsPerPage());
+			
+			return iter.iterator();
+		} catch(Exception e) {
+			throw new AnySearcherException("search failed.", e);
+		}
+	}
+	
+	public static RecordList search(SearchModel searchModel, RecordExtractor recordExtractor) throws QueryBuilderException, RecordKeyException, IOException {
+		IndexSearcher indexSearcher = null;
+		
+		try {
+			Directory directory = FSDirectory.open(new File(searchModel.getRelation().getDirectory()));
+			indexSearcher = new IndexSearcher(directory);
+			
+			LuceneQueryBuilder queryBuilder = new LuceneQueryBuilder();
+			queryBuilder.addQuery(searchModel.getFilterAttributeList());
+			queryBuilder.addQuery(searchModel.getParsedQueryString(), searchModel.getQueryAttributeList(), searchModel.getRelation().getAnalyzer());
+			
+			Query query = queryBuilder.build();
+			query = indexSearcher.rewrite(query);
+			
+			List<SortAttribute> sortAttributeList = searchModel.getSortAttributeList();
+			Sort sort = null;
+			
+			if(sortAttributeList != null && sortAttributeList.size() > 0)
+				sort = SearchModelUtils.makeSort(searchModel.getSortAttributeList());
+
+			ScoreDoc[] docs = null;
+			
+			if(sort == null) {
+				TopDocs topDocs = indexSearcher.search(query, searchModel.getHitsPerPage());
+				docs = topDocs.scoreDocs;
+				searchModel.setTotalRecords(topDocs.totalHits);
+			} else {
+				TopFieldDocs topFieldDocs = indexSearcher.search(query, searchModel.getHitsPerPage(), sort);
+				docs = topFieldDocs.scoreDocs;
+				searchModel.setTotalRecords(topFieldDocs.totalHits);
+			}
+
+			recordExtractor.extract(indexSearcher.getIndexReader(), docs);
+			
+			return recordExtractor.getRecordList();
 
 		} finally {
 			try {
-				if(reader != null)
-					reader.close();
+				if(indexSearcher != null)
+					indexSearcher.close();
 			} catch(Exception e2) {
 				e2.printStackTrace();
 			}
 		}
-	}
-	
-	/**
-	 * Summarize.
-	 *
-	 * @param keywords the keywords
-	 * @param records the records
-	 * @return the record[]
-	 */
-	protected Record[] summarize(String[] keywords, Record[] records) {
-		Iterator it = (Iterator)summarizers.keySet().iterator();
-		
-		while(it.hasNext()) {
-			String attributenName = (String)it.next();
-			SimpleFragmentSummarizer summarizer = (SimpleFragmentSummarizer)summarizers.get(attributenName);
-			summarizer.setKeywords(keywords);
-			
-			for(int i = 0; i < records.length; i++) {
-				String content = records[i].getValue(attributenName);
-				
-				if(!StringUtils.isEmpty(content)) {
-					records[i].setValue(attributenName, summarizer.summarize(content));
-				}
-			}
-		}
-		
-		return records;
 	}
 }

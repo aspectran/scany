@@ -4,6 +4,7 @@
 package org.jhlabs.scany.service.remote.http;
 
 import org.jhlabs.scany.engine.entity.Record;
+import org.jhlabs.scany.engine.entity.RecordList;
 import org.jhlabs.scany.engine.entity.Relation;
 import org.jhlabs.scany.engine.search.AnySearcher;
 import org.jhlabs.scany.engine.search.AnySearcherException;
@@ -22,27 +23,27 @@ public class RemoteHttpSearcher extends SearchModel implements AnySearcher {
 		super(relation);
 	}
 
-	public Record[] search(String queryString) throws AnySearcherException {
+	public RecordList search(String queryString) throws AnySearcherException {
 		return null;
 	}
 
-	public Record[] search(int pageNo) throws AnySearcherException {
+	public RecordList search(int pageNo) throws AnySearcherException {
 		return null;
 	}
 
-	public Record[] search(String queryString, int pageNo) throws AnySearcherException {
+	public RecordList search(String queryString, int pageNo) throws AnySearcherException {
 		return null;
 	}
 
-	public Record[] random() throws AnySearcherException {
+	public RecordList random() throws AnySearcherException {
 		return null;
 	}
 
-	public Record[] random(String queryString) throws AnySearcherException {
+	public RecordList random(String queryString) throws AnySearcherException {
 		return null;
 	}
 
-	public Record[] seek(int start, int maxRecords, boolean reverse) throws AnySearcherException {
+	public RecordList seek(int start, int maxRecords, boolean reverse) throws AnySearcherException {
 		return null;
 	}
 

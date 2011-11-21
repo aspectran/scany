@@ -19,9 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.lucene.analysis.Analyzer;
 import org.jhlabs.scany.context.builder.ScanyContextBuilderAssistant;
-import org.jhlabs.scany.context.rule.LocalServiceRule;
 import org.jhlabs.scany.engine.entity.Schema;
 import org.jhlabs.scany.engine.search.summarize.Summarizer;
 import org.jhlabs.scany.util.xml.EasyNodelet;

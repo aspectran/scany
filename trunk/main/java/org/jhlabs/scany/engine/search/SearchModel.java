@@ -50,15 +50,21 @@ public class SearchModel {
 	
 	private Map<String, Summarizer> summarizerMap;
 
-	private int totalRecords = 0;
-
-	private int hitsPerPage = 10;
-	
 	private String queryString;
 
 	private String parsedQueryString;
 	
 	private String[] queryKeywords;
+
+	protected int totalRecords = 0;
+
+	protected int hitsPerPage = 10;
+	
+	protected int page = 0;
+
+	protected int startRecord = 0;
+	
+	protected boolean reverse;
 
 	/**
 	 * 생성자
@@ -79,6 +85,10 @@ public class SearchModel {
 		return relation;
 	}
 
+	public String getDirectory() {
+		return relation.getDirectory();
+	}
+	
 	/**
 	 * 레코드(Document)의 총 개수를 반환한다.
 	 * 
@@ -88,7 +98,7 @@ public class SearchModel {
 		return this.totalRecords;
 	}
 
-	protected void setTotalRecords(int totalRecords) {
+	public void setTotalRecords(int totalRecords) {
 		this.totalRecords = totalRecords;
 	}
 
@@ -99,6 +109,30 @@ public class SearchModel {
 	 */
 	public int getHitsPerPage() {
 		return hitsPerPage;
+	}
+
+	public int getPage() {
+		return page;
+	}
+
+	public void setPage(int page) {
+		this.page = page;
+	}
+
+	public int getStartRecord() {
+		return startRecord;
+	}
+
+	public void setStartRecord(int startRecord) {
+		this.startRecord = startRecord;
+	}
+
+	public boolean isReverse() {
+		return reverse;
+	}
+
+	public void setReverse(boolean reverse) {
+		this.reverse = reverse;
 	}
 
 	/**

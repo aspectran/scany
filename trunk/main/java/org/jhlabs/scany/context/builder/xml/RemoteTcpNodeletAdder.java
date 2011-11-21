@@ -19,7 +19,6 @@ import java.util.Properties;
 
 import org.jhlabs.scany.context.builder.ScanyContextBuilderAssistant;
 import org.jhlabs.scany.context.rule.ClientRule;
-import org.jhlabs.scany.context.rule.MessageRule;
 import org.jhlabs.scany.context.rule.RemoteTcpServiceRule;
 import org.jhlabs.scany.context.rule.ServerRule;
 import org.jhlabs.scany.context.type.RemoteMode;

@@ -160,7 +160,7 @@ public interface AnySearcher {
 	 * @return hitsPerPage 개의 레코드
 	 * @throws AnySearcherException
 	 */
-	public Record[] random() throws AnySearcherException;
+	public RecordList random() throws AnySearcherException;
 	
 	/**
 	 * 최근 레코드 또는 랜덤 레코드를 검색한다.
@@ -172,7 +172,7 @@ public interface AnySearcher {
 	 * @return hitsPerPage 개의 레코드
 	 * @throws AnySearcherException
 	 */
-	public Record[] random(String queryString) throws AnySearcherException;
+	public RecordList random(String queryString) throws AnySearcherException;
 
 	/**
 	 * 등록된 순서에 따라 도큐먼트를 페이징 한다.
@@ -185,6 +185,6 @@ public interface AnySearcher {
 	 * @return
 	 * @throws AnySearcherException
 	 */
-	public Record[] seek(int start, int maxRecords, boolean reverse) throws AnySearcherException;
+	public RecordList seek(int start, int maxRecords, boolean reverse) throws AnySearcherException;
 	
 }
