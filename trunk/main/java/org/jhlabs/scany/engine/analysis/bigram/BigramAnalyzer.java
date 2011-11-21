@@ -1,119 +1,74 @@
 package org.jhlabs.scany.engine.analysis.bigram;
 
-import org.jhlabs.scany.engine.analysis.bigram.BigramTokenizer;
-
-import java.io.IOException;
 import java.io.Reader;
+import java.util.Arrays;
 import java.util.Set;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.StopAnalyzer;
+import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.StopFilter;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.standard.StandardFilter;
+import org.apache.lucene.analysis.StopwordAnalyzerBase;
+import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.util.Version;
+import org.jhlabs.scany.context.ScanyContext;
 
 /**
- * 한글 분석을 위해 추가된다.
- * (CJKTokennizer의 버그 수정판)
- * <p>
- * Created: 2007. 01. 20 오전 3:01:38
- * </p>
- * 
- * @author Gulendol
+ * An {@link Analyzer} that tokenizes text with {@link BigramAnalyzer} and
+ * filters with {@link StopFilter}
+ *
  */
-public final class BigramAnalyzer extends Analyzer {
+public final class BigramAnalyzer extends StopwordAnalyzerBase {
+	//~ Static fields/initializers ---------------------------------------------
+
 	/**
-	 * An array containing some common English words that are not usually useful
-	 * for searching.
-	 * ------------------------------------------------------------------------
-	 * "a", "an", "and", "are", "as", "at", "be", "but", "by", "for", "if",
-	 * "in", "into", "is", "it", "no", "not", "of", "on", "or", "such", "that",
-	 * "the", "their", "then", "there", "these", "they", "this", "to", "was",
-	 * "will", "with"
+	 * An array containing some common English words that are not usually
+	 * useful for searching and some double-byte interpunctions.
 	 */
-	public final static Set<?> DEFAULT_STOP_WORDS_SET = StopAnalyzer.ENGLISH_STOP_WORDS_SET;
+	public final static String[] STOP_WORDS = { "a", "and", "are", "as", "at", "be", "but", "by", "for", "if", "in",
+			"into", "is", "it", "no", "not", "of", "on", "or", "s", "such", "t", "that", "the", "their", "then",
+			"there", "these", "they", "this", "to", "was", "will", "with", "", "www" };
 
-	private Set<?> stopSet;
-
-	/** Default maximum allowed token length */
-	public static final int DEFAULT_MAX_TOKEN_LENGTH = 255;
-
-	private int maxTokenLength = DEFAULT_MAX_TOKEN_LENGTH;
+	//~ Instance fields --------------------------------------------------------
 
 	/**
-	 * Builds an analyzer which removes words in {@link #STOP_WORDS}.
+	 * Returns an unmodifiable instance of the default stop-words set.
+	 * @return an unmodifiable instance of the default stop-words set.
+	 */
+	public static Set<?> getDefaultStopSet() {
+		return DefaultSetHolder.DEFAULT_STOP_SET;
+	}
+
+	private static class DefaultSetHolder {
+		static final Set<?> DEFAULT_STOP_SET = CharArraySet.unmodifiableSet(new CharArraySet(ScanyContext.LUCENE_VERSION,
+				Arrays.asList(STOP_WORDS), false));
+	}
+
+	//~ Constructors -----------------------------------------------------------
+
+	/**
+	 * Builds an analyzer which removes words in {@link #getDefaultStopSet()}.
 	 */
 	public BigramAnalyzer() {
-		this(DEFAULT_STOP_WORDS_SET);
-	}
-
-	/** Builds an analyzer with the given stop words. */
-	public BigramAnalyzer(Set<?> stopSet) {
-		this.stopSet = stopSet;
+		this(ScanyContext.LUCENE_VERSION, DefaultSetHolder.DEFAULT_STOP_SET);
 	}
 
 	/**
-	 * Builds an analyzer which removes words in the provided array.
+	 * Builds an analyzer with the given stop words
 	 * 
-	 * @param stopSet stop word array
+	 * @param matchVersion
+	 *          lucene compatibility version
+	 * @param stopwords
+	 *          a stopword set
 	 */
-	public BigramAnalyzer(String[] stopWords) {
-		stopSet = StopFilter.makeStopSet(Version.LUCENE_34, stopWords);
+	public BigramAnalyzer(Version matchVersion, Set<?> stopwords) {
+		super(matchVersion, stopwords);
 	}
 
-	/**
-	 * get token stream from input
-	 * 
-	 * @param fieldName lucene field name
-	 * @param reader input reader
-	 * @return TokenStream
-	 */
-	public TokenStream tokenStream(String fieldName, Reader reader) {
-		TokenStream tokenStream = new BigramTokenizer(reader);
-		tokenStream = new StandardFilter(Version.LUCENE_34, tokenStream);
-		tokenStream = new StopFilter(Version.LUCENE_34, tokenStream, stopSet);
-		// LowerCaseFilter 적용 불필요함
+	//~ Methods ----------------------------------------------------------------
 
-		return tokenStream;
+	@Override
+	protected TokenStreamComponents createComponents(String fieldName, Reader reader) {
+		final Tokenizer source = new BigramTokenizer(reader);
+		return new TokenStreamComponents(source, new StopFilter(matchVersion, source, stopwords));
 	}
-
-	public TokenStream reusableTokenStream(String fieldName, Reader reader) throws IOException {
-		SavedStreams streams = (SavedStreams)getPreviousTokenStream();
-		
-		if(streams == null) {
-			streams = new SavedStreams();
-			setPreviousTokenStream(streams);
-			streams.tokenStream = new BigramTokenizer(reader);
-			streams.filteredTokenStream = new StandardFilter(Version.LUCENE_34, streams.tokenStream);
-			streams.filteredTokenStream = new StopFilter(Version.LUCENE_34, streams.filteredTokenStream, stopSet);
-			// LowerCaseFilter 적용 불필요함
-		} else {
-			streams.tokenStream.reset(reader);
-		}
-
-		return streams.filteredTokenStream;
-	}
-
-	/**
-	 * Set maximum allowed token length. If a token is seen that exceeds this
-	 * length then it is discarded. This setting only takes effect the next time
-	 * tokenStream or reusableTokenStream is called.
-	 */
-	public void setMaxTokenLength(int length) {
-		maxTokenLength = length;
-	}
-
-	/**
-	 * @see #setMaxTokenLength
-	 */
-	public int getMaxTokenLength() {
-		return maxTokenLength;
-	}
-
-	private static final class SavedStreams {
-		BigramTokenizer tokenStream;
-		TokenStream filteredTokenStream;
-	}
-
 }

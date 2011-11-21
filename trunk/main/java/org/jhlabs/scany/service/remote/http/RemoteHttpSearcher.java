@@ -3,6 +3,8 @@
  */
 package org.jhlabs.scany.service.remote.http;
 
+import java.util.Iterator;
+
 import org.jhlabs.scany.engine.entity.Record;
 import org.jhlabs.scany.engine.entity.RecordList;
 import org.jhlabs.scany.engine.entity.Relation;
@@ -44,6 +46,16 @@ public class RemoteHttpSearcher extends SearchModel implements AnySearcher {
 	}
 
 	public RecordList seek(int start, int maxRecords, boolean reverse) throws AnySearcherException {
+		return null;
+	}
+
+	public Iterator<Record> interator(int numHitsToCollect) throws AnySearcherException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Iterator<Record> interator(String queryString, int numHitsToCollect) throws AnySearcherException {
+		// TODO Auto-generated method stub
 		return null;
 	}
 

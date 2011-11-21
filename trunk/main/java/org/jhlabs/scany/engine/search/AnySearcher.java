@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.jhlabs.scany.engine.search;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -186,5 +187,9 @@ public interface AnySearcher {
 	 * @throws AnySearcherException
 	 */
 	public RecordList seek(int start, int maxRecords, boolean reverse) throws AnySearcherException;
+	
+	public Iterator<Record> interator(int numHitsToCollect) throws AnySearcherException;
+	
+	public Iterator<Record> interator(String queryString, int numHitsToCollect) throws AnySearcherException;
 	
 }
