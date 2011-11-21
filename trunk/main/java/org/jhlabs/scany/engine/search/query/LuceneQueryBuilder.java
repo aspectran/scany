@@ -19,12 +19,15 @@ import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.NumericRangeQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TermRangeQuery;
 import org.apache.lucene.search.WildcardQuery;
 import org.jhlabs.scany.context.ScanyContext;
 import org.jhlabs.scany.engine.entity.RecordKey;
 import org.jhlabs.scany.engine.search.FilterAttribute;
+import org.jhlabs.scany.engine.search.FilterType;
 
 /**
  * 검색 조항을 모두 조합한 후 하나의 Query를 반환한다.
@@ -91,7 +94,7 @@ public class LuceneQueryBuilder {
 			return;
 		
 		if(filterAttributeList.size() == 1) {
-			queryList.add(makeQuery((FilterAttribute)filterAttributeList.get(0)));
+			queryList.add(createQuery((FilterAttribute)filterAttributeList.get(0)));
 			return;
 		}
 		
@@ -100,7 +103,7 @@ public class LuceneQueryBuilder {
 		
 		while(iter.hasNext()) {
 			FilterAttribute filterAttribute = iter.next();
-			Query query = makeQuery(filterAttribute);
+			Query query = createQuery(filterAttribute);
 
 			if(filterAttribute.isEssential())
 				booleanQuery.add(query, BooleanClause.Occur.MUST);
@@ -111,17 +114,42 @@ public class LuceneQueryBuilder {
 		queryList.add(booleanQuery);
 	}
 
-	private Query makeQuery(FilterAttribute filterAttribute) {
+	private Query createQuery(FilterAttribute filterAttribute) {
+		FilterType filterType = filterAttribute.getFilterType();
 		String attributeName = filterAttribute.getAttributeName();
-		String keyword = filterAttribute.getKeyword();
-
+		
+		if(filterType == FilterType.EQUAL) {
+			String text = filterAttribute.getEqualValue().toString();
+			
+			Query query = null;
+			Term term = new Term(attributeName, text);
+			
+			if(text.indexOf('?') != -1 || text.indexOf('*') != -1) {
+				query = new WildcardQuery(term);
+			} else {
+				query = new TermQuery(term);
+			}
+			
+			return query;
+		}
+		
+		Object lowerValue = filterAttribute.getLowerValue();
+		Object upperValue = filterAttribute.getUpperValue();
+		boolean includeLower = filterAttribute.isIncludeLower();
+		boolean includeUpper = filterAttribute.isIncludeUpper();
+		
 		Query query = null;
-		Term term = new Term(attributeName, keyword);
-
-		if(keyword.indexOf('?') != -1 || keyword.indexOf('*') != -1) {
-			query = new WildcardQuery(term);
-		} else {
-			query = new TermQuery(term);
+		
+		if(filterType == FilterType.INT_RANGE) {
+			query = NumericRangeQuery.newIntRange(attributeName, (Integer)lowerValue, (Integer)upperValue, includeLower, includeUpper);
+		} else if(filterType == FilterType.LONG_RANGE) {
+			query = NumericRangeQuery.newLongRange(attributeName, (Long)lowerValue, (Long)upperValue, includeLower, includeUpper);
+		} else if(filterType == FilterType.FLOAT_RANGE) {
+			query = NumericRangeQuery.newFloatRange(attributeName, (Float)lowerValue, (Float)upperValue, includeLower, includeUpper);
+		} else if(filterType == FilterType.DOUBLE_RANGE) {
+			query = NumericRangeQuery.newDoubleRange(attributeName, (Double)lowerValue, (Double)upperValue, includeLower, includeUpper);
+		} else if(filterType == FilterType.TEXT_RANGE) {
+			query = new TermRangeQuery(attributeName, lowerValue.toString(), upperValue.toString(), includeLower, includeUpper);
 		}
 		
 		return query;
@@ -144,7 +172,7 @@ public class LuceneQueryBuilder {
 		if(queryAttributeList == null || queryAttributeList.size() == 0)
 			typicalColumnName = RecordKey.RECORD_KEY;
 		else
-			typicalColumnName = (String)queryAttributeList.get(0);
+			typicalColumnName = queryAttributeList.get(0);
 		
 		try {
 			QueryParser queryParser = new QueryParser(ScanyContext.LUCENE_VERSION, typicalColumnName, analyzer);
