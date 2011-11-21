@@ -4,6 +4,7 @@
 package org.jhlabs.scany.engine.transaction;
 
 import org.jhlabs.scany.engine.entity.Record;
+import org.jhlabs.scany.engine.index.AnyIndexerException;
 
 /**
  *
@@ -16,9 +17,9 @@ public interface AnyTransaction {
 
 	public void begin();
 	
-	public void commit();
+	public void commit() throws AnyIndexerException;
 	
-	public void rollback();
+	public void rollback() throws AnyIndexerException;
 	
 	public void insert(Record record);
 	

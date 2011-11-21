@@ -4,6 +4,7 @@
 package org.jhlabs.scany.engine.transaction;
 
 import org.jhlabs.scany.engine.entity.Record;
+import org.jhlabs.scany.engine.index.AnyIndexerException;
 import org.jhlabs.scany.engine.transaction.job.DeleteJob;
 import org.jhlabs.scany.engine.transaction.job.InsertJob;
 import org.jhlabs.scany.engine.transaction.job.JobQueue;
@@ -37,9 +38,9 @@ public abstract class AbstractTransaction {
 		jobQueue = new JobQueue();
 	}
 	
-	public abstract void commit();
+	public abstract void commit() throws AnyIndexerException;
 	
-	public abstract void rollback();
+	public abstract void rollback() throws AnyIndexerException;
 	
 	public void insert(Record record) {
 		jobQueue.offer(new InsertJob(record));

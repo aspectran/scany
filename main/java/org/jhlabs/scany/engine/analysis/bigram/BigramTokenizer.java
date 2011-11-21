@@ -20,28 +20,52 @@ package org.jhlabs.scany.engine.analysis.bigram;
 import java.io.IOException;
 import java.io.Reader;
 
-import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.Tokenizer;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
+import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
+import org.apache.lucene.util.AttributeSource;
 
 /**
- * CJKTokenizer was modified from StopTokenizer which does a decent job for most
- * European languages. It performs other token methods for double-byte
- * Characters: the token will return at each two charactors with overlap match.<br>
- * Example: "java C1C2C3C4" will be segment to: "java" "C1C2" "C2C3" "C3C4" it
- * also need filter filter zero length token ""<br>
- * for Digit: digit, '+', '#' will token as letter<br>
- * for more info on Asia language(Chinese Japanese Korean) text segmentation:
- * please search <a
+ * BigramTokenizer is designed for Chinese, Japanese, and Korean languages.
+ * <p>  
+ * The tokens returned are every two adjacent characters with overlap match.
+ * </p>
+ * <p>
+ * Example: "java C1C2C3C4" will be segmented to: "java" "C1C2" "C2C3" "C3C4".
+ * </p>
+ * Additionally, the following is applied to Latin text (such as English):
+ * <ul>
+ * <li>Text is converted to lowercase.
+ * <li>Numeric digits, '+', '#', and '_' are tokenized as letters.
+ * <li>Full-width forms are converted to half-width forms.
+ * </ul>
+ * For more info on Asian language (Chinese, Japanese, and Korean) text segmentation:
+ * please search  <a
  * href="http://www.google.com/search?q=word+chinese+segment">google</a>
- * 
- * @author Che, Dong
+ *
  */
 public final class BigramTokenizer extends Tokenizer {
-	/** Default maximum allowed token length */
-	private static final int MAX_TOKEN_LENGTH = 255;
+	//~ Static fields/initializers ---------------------------------------------
+	/** Word token type */
+	static final int WORD_TYPE = 0;
 
-	/** Default maximum allowed buffer length */
-	private static final int IO_BUFFER_LENGTH = 256;
+	/** Single byte token type */
+	static final int SINGLE_TOKEN_TYPE = 1;
+
+	/** Double byte token type */
+	static final int DOUBLE_TOKEN_TYPE = 2;
+
+	/** Names for token types */
+	static final String[] TOKEN_TYPE_NAMES = { "word", "single", "double" };
+
+	/** Max word length */
+	private static final int MAX_WORD_LEN = 255;
+
+	/** buffer size: */
+	private static final int IO_BUFFER_SIZE = 256;
+
+	//~ Instance fields --------------------------------------------------------
 
 	/** word offset, used to imply which character(in ) is parsed */
 	private int offset = 0;
@@ -50,195 +74,240 @@ public final class BigramTokenizer extends Tokenizer {
 	private int bufferIndex = 0;
 
 	/** data length */
-	private int dataLength = 0;
+	private int dataLen = 0;
 
 	/**
 	 * character buffer, store the characters which are used to compose <br>
 	 * the returned Token
 	 */
-	private final char[] buffer = new char[MAX_TOKEN_LENGTH];
+	private final char[] buffer = new char[MAX_WORD_LEN];
 
 	/**
 	 * I/O buffer, used to store the content of the input(one of the <br>
 	 * members of Tokenizer)
 	 */
-	private final char[] ioBuffer = new char[IO_BUFFER_LENGTH];
+	private final char[] ioBuffer = new char[IO_BUFFER_SIZE];
 
-	/** word type: single=>ASCII double=>non-ASCII word=>default */
-	private String tokenType = "word";
+	/** word type: single=>ASCII  double=>non-ASCII word=>default */
+	private int tokenType = WORD_TYPE;
 
 	/**
-	 * tag: previous character is a cached double-byte character "C1C2C3C4"
-	 * ----(set the C1 isTokened) C1C2 "C2C3C4" ----(set the C2 isTokened) C1C2
-	 * C2C3 "C3C4" ----(set the C3 isTokened) "C1C2 C2C3 C3C4"
+	 * tag: previous character is a cached double-byte character  "C1C2C3C4"
+	 * ----(set the C1 isTokened) C1C2 "C2C3C4" ----(set the C2 isTokened)
+	 * C1C2 C2C3 "C3C4" ----(set the C3 isTokened) "C1C2 C2C3 C3C4"
 	 */
 	private boolean preIsTokened = false;
 
+	private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
+
+	private final OffsetAttribute offsetAtt = addAttribute(OffsetAttribute.class);
+
+	private final TypeAttribute typeAtt = addAttribute(TypeAttribute.class);
+
+	//~ Constructors -----------------------------------------------------------
+
 	/**
 	 * Construct a token stream processing the given input.
-	 * 
-	 * @param in
-	 *            I/O reader
+	 *
+	 * @param in I/O reader
 	 */
 	public BigramTokenizer(Reader in) {
-		input = in;
+		super(in);
 	}
 
+	public BigramTokenizer(AttributeSource source, Reader in) {
+		super(source, in);
+	}
+
+	public BigramTokenizer(AttributeFactory factory, Reader in) {
+		super(factory, in);
+	}
+
+	//~ Methods ----------------------------------------------------------------
+
 	/**
-	 * Returns the next token in the stream, or null at EOS. See
-	 * http://java.sun.com/j2se/1.3/docs/api/java/lang/Character.UnicodeBlock.html
+	 * Returns true for the next token in the stream, or false at EOS.
+	 * See http://java.sun.com/j2se/1.3/docs/api/java/lang/Character.UnicodeBlock.html
 	 * for detail.
-	 * 
-	 * @return Token
-	 * 
-	 * @throws IOException -
-	 *             throw IOException when read error <br>
-	 *             hanppened in the InputStream
-	 * 
+	 *
+	 * @return false for end of stream, true otherwise
+	 *
+	 * @throws java.io.IOException - throw IOException when read error <br>
+	 *         happened in the InputStream
+	 *
 	 */
-	public final Token next() throws IOException {
+	@Override
+	public boolean incrementToken() throws IOException {
+		clearAttributes();
 		/** how many character(s) has been stored in buffer */
-		int length = 0;
 
-		/** the position used to create Token */
-		int start = offset;
+		while(true) { // loop until we find a non-empty token
 
-		while(true) {
-			/** current charactor */
-			char c;
+			int length = 0;
 
-			/** unicode block of current charactor for detail */
-			Character.UnicodeBlock ub;
+			/** the position used to create Token */
+			int start = offset;
 
-			offset++;
+			while(true) { // loop until we've found a full token
+				/** current character */
+				char c;
 
-			if(bufferIndex >= dataLength) {
-				dataLength = input.read(ioBuffer);
-				bufferIndex = 0;
-			}
+				/** unicode block of current character for detail */
+				Character.UnicodeBlock ub;
 
-			if(dataLength == -1) {
-				if(length > 0) {
-					if(preIsTokened) {
-						length = 0;
-						preIsTokened = false;
-					}
+				offset++;
 
-					break;
-				} else {
-					return null;
-				}
-			} else {
-				// get current character
-				c = ioBuffer[bufferIndex++];
-
-				// get the UnicodeBlock of the current character
-				ub = Character.UnicodeBlock.of(c);
-			}
-
-			// if the current character is ASCII or Extend ASCII
-			if((ub == Character.UnicodeBlock.BASIC_LATIN)
-					|| (ub == Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS)) {
-				if(ub == Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS) {
-					/** convert HALFWIDTH_AND_FULLWIDTH_FORMS to BASIC_LATIN */
-					int i = (int) c;
-					i = i - 65248;
-					c = (char)i;
+				if(bufferIndex >= dataLen) {
+					dataLen = input.read(ioBuffer);
+					bufferIndex = 0;
 				}
 
-				// if the current character is a letter or "_" "+" "#"
-				if(Character.isLetterOrDigit(c)
-						|| ((c == '_') || (c == '+') || (c == '#'))) {
-					if(length == 0) {
-						// "javaC1C2C3C4linux" <br>
-						//      ^--: the current character begin to token the ASCII
-						// letter
-						start = offset - 1;
-
-					// if non-ASCII letter, return the previous non-ASCII characters
-					} else if(tokenType == "double") {
-						// "javaC1C2C3C4linux" <br>
-						//              ^--: the previous non-ASCII
-						// : the current character
-						offset--;
-						bufferIndex--;
-						tokenType = "single";
-
+				if(dataLen == -1) {
+					if(length > 0) {
 						if(preIsTokened) {
-							// there is only one non-ASCII has been stored
 							length = 0;
 							preIsTokened = false;
+						} else {
+							offset--;
 						}
 
 						break;
-					}
-
-					// store the LowerCase(c) in the buffer
-					buffer[length++] = Character.toLowerCase(c);
-					tokenType = "single";
-
-					// break the procedure if buffer overflowed!
-					if(length == MAX_TOKEN_LENGTH)
-						break;
-
-				} else if(length > 0) {
-					if(preIsTokened) {
-						length = 0;
-						preIsTokened = false;
 					} else {
-						break;
+						offset--;
+						return false;
 					}
+				} else {
+					//get current character
+					c = ioBuffer[bufferIndex++];
+
+					//get the UnicodeBlock of the current character
+					ub = Character.UnicodeBlock.of(c);
 				}
-			} else {
-				// non-ASCII letter, eg."C1C2C3C4"
-				if(Character.isLetter(c)) {
-					if(length == 0) {
-						start = offset - 1;
-						buffer[length++] = c;
-						tokenType = "double";
-					} else {
-						// if ASCII letter, return the previous ASCII characters
-						if(tokenType == "single") {
+
+				//if the current character is ASCII or Extend ASCII
+				if((ub == Character.UnicodeBlock.BASIC_LATIN)
+						|| (ub == Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS)) {
+					if(ub == Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS) {
+						int i = (int)c;
+						if(i >= 65281 && i <= 65374) {
+							// convert certain HALFWIDTH_AND_FULLWIDTH_FORMS to BASIC_LATIN
+							i = i - 65248;
+							c = (char)i;
+						}
+					}
+
+					// if the current character is a letter or "_" "+" "#"
+					if(Character.isLetterOrDigit(c) || ((c == '_') || (c == '+') || (c == '#'))) {
+						if(length == 0) {
+							// "javaC1C2C3C4linux" <br>
+							//      ^--: the current character begin to token the ASCII
+							// letter
+							start = offset - 1;
+						} else if(tokenType == DOUBLE_TOKEN_TYPE) {
+							// "javaC1C2C3C4linux" <br>
+							//              ^--: the previous non-ASCII
+							// : the current character
 							offset--;
 							bufferIndex--;
 
-							break;
-						} else {
-							buffer[length++] = c;
-							tokenType = "double";
-
-							if(length == 2) {
-								offset--;
-								bufferIndex--;
-								preIsTokened = true;
-
+							if(preIsTokened) {
+								// there is only one non-ASCII has been stored
+								length = 0;
+								preIsTokened = false;
+								break;
+							} else {
 								break;
 							}
 						}
+
+						// store the LowerCase(c) in the buffer
+						buffer[length++] = Character.toLowerCase(c);
+						tokenType = SINGLE_TOKEN_TYPE;
+
+						// break the procedure if buffer overflowed!
+						if(length == MAX_WORD_LEN) {
+							break;
+						}
+					} else if(length > 0) {
+						if(preIsTokened) {
+							length = 0;
+							preIsTokened = false;
+						} else {
+							break;
+						}
 					}
-				} else if(length > 0) {
-					if(preIsTokened) {
-						// empty the buffer
-						length = 0;
-						preIsTokened = false;
-					} else {
-						break;
+				} else {
+					// non-ASCII letter, e.g."C1C2C3C4"
+					if(Character.isLetter(c)) {
+						if(length == 0) {
+							start = offset - 1;
+							buffer[length++] = c;
+							tokenType = DOUBLE_TOKEN_TYPE;
+						} else {
+							if(tokenType == SINGLE_TOKEN_TYPE) {
+								offset--;
+								bufferIndex--;
+
+								//return the previous ASCII characters
+								break;
+							} else {
+								buffer[length++] = c;
+								tokenType = DOUBLE_TOKEN_TYPE;
+
+								if(length == 2) {
+									offset--;
+									bufferIndex--;
+									preIsTokened = true;
+
+									break;
+								}
+							}
+						}
+					} else if(length > 0) {
+						if(preIsTokened) {
+							// empty the buffer
+							length = 0;
+							preIsTokened = false;
+						} else {
+							break;
+						}
 					}
 				}
 			}
+
+			if(length > 0) {
+				termAtt.copyBuffer(buffer, 0, length);
+				offsetAtt.setOffset(correctOffset(start), correctOffset(start + length));
+				typeAtt.setType(TOKEN_TYPE_NAMES[tokenType]);
+				return true;
+			} else if(dataLen == -1) {
+				offset--;
+				return false;
+			}
+
+			// Cycle back and try for the next token (don't
+			// return an empty string)
 		}
-
-		// "" 문자열이 한 번 더 반환되는 문제 수정
-		// bug fixed by Gulendol. 2008-01-08
-		if(length == 0)
-			return null;
-
-		Token token = new Token(new String(buffer, 0, length), start, start + length, tokenType);
-
-		// For debug
-		System.out.println("Bigram Token: " + token.toString());
-		
-		return token;
 	}
 
+	@Override
+	public final void end() {
+		// set final offset
+		final int finalOffset = correctOffset(offset);
+		this.offsetAtt.setOffset(finalOffset, finalOffset);
+	}
+
+	@Override
+	public void reset() throws IOException {
+		super.reset();
+		offset = bufferIndex = dataLen = 0;
+		preIsTokened = false;
+		tokenType = WORD_TYPE;
+	}
+
+	@Override
+	public void reset(Reader reader) throws IOException {
+		super.reset(reader);
+		reset();
+	}
 }
