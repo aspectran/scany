@@ -101,7 +101,9 @@ public class ScanyNodeParser {
 		parser.addNodelet("/scany/client/end()", new EasyNodelet() {
 			public void process(Properties attributes, String text) throws Exception {
 				ClientRule cr = (ClientRule)assistant.popObject();
-				assistant.setClientRule(cr);
+				
+				if(cr.getServiceMode() != null)
+					assistant.setClientRule(cr);
 			}
 		});
 	}

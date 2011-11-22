@@ -23,6 +23,8 @@ import org.jhlabs.scany.engine.entity.Schema;
 public class SchemaConfigAssistant extends AbstractAssistant {
 
 	private Schema schema;
+	
+	private String baseDirectory;
 
 	public Schema getSchema() {
 		return schema;
@@ -30,6 +32,14 @@ public class SchemaConfigAssistant extends AbstractAssistant {
 
 	public void setSchema(Schema schema) {
 		this.schema = schema;
+	}
+
+	public String getBaseDirectory() {
+		return baseDirectory;
+	}
+
+	public void setBaseDirectory(String baseDirectory) {
+		this.baseDirectory = baseDirectory;
 	}
 	
 }
