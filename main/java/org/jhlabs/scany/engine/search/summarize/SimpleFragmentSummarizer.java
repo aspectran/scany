@@ -106,6 +106,15 @@ public class SimpleFragmentSummarizer implements Summarizer {
 	}
 	
 	/**
+	 * 하이라이팅 처리 스타일을 지정한다.
+	 * @param prefixTag &lt;b&gt;
+	 * @param suffixTag &lt;/b&gt;
+	 */
+	public void setHighlightCloseTag(String closeTag) {
+		this.highlightTags[1] = closeTag;
+	}
+	
+	/**
 	 * 문단나눔 정보 클래스
 	 * @author Gulendol
 	 *

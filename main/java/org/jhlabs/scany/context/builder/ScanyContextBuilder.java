@@ -31,21 +31,25 @@ import org.jhlabs.scany.context.rule.ServerRule;
  */
 public class ScanyContextBuilder {
 
-	private final Log log = LogFactory.getLog(ScanyContextBuilder.class);
+	private final static Log log = LogFactory.getLog(ScanyContextBuilder.class);
 
-	public ScanyContext build(String contextConfigLocation) throws ScanyContextException {
+	public static ScanyContext build(String contextConfigLocation) throws ScanyContextException, FileNotFoundException {
+		File file = new File(contextConfigLocation);
+		
+		if(!file.isFile())
+			throw new FileNotFoundException("scany context configuration file is not found. " + contextConfigLocation);
+
+		InputStream is = new FileInputStream(file);
+		
+		return build(is);
+	}
+	
+	public static ScanyContext build(InputStream is) throws ScanyContextException {
 		try {
-			File file = new File(contextConfigLocation);
-			
-			if(!file.isFile())
-				throw new FileNotFoundException("scany context configuration file is not found. " + contextConfigLocation);
-	
-			InputStream inputStream = new FileInputStream(file);
-	
 			ScanyContextBuilderAssistant assistant = new ScanyContextBuilderAssistant();
 			
 			ScanyNodeParser scanyNodeParser = new ScanyNodeParser(assistant);
-			scanyNodeParser.parse(inputStream);
+			scanyNodeParser.parse(is);
 	
 			LocalServiceRule localServiceRule = assistant.getLocalServiceRule();
 			ClientRule clientRule = assistant.getClientRule();

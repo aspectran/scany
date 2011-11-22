@@ -12,6 +12,7 @@ import org.jhlabs.scany.engine.search.SearchModel;
 import org.jhlabs.scany.engine.transaction.AnyTransaction;
 import org.jhlabs.scany.engine.transaction.LuceneTransaction;
 import org.jhlabs.scany.service.AbstractService;
+import org.jhlabs.scany.service.AnyService;
 import org.jhlabs.scany.service.NotDeclaredRelationException;
 
 /**
@@ -21,7 +22,7 @@ import org.jhlabs.scany.service.NotDeclaredRelationException;
  * <p>Created: 2011. 11. 6. 오후 4:46:36</p>
  *
  */
-public class LocalService extends AbstractService {
+public class LocalService extends AbstractService implements AnyService {
 	
 	private LocalServiceRule localServiceRule;
 

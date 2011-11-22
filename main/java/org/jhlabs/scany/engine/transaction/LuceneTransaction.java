@@ -8,10 +8,8 @@ import org.jhlabs.scany.engine.transaction.job.JobType;
 
 public class LuceneTransaction extends AbstractTransaction implements AnyTransaction {
 
-	private Relation relation;
-	
 	public LuceneTransaction(Relation relation) {
-		this.relation = relation;
+		super(relation);
 	}
 
 	public void commit() throws AnyIndexerException {
