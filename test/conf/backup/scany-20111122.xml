@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE scany PUBLIC "-//JHLabs.org//DTD scany 2.0//EN"
+                           "./dtd/scany-2.0.dtd">
+
+<scany>
+
+	<local>
+		<schema></schema>
+		<directory></directory>
+		<characterEncoding>utf-8</characterEncoding>
+		<spooling>
+			<directory></directory>
+		</spooling>
+	</local>
+
+	<client>
+		<remote>
+			<http>
+				<url>http://</url>
+				<message format="json" encoding="utf-8">
+					<keysign encryption="none">1234</keysign>
+					<body compressable="true"/>
+				</message>
+			</http>
+		</remote>
+	</client>
+
+	<server>
+		<remote>
+			<tcp>
+				<connection>
+					<host port=""/>
+					<timeout>2000</timeout>
+				</connection>
+				<message format="xml" encoding="utf-8">
+					<keysign encryption="none">1234</keysign>
+					<body compressable="true"/>
+				</message>
+			</tcp>
+		</remote>
+		<optimizing>
+			
+		</optimizing>
+	</server>
+
+</scany>
