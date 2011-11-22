@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.jhlabs.scany.context.builder.ScanyContextBuilderAssistant;
+import org.jhlabs.scany.context.builder.SchemaConfigAssistant;
 import org.jhlabs.scany.engine.entity.Schema;
 import org.jhlabs.scany.engine.search.summarize.Summarizer;
 import org.jhlabs.scany.util.xml.EasyNodelet;
@@ -33,7 +33,7 @@ import org.jhlabs.scany.util.xml.EasyNodeletParser;
  */
 public class SummarizersNodeletAdder implements EasyNodeletAdder {
 	
-	protected ScanyContextBuilderAssistant assistant;
+	protected SchemaConfigAssistant assistant;
 	
 	/**
 	 * Instantiates a new content nodelet adder.
@@ -41,7 +41,7 @@ public class SummarizersNodeletAdder implements EasyNodeletAdder {
 	 * @param parser the parser
 	 * @param assistant the assistant for Context Builder
 	 */
-	public SummarizersNodeletAdder(ScanyContextBuilderAssistant assistant) {
+	public SummarizersNodeletAdder(SchemaConfigAssistant assistant) {
 		this.assistant = assistant;
 	}
 

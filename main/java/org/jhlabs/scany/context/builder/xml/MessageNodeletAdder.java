@@ -17,7 +17,7 @@ package org.jhlabs.scany.context.builder.xml;
 
 import java.util.Properties;
 
-import org.jhlabs.scany.context.builder.ScanyContextBuilderAssistant;
+import org.jhlabs.scany.context.builder.ScanyConfigAssistant;
 import org.jhlabs.scany.context.rule.MessageRule;
 import org.jhlabs.scany.context.rule.RemoteHttpServiceRule;
 import org.jhlabs.scany.context.rule.RemoteTcpServiceRule;
@@ -33,7 +33,7 @@ import org.jhlabs.scany.util.xml.EasyNodeletParser;
  */
 public class MessageNodeletAdder implements EasyNodeletAdder {
 	
-	protected ScanyContextBuilderAssistant assistant;
+	protected ScanyConfigAssistant assistant;
 	
 	/**
 	 * Instantiates a new content nodelet adder.
@@ -41,7 +41,7 @@ public class MessageNodeletAdder implements EasyNodeletAdder {
 	 * @param parser the parser
 	 * @param assistant the assistant for Context Builder
 	 */
-	public MessageNodeletAdder(ScanyContextBuilderAssistant assistant) {
+	public MessageNodeletAdder(ScanyConfigAssistant assistant) {
 		this.assistant = assistant;
 	}
 	

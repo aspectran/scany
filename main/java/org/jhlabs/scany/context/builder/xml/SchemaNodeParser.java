@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.jhlabs.scany.context.builder.ScanyContextBuilderAssistant;
+import org.jhlabs.scany.context.builder.SchemaConfigAssistant;
 import org.jhlabs.scany.context.rule.LocalServiceRule;
 import org.jhlabs.scany.engine.entity.Attribute;
 import org.jhlabs.scany.engine.entity.AttributeMap;
@@ -40,21 +40,21 @@ public class SchemaNodeParser {
 	
 	private final EasyNodeletParser parser = new EasyNodeletParser();
 
-	private final ScanyContextBuilderAssistant assistant;
+	private final SchemaConfigAssistant assistant;
 	
 	/**
 	 * Instantiates a new translet map parser.
 	 * 
 	 * @param assistant the assistant for Context Builder
 	 */
-	public SchemaNodeParser(ScanyContextBuilderAssistant assistant) {
+	public SchemaNodeParser(SchemaConfigAssistant assistant) {
 		//super(log);
 		
 		this.assistant = assistant;
 		this.assistant.clearObjectStack();
 
-		parser.setValidation(true);
-		parser.setEntityResolver(new ScanyDtdResolver());
+		parser.setValidation(false);
+		//parser.setEntityResolver(new ScanyDtdResolver());
 
 		addRootNodelets();
 		addAnalyzersNodelets();

@@ -18,7 +18,7 @@ package org.jhlabs.scany.context.builder.xml;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.jhlabs.scany.context.builder.ScanyContextBuilderAssistant;
+import org.jhlabs.scany.context.builder.ScanyConfigAssistant;
 import org.jhlabs.scany.context.rule.ClientRule;
 import org.jhlabs.scany.context.rule.ServerRule;
 import org.jhlabs.scany.util.xml.EasyNodelet;
@@ -33,21 +33,21 @@ public class ScanyNodeParser {
 	
 	private final EasyNodeletParser parser = new EasyNodeletParser();
 
-	private final ScanyContextBuilderAssistant assistant;
+	private final ScanyConfigAssistant assistant;
 	
 	/**
 	 * Instantiates a new translet map parser.
 	 * 
 	 * @param assistant the assistant for Context Builder
 	 */
-	public ScanyNodeParser(ScanyContextBuilderAssistant assistant) {
+	public ScanyNodeParser(ScanyConfigAssistant assistant) {
 		//super(log);
 		
 		this.assistant = assistant;
 		this.assistant.clearObjectStack();
 
-		parser.setValidation(true);
-		parser.setEntityResolver(new ScanyDtdResolver());
+		parser.setValidation(false);
+		//parser.setEntityResolver(new ScanyDtdResolver());
 
 		addRootNodelets();
 		addLocalNodelets();
@@ -83,7 +83,7 @@ public class ScanyNodeParser {
 	}
 
 	private void addLocalNodelets() {
-		parser.addNodelet("/scany/local", new LocalNodeletAdder(assistant));
+		parser.addNodelet("/scany", new LocalNodeletAdder(assistant));
 	}
 	
 	private void addClientNodelets() {

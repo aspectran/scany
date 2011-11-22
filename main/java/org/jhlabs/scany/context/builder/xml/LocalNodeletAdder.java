@@ -17,7 +17,7 @@ package org.jhlabs.scany.context.builder.xml;
 
 import java.util.Properties;
 
-import org.jhlabs.scany.context.builder.ScanyContextBuilderAssistant;
+import org.jhlabs.scany.context.builder.ScanyConfigAssistant;
 import org.jhlabs.scany.context.rule.ClientRule;
 import org.jhlabs.scany.context.rule.FileSpoolTransactionRule;
 import org.jhlabs.scany.context.rule.LocalServiceRule;
@@ -35,7 +35,7 @@ import org.jhlabs.scany.util.xml.EasyNodeletParser;
  */
 public class LocalNodeletAdder implements EasyNodeletAdder {
 	
-	protected ScanyContextBuilderAssistant assistant;
+	protected ScanyConfigAssistant assistant;
 	
 	/**
 	 * Instantiates a new content nodelet adder.
@@ -43,7 +43,7 @@ public class LocalNodeletAdder implements EasyNodeletAdder {
 	 * @param parser the parser
 	 * @param assistant the assistant for Context Builder
 	 */
-	public LocalNodeletAdder(ScanyContextBuilderAssistant assistant) {
+	public LocalNodeletAdder(ScanyConfigAssistant assistant) {
 		this.assistant = assistant;
 	}
 	
