@@ -5,10 +5,8 @@ import org.jhlabs.scany.engine.transaction.AbstractTransaction;
 
 public class RemoteHttpTransaction extends AbstractTransaction {
 
-	private Relation table;
-
-	public RemoteHttpTransaction(Relation table) {
-		this.table = table;
+	public RemoteHttpTransaction(Relation relation) {
+		super(relation);
 	}
 	
 	public void commit() {

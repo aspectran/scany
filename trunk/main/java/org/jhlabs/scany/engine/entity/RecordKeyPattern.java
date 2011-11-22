@@ -27,23 +27,30 @@ public class RecordKeyPattern {
 	private String pattern;
 	
 	private String separator;
+	
+	private String[] keyNames;
 
 	public String getPattern() {
 		return pattern;
 	}
 
-	public void setPattern(String pattern) {
+	public void setPattern(String pattern, String separator) {
 		this.pattern = pattern;
+		this.separator = separator;
+		
+		if(separator != null && separator.length() > 0) {
+			keyNames = StringUtils.split(pattern, separator);
+		}
 	}
 
 	public String getSeparator() {
 		return separator;
 	}
-
-	public void setSeparator(String separator) {
-		this.separator = separator;
-	}
 	
+	public String[] getKeyNames() {
+		return keyNames;
+	}
+
 	/**
 	 * 각 요소(Key)를 키패턴(KeyPattern)에 맞게 조합하여 PrimaryKey를 생성한다.
 	 * @param keyPattern
@@ -52,7 +59,6 @@ public class RecordKeyPattern {
 	 */
 	public String combine(RecordKey recordKey) throws RecordKeyException {
 		try {
-			String[] keyNames = StringUtils.split(pattern, separator);
 			String[] keyValues = new String[keyNames.length];
 	
 			if(keyNames.length == 0)

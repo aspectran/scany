@@ -150,8 +150,7 @@ public class SchemaNodeParser {
 				String separator = attributes.getProperty("separator");
 				
 				RecordKeyPattern recordKeyPattern = new RecordKeyPattern();
-				recordKeyPattern.setSeparator(separator);
-				recordKeyPattern.setPattern(text);
+				recordKeyPattern.setPattern(text, separator);
 				
 				Relation relation = (Relation)assistant.peekObject();
 				relation.setRecordKeyPattern(recordKeyPattern);
