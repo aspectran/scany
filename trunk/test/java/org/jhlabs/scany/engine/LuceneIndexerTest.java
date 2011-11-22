@@ -38,7 +38,8 @@ public class LuceneIndexerTest {
 			tran.commit();
 		} catch(Exception e) {
 			try {
-				tran.rollback();
+				if(tran != null)
+					tran.rollback();
 			} catch(AnyIndexerException e1) {
 				e1.printStackTrace();
 			}

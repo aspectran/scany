@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE scany PUBLIC "-//JHLabs.org//DTD scany 2.0//EN"
-                           "./dtd/scany-2.0.dtd">
 
 <scany>
 
@@ -11,7 +9,10 @@
 	</local>
 
 	<client>
-		<local/>
-	</client>
+	<local>
+		<directory>/c:/ADE_JHLabs/workspace/scany-test/data</directory>
+		<schema>/c:/ADE_JHLabs/workspace/scany-test/conf/schema.xml</schema>
+		<characterEncoding>utf-8</characterEncoding>
+	</local>	</client>
 
 </scany>
