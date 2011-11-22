@@ -17,7 +17,7 @@ package org.jhlabs.scany.context.builder.xml;
 
 import java.util.Properties;
 
-import org.jhlabs.scany.context.builder.ScanyContextBuilderAssistant;
+import org.jhlabs.scany.context.builder.SchemaConfigAssistant;
 import org.jhlabs.scany.util.BeanUtils;
 import org.jhlabs.scany.util.xml.EasyNodelet;
 import org.jhlabs.scany.util.xml.EasyNodeletAdder;
@@ -30,7 +30,7 @@ import org.jhlabs.scany.util.xml.EasyNodeletParser;
  */
 public class PropertyNodeletAdder implements EasyNodeletAdder {
 	
-	protected ScanyContextBuilderAssistant assistant;
+	protected SchemaConfigAssistant assistant;
 	
 	/**
 	 * Instantiates a new content nodelet adder.
@@ -38,7 +38,7 @@ public class PropertyNodeletAdder implements EasyNodeletAdder {
 	 * @param parser the parser
 	 * @param assistant the assistant for Context Builder
 	 */
-	public PropertyNodeletAdder(ScanyContextBuilderAssistant assistant) {
+	public PropertyNodeletAdder(SchemaConfigAssistant assistant) {
 		this.assistant = assistant;
 	}
 

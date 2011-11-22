@@ -15,34 +15,15 @@
  */
 package org.jhlabs.scany.context.builder;
 
-import org.jhlabs.scany.context.rule.ClientRule;
-import org.jhlabs.scany.context.rule.LocalServiceRule;
-import org.jhlabs.scany.context.rule.ServerRule;
-import org.jhlabs.scany.engine.entity.Schema;
 import org.jhlabs.scany.util.ArrayStack;
 
 /**
  * <p>Created: 2008. 04. 01 오후 10:25:35</p>
  */
-public class ScanyContextBuilderAssistant {
+public class AbstractAssistant {
 
 	/** The object stack. */
-	private ArrayStack objectStack;
-
-	private LocalServiceRule localServiceRule;
-	
-	private ClientRule clientRule;
-	
-	private ServerRule serverRule;
-	
-	private Schema schema;
-	
-	/**
-	 * Instantiates a new translets config.
-	 */
-	public ScanyContextBuilderAssistant() {
-		this.objectStack = new ArrayStack(); 
-	}
+	private ArrayStack objectStack = new ArrayStack();
 
 	/**
 	 * Push object.
@@ -76,38 +57,6 @@ public class ScanyContextBuilderAssistant {
 	 */
 	public void clearObjectStack() {
 		objectStack.clear();
-	}
-	
-	public LocalServiceRule getLocalServiceRule() {
-		return localServiceRule;
-	}
-
-	public void setLocalServiceRule(LocalServiceRule localServiceRule) {
-		this.localServiceRule = localServiceRule;
-	}
-
-	public ClientRule getClientRule() {
-		return clientRule;
-	}
-
-	public void setClientRule(ClientRule clientRule) {
-		this.clientRule = clientRule;
-	}
-
-	public ServerRule getServerRule() {
-		return serverRule;
-	}
-
-	public void setServerRule(ServerRule serverRule) {
-		this.serverRule = serverRule;
-	}
-
-	public Schema getSchema() {
-		return schema;
-	}
-
-	public void setSchema(Schema schema) {
-		this.schema = schema;
 	}
 	
 }

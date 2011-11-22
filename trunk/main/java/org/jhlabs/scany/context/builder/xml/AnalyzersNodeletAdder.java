@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.jhlabs.scany.context.builder.ScanyContextBuilderAssistant;
+import org.jhlabs.scany.context.builder.SchemaConfigAssistant;
 import org.jhlabs.scany.engine.entity.Schema;
 import org.jhlabs.scany.util.xml.EasyNodelet;
 import org.jhlabs.scany.util.xml.EasyNodeletAdder;
@@ -33,7 +33,7 @@ import org.jhlabs.scany.util.xml.EasyNodeletParser;
  */
 public class AnalyzersNodeletAdder implements EasyNodeletAdder {
 	
-	protected ScanyContextBuilderAssistant assistant;
+	protected SchemaConfigAssistant assistant;
 	
 	/**
 	 * Instantiates a new content nodelet adder.
@@ -41,7 +41,7 @@ public class AnalyzersNodeletAdder implements EasyNodeletAdder {
 	 * @param parser the parser
 	 * @param assistant the assistant for Context Builder
 	 */
-	public AnalyzersNodeletAdder(ScanyContextBuilderAssistant assistant) {
+	public AnalyzersNodeletAdder(SchemaConfigAssistant assistant) {
 		this.assistant = assistant;
 	}
 

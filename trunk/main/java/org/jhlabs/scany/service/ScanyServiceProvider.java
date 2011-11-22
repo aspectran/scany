@@ -1,6 +1,6 @@
 package org.jhlabs.scany.service;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 
 import org.jhlabs.scany.context.ScanyContext;
@@ -15,12 +15,14 @@ public class ScanyServiceProvider {
 	
 	private final ScanyContext scanyContext;
 	
-	public ScanyServiceProvider(String configLocation) throws FileNotFoundException {
-		this(ScanyContextBuilder.build(configLocation));
+	public ScanyServiceProvider(String configLocation) throws ScanyContextException, IOException {
+		ScanyContextBuilder builder = new ScanyContextBuilder();
+		scanyContext = builder.build(configLocation);
 	}
 
 	public ScanyServiceProvider(InputStream is) {
-		this(ScanyContextBuilder.build(is));
+		ScanyContextBuilder builder = new ScanyContextBuilder();
+		scanyContext = builder.build(is);
 	}
 	
 	public ScanyServiceProvider(ScanyContext scanyContext) {

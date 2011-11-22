@@ -32,7 +32,7 @@ import org.xml.sax.SAXException;
  */
 public class ScanyDtdResolver implements EntityResolver {
 
-	private static final String SCANY_DTD = "org/jhlabs/scany/context/builder/xml/dtd/scany-1.dtd";
+	private static final String SCANY_DTD = "org/jhlabs/scany/context/builder/xml/dtd/scany-2.0.dtd";
 
 	private static final Map<String, String> doctypeMap = new HashMap<String, String>();
 
