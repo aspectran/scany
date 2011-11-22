@@ -21,7 +21,7 @@ import java.util.Properties;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.jhlabs.scany.context.builder.SchemaConfigAssistant;
-import org.jhlabs.scany.context.rule.LocalServiceRule;
+import org.jhlabs.scany.context.type.DirectoryType;
 import org.jhlabs.scany.engine.entity.Attribute;
 import org.jhlabs.scany.engine.entity.AttributeMap;
 import org.jhlabs.scany.engine.entity.RecordKeyPattern;
@@ -130,18 +130,28 @@ public class SchemaNodeParser {
 		});
 		parser.addNodelet("/schema/relation/directory", new EasyNodelet() {
 			public void process(Properties attributes, String text) throws Exception {
+				String type = attributes.getProperty("type");
 				String relative = attributes.getProperty("relative");
 				Boolean relativeDirectory = Boolean.valueOf(relative);
 				
+				DirectoryType directoryType = DirectoryType.valueOf(type);
+				
+				if(type != null && type.length() > 0 && directoryType == null)
+					throw new IllegalArgumentException("Unknown directory type '" + type + "'.");
+				
+				if(directoryType == null)
+					directoryType = DirectoryType.FS;
+				
 				Relation relation = (Relation)assistant.peekObject();
-
+				relation.setDirectoryType(directoryType);
+				
 				if(relativeDirectory == Boolean.TRUE) {
-					LocalServiceRule lsr = assistant.getLocalServiceRule();
-					String rootDirectory = lsr.getDirectory();
-					String directory = rootDirectory + "/" + text;
+					String basetDirectory = assistant.getBaseDirectory();
+					String directory = basetDirectory + "/" + text;
 					relation.setDirectory(directory);
 				} else{
-					relation.setDirectory(text);
+					if(text != null && text.length() > 0)
+						relation.setDirectory(text);
 				}
 			}
 		});

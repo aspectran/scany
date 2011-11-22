@@ -18,7 +18,7 @@ package org.jhlabs.scany.service;
  * @author Gulendol
  * 
  */
-public class NotDeclaredRelationException extends RuntimeException {
+public class NotSuchRelationException extends RuntimeException {
 
 	/** @serial */
 	static final long serialVersionUID = 6834919771549843895L;
@@ -26,7 +26,7 @@ public class NotDeclaredRelationException extends RuntimeException {
 	/**
 	 * Simple constructor
 	 */
-	public NotDeclaredRelationException() {
+	public NotSuchRelationException() {
 	}
 
 	/**
@@ -35,7 +35,7 @@ public class NotDeclaredRelationException extends RuntimeException {
 	 * @param msg
 	 *            A message to associate with the exception
 	 */
-	public NotDeclaredRelationException(String relationId) {
+	public NotSuchRelationException(String relationId) {
 		super("'" + relationId + "' is Not declared relation.");
 	}
 
@@ -45,7 +45,7 @@ public class NotDeclaredRelationException extends RuntimeException {
 	 * @param cause
 	 *            The real cause of the exception
 	 */
-	public NotDeclaredRelationException(Throwable cause) {
+	public NotSuchRelationException(Throwable cause) {
 		super(cause);
 	}
 
@@ -58,7 +58,7 @@ public class NotDeclaredRelationException extends RuntimeException {
 	 * @param cause
 	 *            The real cause of the exception
 	 */
-	public NotDeclaredRelationException(String msg, Throwable cause) {
+	public NotSuchRelationException(String msg, Throwable cause) {
 		super(msg, cause);
 	}
 }

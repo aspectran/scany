@@ -58,20 +58,20 @@ public class RemoteHttpNodeletAdder implements EasyNodeletAdder {
 		});
 		parser.addNodelet(xpath, "/remote/http/schema", new EasyNodelet() {
 			public void process(Properties attributes, String text) throws Exception {
-				RemoteHttpServiceRule hsr = (RemoteHttpServiceRule)assistant.peekObject();
-				hsr.setSchemaConfigLocation(text);
+				RemoteHttpServiceRule rhsr = (RemoteHttpServiceRule)assistant.peekObject();
+				rhsr.setSchemaConfigLocation(text);
 			}
 		});
 		parser.addNodelet(xpath, "/remote/http/characterEncoding", new EasyNodelet() {
 			public void process(Properties attributes, String text) throws Exception {
-				RemoteHttpServiceRule hsr = (RemoteHttpServiceRule)assistant.peekObject();
-				hsr.setCharacterEncoding(text);
+				RemoteHttpServiceRule rhsr = (RemoteHttpServiceRule)assistant.peekObject();
+				rhsr.setCharacterEncoding(text);
 			}
 		});
 		parser.addNodelet(xpath, "/remote/http/url", new EasyNodelet() {
 			public void process(Properties attributes, String text) throws Exception {
-				RemoteHttpServiceRule hsr = (RemoteHttpServiceRule)assistant.peekObject();
-				hsr.setUrl(text);
+				RemoteHttpServiceRule rhsr = (RemoteHttpServiceRule)assistant.peekObject();
+				rhsr.setUrl(text);
 			}
 		});
 
@@ -80,11 +80,11 @@ public class RemoteHttpNodeletAdder implements EasyNodeletAdder {
 		if(xpath.endsWith("/scany/client")) {
 			parser.addNodelet(xpath, "/remote/http/end()", new EasyNodelet() {
 				public void process(Properties attributes, String text) throws Exception {
-					RemoteTcpServiceRule rtsr = (RemoteTcpServiceRule)assistant.popObject();
+					RemoteHttpServiceRule rhsr = (RemoteHttpServiceRule)assistant.popObject();
 					ClientRule cr = (ClientRule)assistant.peekObject();
 					cr.setServiceMode(ServiceMode.REMOTE);
 					cr.setRemoteMode(RemoteMode.HTTP);
-					cr.setAnyServiceRule(rtsr);
+					cr.setAnyServiceRule(rhsr);
 				}
 			});
 		}

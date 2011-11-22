@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.jhlabs.scany.engine.search;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
@@ -22,7 +21,6 @@ import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TopFieldDocs;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
 import org.jhlabs.scany.engine.entity.Record;
 import org.jhlabs.scany.engine.entity.RecordKeyException;
 import org.jhlabs.scany.engine.entity.RecordList;
@@ -214,7 +212,7 @@ public class LuceneSearcher extends SearchModel implements AnySearcher {
 		IndexSearcher indexSearcher = null;
 		
 		try {
-			Directory directory = FSDirectory.open(new File(searchModel.getRelation().getDirectory()));
+			Directory directory = searchModel.getRelation().openDirectory();
 			indexSearcher = new IndexSearcher(directory);
 			
 			LuceneQueryBuilder queryBuilder = new LuceneQueryBuilder();

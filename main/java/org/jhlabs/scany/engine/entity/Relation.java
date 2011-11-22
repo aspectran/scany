@@ -11,7 +11,14 @@
 package org.jhlabs.scany.engine.entity;
 
 
+import java.io.File;
+import java.io.IOException;
+
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.RAMDirectory;
+import org.jhlabs.scany.context.type.DirectoryType;
 
 /**
  * 스키마 정보를 담고 있다.
@@ -26,6 +33,8 @@ public class Relation {
 	private String id;
 	
 	private RecordKeyPattern recordKeyPattern;
+	
+	private DirectoryType directoryType;
 	
 	private String directory;
 	
@@ -97,6 +106,14 @@ public class Relation {
 	 */
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public DirectoryType getDirectoryType() {
+		return directoryType;
+	}
+
+	public void setDirectoryType(DirectoryType directoryType) {
+		this.directoryType = directoryType;
 	}
 
 	/**
@@ -185,6 +202,22 @@ public class Relation {
 		RecordKey recordKey = new RecordKey(recordKeyPattern);
 		recordKey.setRecordKeyString(recordKeyString);
 		return recordKey;
+	}
+	
+	public Directory openDirectory() throws IOException {
+		Directory directory = null;
+		
+		if(directoryType == DirectoryType.FS) {
+			directory = FSDirectory.open(new File(this.directory));
+		} else if(directoryType == DirectoryType.FS) {
+			if(this.directory == null)
+				directory = new RAMDirectory();
+			else {
+				directory = new RAMDirectory(FSDirectory.open(new File(this.directory)));
+			}
+		}
+		
+		return directory;
 	}
 
 }

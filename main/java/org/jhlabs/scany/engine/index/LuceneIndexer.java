@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.jhlabs.scany.engine.index;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 
@@ -27,7 +26,6 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 import org.jhlabs.scany.engine.entity.Attribute;
 import org.jhlabs.scany.engine.entity.AttributeMap;
@@ -66,8 +64,8 @@ public class LuceneIndexer implements AnyIndexer {
 
 	private void initialize() throws AnyIndexerException {
 		try {
-			directory = FSDirectory.open(new File(relation.getDirectory()));
-
+			directory = relation.openDirectory();
+			
 			IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_34, relation.getAnalyzer());  
 			
 			indexWriter = new IndexWriter(directory, conf);

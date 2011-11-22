@@ -24,8 +24,7 @@ import org.jhlabs.scany.context.builder.xml.ScanyNodeParser;
 import org.jhlabs.scany.context.builder.xml.SchemaNodeParser;
 import org.jhlabs.scany.context.rule.ClientRule;
 import org.jhlabs.scany.context.rule.LocalServiceRule;
-import org.jhlabs.scany.context.rule.ServerRule;
-import org.jhlabs.scany.engine.entity.Schema;
+import org.jhlabs.scany.context.type.ServiceMode;
 
 /**
  * 
@@ -52,20 +51,17 @@ public class ScanyContextBuilder {
 	public ScanyContext build(InputStream is) throws ScanyContextException {
 		try {
 			ScanyConfigAssistant assistant = new ScanyConfigAssistant();
-	
+
 			loadScanyConfig(is, assistant);
+			
 			assistant.clearObjectStack();
 
-			assistant.clearObjectStack();
-
-			LocalServiceRule localServiceRule = assistant.getLocalServiceRule();
-			ClientRule clientRule = assistant.getClientRule();
-			ServerRule serverRule = assistant.getServerRule();
+			loadSchemaConfig(assistant);
 			
 			ScanyContext scanyContext = new ScanyContext();
-			scanyContext.setLocalServiceRule(localServiceRule);
-			scanyContext.setClientRule(clientRule);
-			scanyContext.setServerRule(serverRule);
+			scanyContext.setLocalServiceRule(assistant.getLocalServiceRule());
+			scanyContext.setClientRule(assistant.getClientRule());
+			scanyContext.setServerRule(assistant.getServerRule());
 			
 			return scanyContext;
 		} catch(Exception e) {
@@ -79,30 +75,67 @@ public class ScanyContextBuilder {
 		scanyNodeParser.parse(is);
 	}
 	
-	private void loadSchemaConfig(ScanyConfigAssistant assistant) throws Exception {
-		LocalServiceRule localServiceRule = assistant.getLocalServiceRule();
-		ClientRule clientRule = assistant.getClientRule();
-		ServerRule serverRule = assistant.getServerRule();
+	private void loadSchemaConfig(ScanyConfigAssistant scanyConfigAssistant) throws Exception {
+		LocalServiceRule localServiceRule = scanyConfigAssistant.getLocalServiceRule();
+		ClientRule clientRule = scanyConfigAssistant.getClientRule();
+
+		String localDirectory = null;
+		String clientDirectory = null;
+		String localSchemaConfigLocation = null;
+		String clientSchemaConfigLocation = null;
 		
-		ScanyNodeParser scanyNodeParser = new ScanyNodeParser(assistant);
-		scanyNodeParser.parse(is);
+		if(localServiceRule != null) {
+			localDirectory = localServiceRule.getDirectory();
+		}
+
+		if(clientRule != null && clientRule.getServiceMode() == ServiceMode.LOCAL) {
+			clientDirectory = ((LocalServiceRule)clientRule.getAnyServiceRule()).getDirectory();
+		} 
+		
+		if(localServiceRule != null) {
+			localSchemaConfigLocation = localServiceRule.getSchemaConfigLocation();
+		}
+		
+		if(clientRule != null) {
+			clientSchemaConfigLocation = clientRule.getSchemaConfigLocation();
+		}
+		
+		if(localSchemaConfigLocation != null && localSchemaConfigLocation.equals(clientSchemaConfigLocation))
+			clientSchemaConfigLocation = null;
+			
+		if(localSchemaConfigLocation != null) {
+			SchemaConfigAssistant assistant = new SchemaConfigAssistant();
+			assistant.setBaseDirectory(localDirectory);
+			loadSchema(localSchemaConfigLocation, assistant);
+			assistant.clearObjectStack();
+			localServiceRule.setSchema(assistant.getSchema());
+		}
+		
+		if(clientSchemaConfigLocation != null) {
+			SchemaConfigAssistant assistant = new SchemaConfigAssistant();
+			assistant.setBaseDirectory(clientDirectory);
+			loadSchema(clientSchemaConfigLocation, assistant);
+			assistant.clearObjectStack();
+			clientRule.setSchema(assistant.getSchema());
+		}
+		
+		if(localServiceRule != null && clientRule != null && clientRule.getSchema() == null) {
+			clientRule.setSchema(localServiceRule.getSchema());
+		}
 	}
 
-	public Schema loadSchema(String schemaConfigLocation) throws Exception {
+	private void loadSchema(String schemaConfigLocation, SchemaConfigAssistant assistant) throws Exception {
 		File file = new File(schemaConfigLocation);
 		
 		if(!file.isFile())
 			throw new FileNotFoundException("Scany schema configuration file is not found. " + schemaConfigLocation);
 
 		InputStream is = new FileInputStream(file);
-		Schema schema = loadSchema(is);
+		loadSchema(is, assistant);
 		is.close();
-		
-		return schema;
 	}
 	
-	private Schema loadSchema(InputStream is) throws Exception {
-		ScanyConfigAssistant assistant = new ScanyConfigAssistant();
+	private void loadSchema(InputStream is, SchemaConfigAssistant assistant) throws Exception {
 		SchemaNodeParser schemaNodeParser = new SchemaNodeParser(assistant);
 		schemaNodeParser.parse(is);
 	}
