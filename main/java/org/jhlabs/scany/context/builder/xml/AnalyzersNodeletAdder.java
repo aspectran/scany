@@ -80,7 +80,7 @@ public class AnalyzersNodeletAdder implements EasyNodeletAdder {
 			public void process(Properties attributes, String text) throws Exception {
 				Analyzer analyzer = (Analyzer)assistant.popObject();
 				String id = (String)assistant.popObject();
-				
+
 				@SuppressWarnings("unchecked")
 				Map<String, Analyzer> analyzerMap = (Map<String, Analyzer>)assistant.peekObject();
 				analyzerMap.put(id, analyzer);
@@ -91,7 +91,7 @@ public class AnalyzersNodeletAdder implements EasyNodeletAdder {
 				@SuppressWarnings("unchecked")
 				Map<String, Analyzer> analyzerMap = (Map<String, Analyzer>)assistant.popObject();
 
-				Schema schema = (Schema)assistant.peekObject();
+				Schema schema = assistant.getSchema();
 				schema.setAnalyzerMap(analyzerMap);
 			}
 		});

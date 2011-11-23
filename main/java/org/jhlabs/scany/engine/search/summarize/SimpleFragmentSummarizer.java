@@ -110,6 +110,15 @@ public class SimpleFragmentSummarizer implements Summarizer {
 	 * @param prefixTag &lt;b&gt;
 	 * @param suffixTag &lt;/b&gt;
 	 */
+	public void setHighlightOpenTag(String openTag) {
+		this.highlightTags[0] = openTag;
+	}
+	
+	/**
+	 * 하이라이팅 처리 스타일을 지정한다.
+	 * @param prefixTag &lt;b&gt;
+	 * @param suffixTag &lt;/b&gt;
+	 */
 	public void setHighlightCloseTag(String closeTag) {
 		this.highlightTags[1] = closeTag;
 	}

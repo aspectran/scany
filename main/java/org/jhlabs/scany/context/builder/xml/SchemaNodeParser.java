@@ -16,6 +16,7 @@
 package org.jhlabs.scany.context.builder.xml;
 
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -231,9 +232,15 @@ public class SchemaNodeParser {
 		parser.addNodelet("/schema/relation/end()", new EasyNodelet() {
 			public void process(Properties attributes, String text) throws Exception {
 				Relation relation = (Relation)assistant.popObject();
-				Schema schema = (Schema)assistant.peekObject();
+				Schema schema = assistant.getSchema();
 				relation.setSchema(schema);
 				Map<String, Relation> relationMap = schema.getRelationMap();
+				
+				if(relationMap == null) {
+					relationMap = new HashMap<String, Relation>();
+					schema.setRelationMap(relationMap);
+				}
+				
 				relationMap.put(relation.getId(), relation);
 			}
 		});

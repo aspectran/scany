@@ -65,7 +65,7 @@ public class ScanyContextBuilder {
 			
 			return scanyContext;
 		} catch(Exception e) {
-			log.error("Translets configuration error.");
+			log.error("Scany configuration error.", e);
 			throw new ScanyContextBuilderException("Scany configuration error", e);
 		}
 	}
