@@ -19,7 +19,9 @@ import java.util.Map;
  * @author Gulendol
  *
  */
-public class Record {
+public class Record implements java.io.Serializable {
+
+	private static final long serialVersionUID = 478994437917671858L;
 
 	private RecordKey recordKey;
 

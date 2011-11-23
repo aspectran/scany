@@ -240,7 +240,7 @@ public class SearchModel {
 			if(attribute == null)
 				throw new InvalidAttributeException(filterAttribute.getAttributeName());
 			
-			if(!attribute.isIndexable() || !attribute.isTokenizable()) {
+			if(!attribute.isIndexable() || !attribute.isAnalyzable()) {
 				throw new InvalidAttributeException(filterAttribute.getAttributeName(), "색인화 또는 토큰화된 속성이어야 합니다.");
 			}
 		}
@@ -289,7 +289,7 @@ public class SearchModel {
 			if(attribute == null)
 				throw new InvalidAttributeException(sortAttribute.getAttributeName());
 			
-			if(!attribute.isIndexable() || !attribute.isTokenizable()) {
+			if(!attribute.isIndexable() || !attribute.isAnalyzable()) {
 				throw new InvalidAttributeException(sortAttribute.getAttributeName(), "색인화 또는 토큰화된 속성이어야 합니다.");
 			}
 		}

@@ -292,53 +292,52 @@ public class LuceneIndexer implements AnyIndexer {
 	 */
 	private Document createDocument(Record record) throws AnyIndexerException {
 		try {
-			// 컬럼속성
 			AttributeMap attributeMap = relation.getAttributeMap();
 
 			if(attributeMap.size() == 0)
-				throw new IllegalArgumentException("Column 속성이 정의되어 있지 않습니다.");
+				throw new IllegalArgumentException("Attributes are not defined.");
 
 			Document document = new Document();
-			Field field = null;
-			Field.Index index = null;
-			Field.Store store = null;
 
-			// Primary Key 필드
-			field = new Field(RecordKey.RECORD_KEY, record.getRecordKey().getRecordKeyString(), Field.Store.YES,
-					Field.Index.NOT_ANALYZED);
+			// Record Key
+			Field field = new Field(RecordKey.RECORD_KEY, record.getRecordKey().getRecordKeyString(), Field.Store.YES, Field.Index.NOT_ANALYZED);
 			document.add(field);
 
-			// 일반 필드 분석
 			Iterator<Attribute> iter = attributeMap.values().iterator();
 
+			Field.Index index = null;
+			Field.Store store = null;
+			
 			while(iter.hasNext()) {
 				Attribute attribute = iter.next();
 				String value = record.getValue(attribute.getName());
 
-				if(value == null)
-					throw new IllegalArgumentException("[" + attribute.getName() + "] Column의 값이 지정되어 있지 않습니다.");
+				if(!attribute.isNullable() && value == null)
+					throw new NullAttributeException(attribute);
 
-				store = attribute.isStorable() ? Field.Store.YES : Field.Store.NO;
-
-				// 색인여부, 토큰분리 여부
-				if(attribute.isTokenizable()) {
-					index = Field.Index.ANALYZED; //Field.Index.TOKENIZED;
-				} else {
-					//index = attribute.isIndexable() ? Field.Index.UN_TOKENIZED : Field.Index.NO;
-					index = attribute.isIndexable() ? Field.Index.NOT_ANALYZED : Field.Index.NO;
+				if(value != null) {
+					store = attribute.isStorable() ? Field.Store.YES : Field.Store.NO;
+	
+					// 색인여부, 토큰분리 여부
+					if(attribute.isAnalyzable()) {
+						index = Field.Index.ANALYZED; //Field.Index.TOKENIZED;
+					} else {
+						//index = attribute.isIndexable() ? Field.Index.UN_TOKENIZED : Field.Index.NO;
+						index = attribute.isIndexable() ? Field.Index.NOT_ANALYZED : Field.Index.NO;
+					}
+	
+					field = new Field(attribute.getName(), value, store, index);
+					
+					// boost factor
+					field.setBoost(attribute.getBoost());
+	
+					document.add(field);
 				}
-
-				field = new Field(attribute.getName(), value, store, index);
-				
-				// boost factor
-				field.setBoost(attribute.getBoost());
-
-				document.add(field);
 			}
 
 			return document;
 		} catch(Exception e) {
-			throw new AnyIndexerException("레코드(Record) 생성에 실패했습니다.", e);
+			throw new AnyIndexerException("Failed to create Record.", e);
 		}
 	}
 }

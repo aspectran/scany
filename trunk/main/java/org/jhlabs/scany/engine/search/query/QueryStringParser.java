@@ -265,9 +265,4 @@ public class QueryStringParser {
 		
 		fields = (String[])tokens.toArray(new String[tokens.size()]);
 	}
-	
-	public static void main(String[] args) {
-		//System.out.println(strainQueryString("가나 And and and 다라 and", false));
-
-	}
 }

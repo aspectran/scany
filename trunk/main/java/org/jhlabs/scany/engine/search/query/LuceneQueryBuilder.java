@@ -157,32 +157,62 @@ public class LuceneQueryBuilder {
 	
 	/**
 	 * 토큰화된 컬럼을 검색하기 위한 질의를 만든다.
-	 * 
-	 * @param queryString
-	 * @return
-	 * @throws QueryBuilderException 
-	 * @throws MultipartRequestzException
+	 *
+	 * @param queryString the query string
+	 * @param queryAttributeList the query attribute list
+	 * @param analyzer the analyzer
+	 * @throws ParseException the parse exception
 	 */
-	public void addQuery(String queryString, List<String> queryAttributeList, Analyzer analyzer) throws QueryBuilderException {
+	public void addQuery_____(String queryString, List<String> queryAttributeList, Analyzer analyzer) throws ParseException {
 		if(queryString == null || queryString.length() == 0)
 			return;
 		
-		String typicalColumnName;
+		String firstAttrName;
 		
 		if(queryAttributeList == null || queryAttributeList.size() == 0)
-			typicalColumnName = RecordKey.RECORD_KEY;
+			firstAttrName = RecordKey.RECORD_KEY;
 		else
-			typicalColumnName = queryAttributeList.get(0);
+			firstAttrName = queryAttributeList.get(0);
 		
-		try {
-			QueryParser queryParser = new QueryParser(ScanyContext.LUCENE_VERSION, typicalColumnName, analyzer);
-			queryParser.setDefaultOperator(QueryParser.AND_OPERATOR);
-
-			Query query = queryParser.parse(queryString);
-			queryList.add(query);
-		} catch(ParseException e) {
-			throw new QueryBuilderException("Cannot add a Query.", e);
-		}
+		QueryParser queryParser = new QueryParser(ScanyContext.LUCENE_VERSION, firstAttrName, analyzer);
+		queryParser.setDefaultOperator(QueryParser.AND_OPERATOR);
+		Query query = queryParser.parse(queryString);
+		queryList.add(query);
+	}
+	
+	/**
+	 * 토큰화된 컬럼을 검색하기 위한 질의를 만든다.
+	 *
+	 * @param queryString the query string
+	 * @param queryAttributeList the query attribute list
+	 * @param analyzer the analyzer
+	 * @throws ParseException the parse exception
+	 */
+	public void addQuery(String queryString, Analyzer analyzer) throws ParseException {
+		addQuery(queryString, (String)null, analyzer);
+	}
+	
+	/**
+	 * 토큰화된 컬럼을 검색하기 위한 질의를 만든다.
+	 *
+	 * @param queryString the query string
+	 * @param queryAttributeList the query attribute list
+	 * @param analyzer the analyzer
+	 * @throws ParseException the parse exception
+	 */
+	public void addQuery(String queryString, String typicalField, Analyzer analyzer) throws ParseException {
+		if(queryString == null || queryString.length() == 0)
+			return;
+		
+		String firstAttrName = typicalField;
+		
+		if(firstAttrName == null)
+			firstAttrName = RecordKey.RECORD_KEY;
+		
+		QueryParser queryParser = new QueryParser(ScanyContext.LUCENE_VERSION, firstAttrName, analyzer);
+		queryParser.setDefaultOperator(QueryParser.AND_OPERATOR);
+		Query query = queryParser.parse(queryString);
+		queryList.add(query);
 	}
 	
 }
