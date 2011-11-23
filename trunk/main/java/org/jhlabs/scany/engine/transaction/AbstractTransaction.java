@@ -24,14 +24,14 @@ import org.jhlabs.scany.engine.transaction.job.UpdateJob;
 public abstract class AbstractTransaction {
 
 	protected Relation relation;
-	
-	public AbstractTransaction(Relation relation) {
-		this.relation = relation;
-	}
-	
+
 	protected JobQueue jobQueue;
 	
 	protected JobQueue committedJobQueue;
+
+	public AbstractTransaction(Relation relation) {
+		this.relation = relation;
+	}
 	
 	public void begin() {
 		if(jobQueue != null) {
@@ -45,6 +45,7 @@ public abstract class AbstractTransaction {
 		}
 		
 		jobQueue = new JobQueue();
+		committedJobQueue = new JobQueue();
 	}
 	
 	public abstract void commit() throws AnyIndexerException;

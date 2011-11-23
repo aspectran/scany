@@ -45,7 +45,7 @@ public class LuceneTransaction extends AbstractTransaction implements AnyTransac
 	}
 
 	public void rollback() throws AnyIndexerException {
-		if(committedJobQueue == null && committedJobQueue.size() == 0)
+		if(committedJobQueue == null || committedJobQueue.size() == 0)
 			return;
 		
 		LuceneIndexer luceneIndexer = null;
