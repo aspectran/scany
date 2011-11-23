@@ -6,21 +6,22 @@
 		<analyzer id="bigram" class="org.jhlabs.scany.engine.analysis.bigram.BigramAnalyzer"/>
 		<analyzer id="csv" class="org.jhlabs.scany.engine.analysis.csv.CSVAnalyzer"/>
 		<analyzer id="syllabic" class="org.jhlabs.scany.engine.analysis.syllabic.SyllabicAnalyzer"/>
+		<analyzer id="standard" class="org.apache.lucene.analysis.WhitespaceAnalyzer"/>
 	</analyzers>
 	
 	<summarizers>
 		<summarizer id="summarizer" class="org.jhlabs.scany.engine.search.summarize.SimpleFragmentSummarizer">
 			<properties>
 				<property name="highlightOpenTag">&lt;strong style='color:red'&gt;</property>
-				<property name="highlightOpenTag">&lt;/strong&gt;</property>
+				<property name="highlightCloseTag">&lt;/strong&gt;</property>
 			</properties>
 		</summarizer>
 	</summarizers>
 	
-	<relation id="relation01" analyzer="bigram">
+	<relation id="relation01" analyzer="standard">
 		<description>공지사항</description>
 		<directory relative="true">notice</directory>
-		<recordKeyPattern separator="$">boardId$articleNo</recordKeyPattern>
+		<recordKeyPattern separator="$">boardId$articleId</recordKeyPattern>
 		<attributes>
 			<attribute name="boardId"
 				storable="true" indexable="false" queryable="false"
@@ -35,15 +36,15 @@
 				storable="true" indexable="true" queryable="false"
 				>분류</attribute>
 			<attribute name="title"
-				storable="true" indexable="tokenize" queryable="prefix"
+				storable="true" indexable="true" queryable="true"
 				boost="1.1"
 				>제목</attribute>
 			<attribute name="content"
-				storable="true" indexable="tokenize" queryable="prefix" summarizer="summarizer"
+				storable="true" indexable="true" queryable="true" summarizer="summarizer"
 				boost="1.0"
 				>내용</attribute>
 			<attribute name="tag"
-				storable="true" indexable="tokenize" queryable="true"
+				storable="true" indexable="true" queryable="true"
 				boost="1.2"
 				analyzer="csv"
 				>태그</attribute>

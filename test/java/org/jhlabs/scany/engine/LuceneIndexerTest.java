@@ -22,7 +22,7 @@ public class LuceneIndexerTest {
 
 	@Before
 	public void before(){
-		System.out.println("Before");
+		System.out.println("Start.");
 	}
 	
 	@Test
@@ -32,9 +32,9 @@ public class LuceneIndexerTest {
 
 		try {
 			tran = service.getTransaction("relation01");
-			
-			tran.insert(createRecord());
-			
+			tran.begin();
+			tran.merge(createRecord());
+			//tran.insert(createRecord());
 			tran.commit();
 		} catch(Exception e) {
 			try {
@@ -57,7 +57,7 @@ public class LuceneIndexerTest {
 		record.setValue("category", "cate01");
 		record.setValue("category", "cate01");
 		record.setValue("title", "감 오리하이 Apple scany +fff ");
-		record.setValue("content", "gulendol@aaa.com");
+		record.setValue("content", "감자오리김치 gulendol@aaa.com");
 		record.setValue("tag", "aaa,bbb,ccc");
 		record.setValue("writer", "작성자");
 		record.setValue("date", "20111122170410");
