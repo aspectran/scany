@@ -20,7 +20,6 @@ import java.util.Properties;
 import org.jhlabs.scany.context.builder.ScanyConfigAssistant;
 import org.jhlabs.scany.context.rule.ClientRule;
 import org.jhlabs.scany.context.rule.RemoteHttpServiceRule;
-import org.jhlabs.scany.context.rule.RemoteTcpServiceRule;
 import org.jhlabs.scany.context.type.RemoteMode;
 import org.jhlabs.scany.context.type.ServiceMode;
 import org.jhlabs.scany.util.xml.EasyNodelet;

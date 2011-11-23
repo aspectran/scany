@@ -23,6 +23,8 @@ import java.util.Properties;
 import org.apache.lucene.analysis.Analyzer;
 import org.jhlabs.scany.context.builder.SchemaConfigAssistant;
 import org.jhlabs.scany.context.type.DirectoryType;
+import org.jhlabs.scany.context.type.IndexableOption;
+import org.jhlabs.scany.context.type.QueryableOption;
 import org.jhlabs.scany.engine.entity.Attribute;
 import org.jhlabs.scany.engine.entity.AttributeMap;
 import org.jhlabs.scany.engine.entity.RecordKeyPattern;
@@ -176,9 +178,12 @@ public class SchemaNodeParser {
 		parser.addNodelet("/schema/relation/attributes/attribute", new EasyNodelet() {
 			public void process(Properties attributes, String text) throws Exception {
 				String name = attributes.getProperty("name");
+				Boolean nullable = Boolean.valueOf(attributes.getProperty("nullable"));
 				Boolean storable = Boolean.valueOf(attributes.getProperty("storable"));
 				Boolean indexable = Boolean.valueOf(attributes.getProperty("indexable"));
+				Boolean analyzable = Boolean.valueOf(attributes.getProperty("analyzable"));
 				Boolean queryable = Boolean.valueOf(attributes.getProperty("queryable"));
+				Boolean prefixQueryable = Boolean.valueOf(attributes.getProperty("prefixQueryable"));
 				String analyzerId = attributes.getProperty("analyzer");
 				String summarizerId = attributes.getProperty("summarizer");
 				String boost = attributes.getProperty("boost");
@@ -186,9 +191,12 @@ public class SchemaNodeParser {
 				Attribute attribute = new Attribute();
 				attribute.setName(name);
 				attribute.setDescription(text);
+				attribute.setNullable(nullable);
 				attribute.setStorable(storable);
 				attribute.setIndexable(indexable);
-				attribute.setQueryable(queryable);
+				attribute.setAnalyzable(!indexable ? !indexable : analyzable);
+				attribute.setQueryable(prefixQueryable ? !prefixQueryable : queryable);
+				attribute.setPrefixQueryable(prefixQueryable);
 				
 				Schema schema = assistant.getSchema();
 

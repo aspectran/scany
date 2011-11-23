@@ -27,6 +27,8 @@ public class Attribute {
 
 	private String name;
 	
+	private boolean nullable;
+	
 	/**
 	 * 원본 내용의 저장 여부
 	 */
@@ -47,7 +49,7 @@ public class Attribute {
 	/**
 	 * 색인 데이터의 토큰 분리 여부
 	 */
-	private boolean tokenizable;
+	private boolean analyzable;
 	
 	/**
 	 * 통합 질의에 포함할 컬럼인지 여부
@@ -71,6 +73,14 @@ public class Attribute {
 	private Summarizer summarizer;
 	
 	private float boost;
+
+	public boolean isNullable() {
+		return nullable;
+	}
+
+	public void setNullable(boolean nullable) {
+		this.nullable = nullable;
+	}
 
 	/**
 	 * @return the boost
@@ -173,15 +183,15 @@ public class Attribute {
 	/**
 	 * @return the isTokenizable
 	 */
-	public boolean isTokenizable() {
-		return tokenizable;
+	public boolean isAnalyzable() {
+		return analyzable;
 	}
 
 	/**
-	 * @param tokenizable the isTokenizable to set
+	 * @param analyzable the isTokenizable to set
 	 */
-	public void setTokenizable(boolean tokenizable) {
-		this.tokenizable = tokenizable;
+	public void setAnalyzable(boolean analyzable) {
+		this.analyzable = analyzable;
 	}
 
 	/**
