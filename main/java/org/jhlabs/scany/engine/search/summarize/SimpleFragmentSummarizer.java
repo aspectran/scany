@@ -10,7 +10,7 @@
  ******************************************************************************/
 package org.jhlabs.scany.engine.search.summarize;
 
-import org.jhlabs.scany.engine.search.query.QueryStringParser;
+import org.jhlabs.scany.engine.search.query.QueryTextParser;
 import org.jhlabs.scany.util.StringUtils;
 
 import java.util.ArrayList;
@@ -469,7 +469,7 @@ public class SimpleFragmentSummarizer implements Summarizer {
 	 * @return
 	 */
 	private String[] extractKeywords(String queryString) {
-		QueryStringParser parser = new QueryStringParser();
+		QueryTextParser parser = new QueryTextParser();
 		parser.parse(queryString);
 		
 		return parser.getKeywords();
