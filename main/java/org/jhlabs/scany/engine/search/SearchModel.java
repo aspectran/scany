@@ -42,7 +42,7 @@ public class SearchModel {
 
 	private Relation relation;
 
-	private List<String> queryAttributeList;
+	private List<QueryAttribute> queryAttributeList;
 
 	private List<FilterAttribute> filterAttributeList;
 
@@ -50,9 +50,9 @@ public class SearchModel {
 	
 	private Map<String, Summarizer> summarizerMap;
 
-	private String queryString;
+	private String queryText;
 
-	private String parsedQueryString;
+	private String parsedQueryText;
 	
 	private String[] queryKeywords;
 
@@ -144,41 +144,39 @@ public class SearchModel {
 		this.hitsPerPage = hitsPerPage;
 	}
 
-	public String getQueryString() {
-		return queryString;
+	public String getQueryText() {
+		return queryText;
 	}
 
-	public String setQueryString(String queryString) {
-		Attribute[] queryAttributes = SearchModelUtils.extractAttributes(getRelation().getAttributeMap(), getQueryAttributeList());
-		
-		QueryTextParser parser = new QueryTextParser(queryAttributes);
-		parsedQueryString = parser.parse(queryString);
+	public String setQueryText(String queryText) {
+		QueryTextParser parser = new QueryTextParser();
+		parsedQueryText = parser.parse(queryText);
 		queryKeywords = parser.getKeywords();
 
-		return parsedQueryString;
+		return parsedQueryText;
 	}
 	
-	public String getParsedQueryString() {
-		return parsedQueryString;
+	public String getParsedQueryText() {
+		return parsedQueryText;
 	}
 
 	public String[] getQueryKeywords() {
 		return queryKeywords;
 	}
 
-	public List<String> getQueryAttributeList() {
+	public List<QueryAttribute> getQueryAttributeList() {
 		if(queryAttributeList == null)
 			return SearchModelUtils.extractDefaultQueryAttributeList(relation.getAttributeMap());
 
 		return queryAttributeList;
 	}
 
-	public void setQueryAttributeList(List<String> queryAttributeList) {
-		Iterator<String> iter = queryAttributeList.iterator();
+	public void setQueryAttributeList(List<QueryAttribute> queryAttributeList) {
+		Iterator<QueryAttribute> iter = queryAttributeList.iterator();
 		
 		while(iter.hasNext()) {
-			String attributeName = iter.next();
-			addQueryAttribute(attributeName);
+			QueryAttribute queryAttribute = iter.next();
+			addQueryAttribute(queryAttribute);
 		}
 	}
 
@@ -190,14 +188,25 @@ public class SearchModel {
 	 * @param columnName 컬럼명
 	 * @throws AnySearcherException
 	 */
-	public void addQueryAttribute(String attributeName) {
-		if(relation.getAttributeMap().get(attributeName) == null)
-			throw new InvalidAttributeException(attributeName);
+	public void addQueryAttribute(QueryAttribute queryAttribute) {
+		Attribute attribute = relation.getAttributeMap().get(queryAttribute.getAttributeName());
 
+		if(attribute == null)
+			throw new InvalidAttributeException(queryAttribute.getAttributeName());
+		
+		if(!RecordKey.RECORD_KEY.equals(attribute.getName())) {
+			if(!attribute.isIndexable() || !attribute.isAnalyzable()) {
+				throw new InvalidAttributeException(queryAttribute.getAttributeName(), "색인화 또는 토큰화된 속성이어야 합니다.");
+			}
+		}
+		
+		queryAttribute.setAttribute(attribute);
+		queryAttribute.setAnalyzer(attribute.getAnalyzer());
+		
 		if(queryAttributeList == null)
-			queryAttributeList = new ArrayList<String>();
-
-		queryAttributeList.add(attributeName);
+			queryAttributeList = new ArrayList<QueryAttribute>();
+		
+		queryAttributeList.add(queryAttribute);
 	}
 	
 	public List<FilterAttribute> getFilterAttributeList() {
@@ -234,16 +243,18 @@ public class SearchModel {
 	 * 
 	 */
 	public void addFilterAttribute(FilterAttribute filterAttribute) {
-		if(!RecordKey.RECORD_KEY.equals(filterAttribute.getAttributeName())) {
-			Attribute attribute = relation.getAttributeMap().get(filterAttribute.getAttributeName());
+		Attribute attribute = relation.getAttributeMap().get(filterAttribute.getAttributeName());
 
-			if(attribute == null)
-				throw new InvalidAttributeException(filterAttribute.getAttributeName());
-			
+		if(attribute == null)
+			throw new InvalidAttributeException(filterAttribute.getAttributeName());
+		
+		if(!RecordKey.RECORD_KEY.equals(attribute.getName())) {
 			if(!attribute.isIndexable() || !attribute.isAnalyzable()) {
-				throw new InvalidAttributeException(filterAttribute.getAttributeName(), "색인화 또는 토큰화된 속성이어야 합니다.");
+				throw new InvalidAttributeException(attribute.getName(), "색인화 또는 토큰화된 속성이어야 합니다.");
 			}
 		}
+		
+		filterAttribute.setAttribute(attribute);
 		
 		if(filterAttributeList == null)
 			filterAttributeList = new ArrayList<FilterAttribute>();
@@ -283,16 +294,18 @@ public class SearchModel {
 	 * @throws AnySearcherException
 	 */
 	public void addSortAttribute(SortAttribute sortAttribute) {
-		if(!RecordKey.RECORD_KEY.equals(sortAttribute.getAttributeName())) {
-			Attribute attribute = relation.getAttributeMap().get(sortAttribute.getAttributeName());
+		Attribute attribute = relation.getAttributeMap().get(sortAttribute.getAttributeName());
 
-			if(attribute == null)
-				throw new InvalidAttributeException(sortAttribute.getAttributeName());
-			
+		if(attribute == null)
+			throw new InvalidAttributeException(sortAttribute.getAttributeName());
+		
+		if(!RecordKey.RECORD_KEY.equals(attribute.getName())) {
 			if(!attribute.isIndexable() || !attribute.isAnalyzable()) {
-				throw new InvalidAttributeException(sortAttribute.getAttributeName(), "색인화 또는 토큰화된 속성이어야 합니다.");
+				throw new InvalidAttributeException(attribute.getName(), "색인화 또는 토큰화된 속성이어야 합니다.");
 			}
 		}
+		
+		sortAttribute.setAttribute(attribute);
 
 		if(sortAttributeList == null)
 			sortAttributeList = new ArrayList<SortAttribute>();

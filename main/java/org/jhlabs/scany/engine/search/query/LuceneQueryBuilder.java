@@ -29,6 +29,7 @@ import org.jhlabs.scany.context.ScanyContext;
 import org.jhlabs.scany.engine.entity.RecordKey;
 import org.jhlabs.scany.engine.search.FilterAttribute;
 import org.jhlabs.scany.engine.search.FilterType;
+import org.jhlabs.scany.engine.search.QueryAttribute;
 
 /**
  * 검색 조항을 모두 조합한 후 하나의 Query를 반환한다.
@@ -190,9 +191,9 @@ public class LuceneQueryBuilder {
 	 * @throws ParseException the parse exception
 	 */
 	public void addQuery(String queryText, Analyzer analyzer) throws ParseException {
-		addQuery(queryText, (String)null, analyzer);
+		addQuery(queryText, null, analyzer);
 	}
-	
+		
 	/**
 	 * 토큰화된 컬럼을 검색하기 위한 질의를 만든다.
 	 *
@@ -201,37 +202,28 @@ public class LuceneQueryBuilder {
 	 * @param analyzer the analyzer
 	 * @throws ParseException the parse exception
 	 */
-	public void addQuery(String queryText, String typicalField, Analyzer analyzer) throws ParseException {
+	public void addQuery(String queryText, List<QueryAttribute> queryAttributeList, Analyzer analyzer) throws ParseException {
 		if(queryText == null || queryText.length() == 0)
 			return;
 		
-		String firstAttrName = typicalField;
-		
-		if(firstAttrName == null)
-			firstAttrName = RecordKey.RECORD_KEY;
-		
-		QueryParser queryParser = new QueryParser(ScanyContext.LUCENE_VERSION, firstAttrName, analyzer);
-		queryParser.setDefaultOperator(QueryParser.AND_OPERATOR);
-		Query query = queryParser.parse(queryText);
-		queryList.add(query);
-	}
-	
-	/**
-	 * 토큰화된 컬럼을 검색하기 위한 질의를 만든다.
-	 *
-	 * @param queryText the query string
-	 * @param queryAttributeList the query attribute list
-	 * @param analyzer the analyzer
-	 * @throws ParseException the parse exception
-	 */
-	public void addQuery(String queryText, String[] attributeNames, Analyzer analyzer) throws ParseException {
-		if(queryText == null || queryText.length() == 0)
-			return;
-		
-		QueryParser queryParser = new MultiFieldQueryParser(ScanyContext.LUCENE_VERSION, attributeNames, analyzer);
-		queryParser.setDefaultOperator(QueryParser.AND_OPERATOR);
-		Query query = queryParser.parse(queryText);
-		queryList.add(query);
+		if(queryAttributeList != null && queryAttributeList.size() > 0) {
+			String[] attributeNames = new String[queryAttributeList.size()];
+			int index = 0;
+			
+			for(QueryAttribute queryAttribute : queryAttributeList) {
+				attributeNames[index++] = queryAttribute.getAttributeName();
+			}
+			
+			QueryParser queryParser = new MultiFieldQueryParser(ScanyContext.LUCENE_VERSION, attributeNames, analyzer);
+			queryParser.setDefaultOperator(QueryParser.AND_OPERATOR);
+			Query query = queryParser.parse(queryText);
+			queryList.add(query);
+		} else {
+			QueryParser queryParser = new QueryParser(ScanyContext.LUCENE_VERSION, RecordKey.RECORD_KEY, analyzer);
+			queryParser.setDefaultOperator(QueryParser.AND_OPERATOR);
+			Query query = queryParser.parse(queryText);
+			queryList.add(query);
+		}
 	}
 	
 }

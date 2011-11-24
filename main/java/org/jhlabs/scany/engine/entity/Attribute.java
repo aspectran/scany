@@ -68,6 +68,8 @@ public class Attribute {
 	
 	private String description;
 	
+	private String analyzerId;
+	
 	private Analyzer analyzer;
 	
 	private Summarizer summarizer;
@@ -206,6 +208,14 @@ public class Attribute {
 	 */
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getAnalyzerId() {
+		return analyzerId;
+	}
+
+	public void setAnalyzerId(String analyzerId) {
+		this.analyzerId = analyzerId;
 	}
 
 	/**

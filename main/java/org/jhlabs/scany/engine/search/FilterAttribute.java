@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.jhlabs.scany.engine.search;
 
+import org.jhlabs.scany.engine.entity.Attribute;
+
 
 /**
  * 
@@ -23,6 +25,8 @@ public class FilterAttribute {
 	private FilterType filterType;
 	
 	private String attributeName;
+	
+	private Attribute attribute;
 	
 	private Object equalValue;
 	
@@ -59,6 +63,14 @@ public class FilterAttribute {
 
 	public String getAttributeName() {
 		return attributeName;
+	}
+
+	protected Attribute getAttribute() {
+		return attribute;
+	}
+
+	protected void setAttribute(Attribute attribute) {
+		this.attribute = attribute;
 	}
 
 	public Object getEqualValue() {

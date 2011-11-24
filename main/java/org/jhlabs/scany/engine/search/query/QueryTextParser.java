@@ -10,12 +10,12 @@
  ******************************************************************************/
 package org.jhlabs.scany.engine.search.query;
 
-import org.jhlabs.scany.engine.entity.Attribute;
-import org.jhlabs.scany.util.StringUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+
+import org.jhlabs.scany.engine.entity.Attribute;
+import org.jhlabs.scany.util.StringUtils;
 
 /**
  * 사용자가 입력한 질의 문장을 분석하여 검색단어와 질의 연산자를 구분하는 역할을 한다.
@@ -60,10 +60,6 @@ public class QueryTextParser {
 	public QueryTextParser() {
 	}
 	
-	public QueryTextParser(Attribute[] queryAttributes) {
-		this.queryAttributes = queryAttributes;
-	}
-	
 	public String parse(String queryString) {
 		strainQueryString(queryString);
 
@@ -96,6 +92,8 @@ public class QueryTextParser {
 				fields[i] = '\"' + fields[i] + '\"';
 			}
 
+			sb.append(fields[i]);
+/*
 			sb.append('(');
 
 			for(int k = 0; k < queryAttributes.length; k++) {
@@ -114,6 +112,7 @@ public class QueryTextParser {
 			}
 
 			sb.append(')');
+*/
 		}
 
 		// for Debug
