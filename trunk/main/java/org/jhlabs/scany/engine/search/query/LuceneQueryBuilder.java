@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.BooleanClause;
@@ -54,7 +55,7 @@ public class LuceneQueryBuilder {
 	/**
 	 * 질의를 분석한다.
 	 * 
-	 * @param queryString
+	 * @param queryText
 	 * @return
 	 * @throws MultipartRequestzException
 	 */
@@ -86,7 +87,7 @@ public class LuceneQueryBuilder {
 	 * 필터링에 기준이 되는 값(키워드)은 파싱을 하지 않는 것이 특징이다.
 	 * 내부적으로 TermQuery 또는 WildcardQuery 를 이용한다.
 	 * 
-	 * @param queryString
+	 * @param queryText
 	 * @return
 	 */
 	public void addQuery(List<FilterAttribute> filterAttributeList) {
@@ -158,13 +159,13 @@ public class LuceneQueryBuilder {
 	/**
 	 * 토큰화된 컬럼을 검색하기 위한 질의를 만든다.
 	 *
-	 * @param queryString the query string
+	 * @param queryText the query string
 	 * @param queryAttributeList the query attribute list
 	 * @param analyzer the analyzer
 	 * @throws ParseException the parse exception
 	 */
-	public void addQuery_____(String queryString, List<String> queryAttributeList, Analyzer analyzer) throws ParseException {
-		if(queryString == null || queryString.length() == 0)
+	public void addQuery_____(String queryText, List<String> queryAttributeList, Analyzer analyzer) throws ParseException {
+		if(queryText == null || queryText.length() == 0)
 			return;
 		
 		String firstAttrName;
@@ -176,32 +177,32 @@ public class LuceneQueryBuilder {
 		
 		QueryParser queryParser = new QueryParser(ScanyContext.LUCENE_VERSION, firstAttrName, analyzer);
 		queryParser.setDefaultOperator(QueryParser.AND_OPERATOR);
-		Query query = queryParser.parse(queryString);
+		Query query = queryParser.parse(queryText);
 		queryList.add(query);
 	}
 	
 	/**
 	 * 토큰화된 컬럼을 검색하기 위한 질의를 만든다.
 	 *
-	 * @param queryString the query string
+	 * @param queryText the query string
 	 * @param queryAttributeList the query attribute list
 	 * @param analyzer the analyzer
 	 * @throws ParseException the parse exception
 	 */
-	public void addQuery(String queryString, Analyzer analyzer) throws ParseException {
-		addQuery(queryString, (String)null, analyzer);
+	public void addQuery(String queryText, Analyzer analyzer) throws ParseException {
+		addQuery(queryText, (String)null, analyzer);
 	}
 	
 	/**
 	 * 토큰화된 컬럼을 검색하기 위한 질의를 만든다.
 	 *
-	 * @param queryString the query string
+	 * @param queryText the query string
 	 * @param queryAttributeList the query attribute list
 	 * @param analyzer the analyzer
 	 * @throws ParseException the parse exception
 	 */
-	public void addQuery(String queryString, String typicalField, Analyzer analyzer) throws ParseException {
-		if(queryString == null || queryString.length() == 0)
+	public void addQuery(String queryText, String typicalField, Analyzer analyzer) throws ParseException {
+		if(queryText == null || queryText.length() == 0)
 			return;
 		
 		String firstAttrName = typicalField;
@@ -211,7 +212,25 @@ public class LuceneQueryBuilder {
 		
 		QueryParser queryParser = new QueryParser(ScanyContext.LUCENE_VERSION, firstAttrName, analyzer);
 		queryParser.setDefaultOperator(QueryParser.AND_OPERATOR);
-		Query query = queryParser.parse(queryString);
+		Query query = queryParser.parse(queryText);
+		queryList.add(query);
+	}
+	
+	/**
+	 * 토큰화된 컬럼을 검색하기 위한 질의를 만든다.
+	 *
+	 * @param queryText the query string
+	 * @param queryAttributeList the query attribute list
+	 * @param analyzer the analyzer
+	 * @throws ParseException the parse exception
+	 */
+	public void addQuery(String queryText, String[] attributeNames, Analyzer analyzer) throws ParseException {
+		if(queryText == null || queryText.length() == 0)
+			return;
+		
+		QueryParser queryParser = new MultiFieldQueryParser(ScanyContext.LUCENE_VERSION, attributeNames, analyzer);
+		queryParser.setDefaultOperator(QueryParser.AND_OPERATOR);
+		Query query = queryParser.parse(queryText);
 		queryList.add(query);
 	}
 	

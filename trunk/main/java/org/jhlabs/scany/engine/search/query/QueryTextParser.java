@@ -42,7 +42,7 @@ import java.util.StringTokenizer;
  * @author Gulendol
  *
  */
-public class QueryStringParser {
+public class QueryTextParser {
 
 	protected static final String[] OPERATORS = { "AND", "OR", "NOT" };
 
@@ -57,10 +57,10 @@ public class QueryStringParser {
 	
 	private String[] fields;
 	
-	public QueryStringParser() {
+	public QueryTextParser() {
 	}
 	
-	public QueryStringParser(Attribute[] queryAttributes) {
+	public QueryTextParser(Attribute[] queryAttributes) {
 		this.queryAttributes = queryAttributes;
 	}
 	

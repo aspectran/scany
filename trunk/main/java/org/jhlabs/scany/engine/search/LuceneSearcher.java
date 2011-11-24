@@ -69,18 +69,18 @@ public class LuceneSearcher extends SearchModel implements AnySearcher {
 	/**
 	 * 질의문에 의한 검색을 수행한다.
 	 * 별도로 페이지 번호를 지정하지 않으면 1 페이지를 반환한다. 
-	 * @param queryString
+	 * @param queryText
 	 * @return
 	 * @throws AnySearcherException
 	 */
-	public RecordList search(String queryString) throws AnySearcherException {
-		return search(queryString, 1);
+	public RecordList search(String queryText) throws AnySearcherException {
+		return search(queryText, 1);
 	}
 	
 	/**
 	 * 질의문에 의한 검색을 수행한다.
 	 * 필터 컬럼만 지정했을 경우 사용한다.
-	 * @param queryString
+	 * @param queryText
 	 * @return
 	 * @throws AnySearcherException
 	 */
@@ -94,17 +94,17 @@ public class LuceneSearcher extends SearchModel implements AnySearcher {
 	 * 검색 결과가 없으면 Record[0]을 반환한다.
 	 * 색인 저장소(디렉토리)가 생성되어 있지 않으면 null을 반환하고,
 	 * 빈 디렉토리 즉, 디렉토리 내에 세그먼트 파일이 존재하지 않으면 예외를 발생한다. 
-	 * @param queryString 사용자가 입력한 질의문
+	 * @param queryText 사용자가 입력한 질의문
 	 * @param pageNo 페이지 번호
 	 * @return hitsPerPage 개수 만큼의 Record를 반환한다.
 	 * @throws AnySearcherException
 	 */
-	public RecordList search(String queryString, int page) throws AnySearcherException {
+	public RecordList search(String queryText, int page) throws AnySearcherException {
 		if(page <= 0)
 			return null;
 
 		try {
-			setQueryString(queryString);
+			setQueryString(queryText);
 			setPage(page);
 
 			RecordExtractor recordExtractor = new PagingRecordExtractor((SearchModel)this);
@@ -135,13 +135,13 @@ public class LuceneSearcher extends SearchModel implements AnySearcher {
 	 * 검색 범위를 한정하지 않으면 모든 레코드에 대해 검색한다.
 	 * 색인 저장소(디렉토리)가 생성되어 있지 않으면 null을 반환하고,
 	 * 빈 디렉토리 즉, 디렉토리 내에 세그먼트 파일이 존재하지 않으면 예외를 발생한다. 
-	 * @param queryString 질의문
+	 * @param queryText 질의문
 	 * @return hitsPerPage 개의 레코드
 	 * @throws AnySearcherException
 	 */
-	public RecordList random(String queryString) throws AnySearcherException {
+	public RecordList random(String queryText) throws AnySearcherException {
 		try {
-			setQueryString(queryString);
+			setQueryString(queryText);
 			
 			RecordExtractor recordExtractor = new RandomRecordExtractor((SearchModel)this);
 			
@@ -190,9 +190,9 @@ public class LuceneSearcher extends SearchModel implements AnySearcher {
 		return interator(null, numHitsToCollect);
 	}
 	
-	public Iterator<Record> interator(String queryString, int numHitsToCollect) throws AnySearcherException {
+	public Iterator<Record> interator(String queryText, int numHitsToCollect) throws AnySearcherException {
 		try {
-			setQueryString(queryString);
+			setQueryString(queryText);
 			
 			LuceneQueryBuilder queryBuilder = new LuceneQueryBuilder();
 			queryBuilder.addQuery(getFilterAttributeList());
