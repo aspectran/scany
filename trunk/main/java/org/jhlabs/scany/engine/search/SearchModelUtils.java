@@ -44,16 +44,22 @@ public class SearchModelUtils {
 		return sort;
 	}
 	
-	public static List<String> extractDefaultQueryAttributeList(AttributeMap attributeMap) {
-		List<String> queryAttributeList = new ArrayList<String>();
+	public static List<QueryAttribute> extractDefaultQueryAttributeList(AttributeMap attributeMap) {
+		List<QueryAttribute> queryAttributeList = new ArrayList<QueryAttribute>();
 		
 		Iterator<Attribute> iter = attributeMap.values().iterator();
 		
 		while(iter.hasNext()) {
 			Attribute attribute = iter.next();
 			
-			if(attribute.isQueryable())
-				queryAttributeList.add(attribute.getName());
+			if(attribute.isQueryable()) {
+				QueryAttribute queryAttribute = new QueryAttribute();
+				queryAttribute.setAttributeName(attribute.getName());
+				queryAttribute.setAttribute(attribute);
+				queryAttribute.setAnalyzer(attribute.getAnalyzer());
+				queryAttribute.setAnalyzerId(attribute.getAnalyzerId());
+				queryAttributeList.add(queryAttribute);
+			}
 		}
 		
 		if(queryAttributeList.size() == 0)

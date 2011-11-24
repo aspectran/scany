@@ -42,7 +42,11 @@ public class Relation {
 
 	private AttributeMap attributeMap;
 	
+	private String analyzerId;
+	
 	private Analyzer analyzer;
+	
+	private Analyzer perFieldAnalyzer;
 	
 	private int mergeFactor;
 	
@@ -144,6 +148,14 @@ public class Relation {
 		this.description = description;
 	}
 
+	public String getAnalyzerId() {
+		return analyzerId;
+	}
+
+	public void setAnalyzerId(String analyzerId) {
+		this.analyzerId = analyzerId;
+	}
+
 	/**
 	 * @return the analyzer
 	 */
@@ -156,6 +168,14 @@ public class Relation {
 	 */
 	public void setAnalyzer(Analyzer analyzer) {
 		this.analyzer = analyzer;
+	}
+
+	public Analyzer getPerFieldAnalyzer() {
+		return perFieldAnalyzer;
+	}
+
+	public void setPerFieldAnalyzer(Analyzer perFieldAnalyzer) {
+		this.perFieldAnalyzer = perFieldAnalyzer;
 	}
 
 	/**

@@ -104,7 +104,7 @@ public class LuceneSearcher extends SearchModel implements AnySearcher {
 			return null;
 
 		try {
-			setQueryString(queryText);
+			setQueryText(queryText);
 			setPage(page);
 
 			RecordExtractor recordExtractor = new PagingRecordExtractor((SearchModel)this);
@@ -141,7 +141,7 @@ public class LuceneSearcher extends SearchModel implements AnySearcher {
 	 */
 	public RecordList random(String queryText) throws AnySearcherException {
 		try {
-			setQueryString(queryText);
+			setQueryText(queryText);
 			
 			RecordExtractor recordExtractor = new RandomRecordExtractor((SearchModel)this);
 			
@@ -192,15 +192,11 @@ public class LuceneSearcher extends SearchModel implements AnySearcher {
 	
 	public Iterator<Record> interator(String queryText, int numHitsToCollect) throws AnySearcherException {
 		try {
-			setQueryString(queryText);
+			setQueryText(queryText);
 			
 			LuceneQueryBuilder queryBuilder = new LuceneQueryBuilder();
 			queryBuilder.addQuery(getFilterAttributeList());
-			
-			if(getQueryAttributeList() == null || getQueryAttributeList().size() == 0)
-				queryBuilder.addQuery(getParsedQueryString(), getRelation().getAnalyzer());
-			else
-				queryBuilder.addQuery(getParsedQueryString(), getQueryAttributeList().get(0), getRelation().getAnalyzer());
+			queryBuilder.addQuery(getParsedQueryText(), getQueryAttributeList(), getRelation().getAnalyzer());
 
 			Query query = queryBuilder.build();
 			
@@ -223,11 +219,7 @@ public class LuceneSearcher extends SearchModel implements AnySearcher {
 			
 			LuceneQueryBuilder queryBuilder = new LuceneQueryBuilder();
 			queryBuilder.addQuery(searchModel.getFilterAttributeList());
-			
-			if(searchModel.getQueryAttributeList() == null || searchModel.getQueryAttributeList().size() == 0)
-				queryBuilder.addQuery(searchModel.getParsedQueryString(), searchModel.getRelation().getAnalyzer());
-			else
-				queryBuilder.addQuery(searchModel.getParsedQueryString(), searchModel.getQueryAttributeList().get(0), searchModel.getRelation().getAnalyzer());
+			queryBuilder.addQuery(searchModel.getParsedQueryText(), searchModel.getQueryAttributeList(), searchModel.getRelation().getAnalyzer());
 			
 			Query query = queryBuilder.build();
 			query = indexSearcher.rewrite(query);

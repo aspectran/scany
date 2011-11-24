@@ -13,8 +13,10 @@ package org.jhlabs.scany.engine.index;
 import java.io.IOException;
 import java.util.Iterator;
 
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -26,7 +28,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.util.Version;
+import org.jhlabs.scany.context.ScanyContext;
 import org.jhlabs.scany.engine.entity.Attribute;
 import org.jhlabs.scany.engine.entity.AttributeMap;
 import org.jhlabs.scany.engine.entity.Record;
@@ -46,6 +48,8 @@ public class LuceneIndexer implements AnyIndexer {
 	private Directory directory;
 
 	private IndexWriter indexWriter;
+	
+	private Analyzer analyzer;
 
 	/**
 	 * 생성자
@@ -66,13 +70,18 @@ public class LuceneIndexer implements AnyIndexer {
 		try {
 			directory = relation.openDirectory();
 			
-			IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_34, relation.getAnalyzer());  
+			IndexWriterConfig conf = new IndexWriterConfig(ScanyContext.LUCENE_VERSION, relation.getAnalyzer());  
 			
 			indexWriter = new IndexWriter(directory, conf);
 
 			// Performance 설정
 			//indexWriter.setMergeFactor(relation.getMergeFactor());
 			//indexWriter.setMaxMergeDocs(relation.getMaxMergeDocs());
+			
+			if(relation.getPerFieldAnalyzer() != null)
+				analyzer = relation.getPerFieldAnalyzer();
+			else
+				analyzer = relation.getAnalyzer();
 
 		} catch(IOException e) {
 			throw new AnyIndexerException("색인기(AnyIndexer)를 초기화할 수 없습니다.", e);
@@ -98,7 +107,7 @@ public class LuceneIndexer implements AnyIndexer {
 
 			Document document = createDocument(record); 
 			
-			indexWriter.addDocument(document);
+			indexWriter.addDocument(document, analyzer);
 
 		} catch(Exception e) {
 			throw new AnyIndexerException("색인 등록(insert)에 실패했습니다.", e);
@@ -128,7 +137,7 @@ public class LuceneIndexer implements AnyIndexer {
 			Document document = createDocument(record); 
 			Term term = new Term(RecordKey.RECORD_KEY, record.getRecordKey().getRecordKeyString());
 
-			indexWriter.updateDocument(term, document);
+			indexWriter.updateDocument(term, document, analyzer);
 		} catch(Exception e) {
 			throw new AnyIndexerException("색인 수정(update)에 실패했습니다.", e);
 		}
@@ -326,7 +335,7 @@ public class LuceneIndexer implements AnyIndexer {
 						index = attribute.isIndexable() ? Field.Index.NOT_ANALYZED : Field.Index.NO;
 					}
 	
-					field = new Field(attribute.getName(), value, store, index);
+					field = new Field(attribute.getName(), value, store, index, TermVector.NO);
 					
 					// boost factor
 					field.setBoost(attribute.getBoost());

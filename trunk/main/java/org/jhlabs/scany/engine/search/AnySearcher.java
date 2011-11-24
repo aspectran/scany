@@ -49,9 +49,9 @@ public interface AnySearcher {
 	 */
 	public void setHitsPerPage(int hitsPerPage);
 
-	public List<String> getQueryAttributeList();
+	public List<QueryAttribute> getQueryAttributeList();
 
-	public void setQueryAttributeList(List<String> queryAttributeList);
+	public void setQueryAttributeList(List<QueryAttribute> queryAttributeList);
 
 	/**
 	 * 질의 가능 대상 컬럼을 수동으로 추가한다.
@@ -61,7 +61,7 @@ public interface AnySearcher {
 	 * @param columnName 컬럼명
 	 * @throws AnySearcherException
 	 */
-	public void addQueryAttribute(String attributeName);
+	public void addQueryAttribute(QueryAttribute aueryAttribute);
 	
 	public List<FilterAttribute> getFilterAttributeList();
 

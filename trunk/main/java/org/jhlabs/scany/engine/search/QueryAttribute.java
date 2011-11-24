@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.jhlabs.scany.engine.search;
 
+import org.apache.lucene.analysis.Analyzer;
 import org.jhlabs.scany.engine.entity.Attribute;
 
 
@@ -21,40 +22,54 @@ import org.jhlabs.scany.engine.entity.Attribute;
  * @author Gulendol
  *
  */
-public class SortAttribute {
+public class QueryAttribute {
 
 	private String attributeName;
 	
+	private String analyzerId;
+	
+	private Analyzer analyzer;
+	
 	private Attribute attribute;
-	
-	private SortFieldType sortFieldType;
-	
-	private boolean reverse;
 
-	public SortAttribute(String attributeName, SortFieldType sortFieldType, boolean reverse) {
+	public QueryAttribute() {
+	}
+	
+	public QueryAttribute(String attributeName, String analyzerId) {
 		this.attributeName = attributeName;
-		this.sortFieldType = sortFieldType;
-		this.reverse = reverse;
+		this.analyzerId = analyzerId;
 	}
 
-	protected String getAttributeName() {
+	public String getAttributeName() {
 		return attributeName;
+	}
+
+	public void setAttributeName(String attributeName) {
+		this.attributeName = attributeName;
+	}
+
+	public String getAnalyzerId() {
+		return analyzerId;
+	}
+
+	public void setAnalyzerId(String analyzerId) {
+		this.analyzerId = analyzerId;
+	}
+
+	public Analyzer getAnalyzer() {
+		return analyzer;
+	}
+
+	protected void setAnalyzer(Analyzer analyzer) {
+		this.analyzer = analyzer;
 	}
 
 	protected Attribute getAttribute() {
 		return attribute;
 	}
 
-	public void setAttribute(Attribute attribute) {
+	protected void setAttribute(Attribute attribute) {
 		this.attribute = attribute;
-	}
-
-	public SortFieldType getSortFieldType() {
-		return sortFieldType;
-	}
-
-	public boolean isReverse() {
-		return reverse;
 	}
 	
 }

@@ -17,14 +17,14 @@ package org.jhlabs.scany.context.builder.xml;
 
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.jhlabs.scany.context.builder.SchemaConfigAssistant;
 import org.jhlabs.scany.context.type.DirectoryType;
-import org.jhlabs.scany.context.type.IndexableOption;
-import org.jhlabs.scany.context.type.QueryableOption;
 import org.jhlabs.scany.engine.entity.Attribute;
 import org.jhlabs.scany.engine.entity.AttributeMap;
 import org.jhlabs.scany.engine.entity.RecordKeyPattern;
@@ -120,6 +120,7 @@ public class SchemaNodeParser {
 				
 				Relation relation = new Relation();
 				relation.setId(id);
+				relation.setAnalyzerId(analyzerId);
 				relation.setAnalyzer(analyzer);
 				
 				assistant.pushObject(relation);
@@ -206,6 +207,7 @@ public class SchemaNodeParser {
 					if(analyzer == null)
 						throw new IllegalArgumentException("Could not set analyzer '" + analyzerId + "' on attribute '" + name + "'.");
 
+					attribute.setAnalyzerId(analyzerId);
 					attribute.setAnalyzer(analyzer);
 				}
 				
@@ -250,6 +252,26 @@ public class SchemaNodeParser {
 				}
 				
 				relationMap.put(relation.getId(), relation);
+				
+				if(relation.getAttributeMap() != null) {
+					Iterator<Attribute> iter = relation.getAttributeMap().values().iterator();
+					PerFieldAnalyzerWrapper perFieldAnalyzer = new PerFieldAnalyzerWrapper(relation.getAnalyzer());
+					boolean usePerFieldAnalyzer = false;
+					
+					while(iter.hasNext()) {
+						Attribute attribute = iter.next();
+						
+						if(attribute.getAnalyzer() != null) {
+							if(relation.getAnalyzerId() != null && !relation.getAnalyzerId().equals(attribute.getAnalyzerId())) {
+								perFieldAnalyzer.addAnalyzer(attribute.getName(), attribute.getAnalyzer());
+								usePerFieldAnalyzer = true;
+							}
+						}
+					}
+					
+					if(usePerFieldAnalyzer)
+						relation.setPerFieldAnalyzer(perFieldAnalyzer);
+				}
 			}
 		});
 	}
