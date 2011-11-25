@@ -10,9 +10,8 @@
  ******************************************************************************/
 package org.jhlabs.scany.engine.index;
 
-import org.jhlabs.scany.engine.entity.RecordKey;
 import org.jhlabs.scany.engine.entity.Record;
-import org.jhlabs.scany.engine.entity.Relation;
+import org.jhlabs.scany.engine.entity.RecordKey;
 
 /**
  * 색인 추가(insert), 색인 갱신(update), 색인 삭제(delete) 기능을 담당한다.
@@ -21,12 +20,6 @@ import org.jhlabs.scany.engine.entity.Relation;
  * 
  */
 public interface AnyIndexer {
-
-	/**
-	 * 스키마를 반환한다.
-	 * @throws AnyIndexerException
-	 */
-	public Relation getRelation() throws AnyIndexerException;
 
 	/**
 	 * 색인등록
@@ -53,6 +46,8 @@ public interface AnyIndexer {
 	 */
 	public void merge(Record record) throws AnyIndexerException;
 
+	public void delete(Record record) throws AnyIndexerException;
+	
 	/**
 	 * 색인삭제.
 	 * 와일드카드(*)를 사용한 하위 key 일괄 삭제 가능.
@@ -78,6 +73,10 @@ public interface AnyIndexer {
 	 * 색인 작업을 종료한다.
 	 */
 	public void close() throws AnyIndexerException;
+	
+	public void commit() throws AnyIndexerException;
+	
+	public void rollback() throws AnyIndexerException;
 	
 	/**
 	 * 해당 Key가 존재하는 여부를 반환.

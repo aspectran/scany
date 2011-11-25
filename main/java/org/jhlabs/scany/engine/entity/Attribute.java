@@ -15,6 +15,7 @@ import java.io.StringReader;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
+import org.jhlabs.scany.context.type.WithTermVector;
 import org.jhlabs.scany.engine.search.summarize.Summarizer;
 
 /**
@@ -76,6 +77,8 @@ public class Attribute {
 	
 	private float boost;
 
+	private WithTermVector withTermVector;
+	
 	public boolean isNullable() {
 		return nullable;
 	}
@@ -256,6 +259,14 @@ public class Attribute {
 	 */
 	public TokenStream makeTokenStream(String value) {
 		return analyzer.tokenStream(name, new StringReader(value));
+	}
+
+	public WithTermVector getWithTermVector() {
+		return withTermVector;
+	}
+
+	public void setWithTermVector(WithTermVector withTermVector) {
+		this.withTermVector = withTermVector;
 	}
 	
 }

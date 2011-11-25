@@ -29,6 +29,7 @@ import org.jhlabs.scany.engine.entity.RecordKeyException;
 import org.jhlabs.scany.engine.entity.RecordList;
 import org.jhlabs.scany.engine.entity.Relation;
 import org.jhlabs.scany.engine.search.query.QueryTextParser;
+import org.jhlabs.scany.engine.search.query.SimpleQueryTextParser;
 import org.jhlabs.scany.engine.search.summarize.Summarizer;
 
 /**
@@ -149,7 +150,7 @@ public class SearchModel {
 	}
 
 	public String setQueryText(String queryText) {
-		QueryTextParser parser = new QueryTextParser();
+		QueryTextParser parser = new SimpleQueryTextParser();
 		parsedQueryText = parser.parse(queryText);
 		queryKeywords = parser.getKeywords();
 

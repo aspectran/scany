@@ -25,6 +25,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.jhlabs.scany.context.builder.SchemaConfigAssistant;
 import org.jhlabs.scany.context.type.DirectoryType;
+import org.jhlabs.scany.context.type.WithTermVector;
 import org.jhlabs.scany.engine.entity.Attribute;
 import org.jhlabs.scany.engine.entity.AttributeMap;
 import org.jhlabs.scany.engine.entity.RecordKeyPattern;
@@ -185,10 +186,14 @@ public class SchemaNodeParser {
 				Boolean analyzable = Boolean.valueOf(attributes.getProperty("analyzable"));
 				Boolean queryable = Boolean.valueOf(attributes.getProperty("queryable"));
 				Boolean prefixQueryable = Boolean.valueOf(attributes.getProperty("prefixQueryable"));
+				WithTermVector withTermVector = WithTermVector.valueOf(attributes.getProperty("termVector"));
 				String analyzerId = attributes.getProperty("analyzer");
 				String summarizerId = attributes.getProperty("summarizer");
 				String boost = attributes.getProperty("boost");
 
+				if(withTermVector == null)
+					withTermVector = WithTermVector.NO;
+				
 				Attribute attribute = new Attribute();
 				attribute.setName(name);
 				attribute.setDescription(text);
@@ -198,6 +203,7 @@ public class SchemaNodeParser {
 				attribute.setAnalyzable(!indexable ? !indexable : analyzable);
 				attribute.setQueryable(prefixQueryable ? !prefixQueryable : queryable);
 				attribute.setPrefixQueryable(prefixQueryable);
+				attribute.setWithTermVector(withTermVector);
 				
 				Schema schema = assistant.getSchema();
 

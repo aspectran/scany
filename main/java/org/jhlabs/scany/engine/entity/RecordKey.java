@@ -141,4 +141,22 @@ public class RecordKey {
 	public boolean hasWildcard() {
 		return wildcard;
 	}
+	
+	public static void populate(Record record, Relation relation) {
+		if(record.getRecordKey() == null) {
+			RecordKeyPattern recordKeyPattern = relation.getRecordKeyPattern();
+			String[] keyNames = recordKeyPattern.getKeyNames();
+			
+			if(keyNames != null) {
+				RecordKey recordKey = relation.newRecordKey();
+			
+				for(String keyName : keyNames) {
+					recordKey.setKeyValue(keyName, record.getValue(keyName));
+				}
+				
+				record.setRecordKey(recordKey);
+			}
+		}
+	}
+	
 }
