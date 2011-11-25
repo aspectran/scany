@@ -12,45 +12,38 @@ package org.jhlabs.scany.engine;
 
 import org.jhlabs.scany.ScanyServiceProviderFactory;
 import org.jhlabs.scany.engine.entity.Record;
+import org.jhlabs.scany.engine.entity.RecordList;
 import org.jhlabs.scany.engine.index.AnyIndexer;
 import org.jhlabs.scany.engine.index.AnyIndexerException;
+import org.jhlabs.scany.engine.search.AnySearcher;
+import org.jhlabs.scany.engine.search.AnySearcherException;
+import org.jhlabs.scany.engine.search.SortFieldType;
 import org.jhlabs.scany.engine.transaction.AnyTransaction;
 import org.jhlabs.scany.service.AnyService;
-import org.junit.Before;
 import org.junit.Test;
 
 public class LuceneIndexerTest {
 
-	@Before
-	public void before(){
-		System.out.println("Start.");
-	}
-	
 	@Test
-	public void insert() {
+	public void transactionTest() {
 		AnyService service = ScanyServiceProviderFactory.getService();
 		AnyTransaction tran = null;
 
 		try {
 			tran = service.getTransaction("relation01");
-			tran.begin();
-			tran.merge(createRecord());
-			//tran.insert(createRecord());
+			Record r = createRecord();
+			tran.merge(r);
+			r.setValue("articleId", "2");
+			r.setValue("title", "동해물과 백두산이 마르고 닳도록~");
+			tran.merge(r);
 			tran.commit();
 		} catch(Exception e) {
-			try {
-				if(tran != null)
-					tran.rollback();
-			} catch(AnyIndexerException e1) {
-				e1.printStackTrace();
-			}
-			
 			e.printStackTrace();
 		}
 	}
 	
-	@Test
-	public void rollbackTest() throws AnyIndexerException {
+	@ Test
+	public void indexerTest() throws AnyIndexerException {
 		AnyService service = ScanyServiceProviderFactory.getService();
 		AnyIndexer indexer = null;
 		
@@ -61,6 +54,7 @@ public class LuceneIndexerTest {
 			indexer.commit();
 			r.setValue("title", "동해물과 백두산이 마르고 닳도록~");
 			indexer.insert(r);
+			indexer.optimize();
 			//indexer.delete(createRecord());
 			//indexer.insert(createRecord());
 			//indexer.insert(createRecord());
@@ -81,6 +75,26 @@ public class LuceneIndexerTest {
 				if(indexer != null)
 					indexer.close();
 			} catch(Exception ignored) {}
+		}
+	}
+
+	@Test
+	public void searchTest() throws AnySearcherException {
+		AnyService service = ScanyServiceProviderFactory.getService();
+		
+		try {
+			AnySearcher searcher = service.getSearcher("relation01");
+			searcher.addSortAttribute("articleId", SortFieldType.INT, false);
+			RecordList recordList = searcher.search("감자");
+			
+			for(Record record : recordList) {
+				System.out.println("articleId: " + record.getValue("articleId"));
+				System.out.println("title: " + record.getValue("title"));
+				System.out.println("content: " + record.getValue("content"));
+				System.out.println("tag: " + record.getValue("tag"));
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
