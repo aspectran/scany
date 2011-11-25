@@ -42,7 +42,7 @@ import org.jhlabs.scany.service.AnyService;
 public class TestingPagingCollector {
 
 	public static void main(String[] args) throws Exception {
-		AnyService service = ScanyServiceProviderFactory.getAnyService();
+		AnyService service = ScanyServiceProviderFactory.getService();
 		
 		IndexReader reader = getReaderFlatScore(13245);
 		IndexSearcher searcher = new IndexSearcher(reader);
