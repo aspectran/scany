@@ -39,8 +39,6 @@ public class SyllabicTokenizer extends Tokenizer {
 
 	private static final int IO_BUFFER_SIZE = 1024;
 
-	private final char[] buffer = new char[MAX_WORD_LEN];
-
 	private final CharacterBuffer ioBuffer = CharacterUtils.newCharacterBuffer(IO_BUFFER_SIZE);
 
 	private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);;
@@ -114,71 +112,6 @@ public class SyllabicTokenizer extends Tokenizer {
 		return true;
 	}
 
-	public final boolean incrementToken2() throws IOException {
-		clearAttributes();
-
-		int length = 0;
-		int start = offset;
-		//char[] buffer = termAtt.buffer();
-
-		label0: do {
-			do {
-				if(bufferIndex >= dataLen) {
-					offset += dataLen;
-					if(!charUtils.fill(ioBuffer, input)) { // read supplementary char aware with CharacterUtils
-						dataLen = 0; // so next offset += dataLen won't decrement offset
-						if(length > 0) {
-							break;
-						} else {
-							finalOffset = correctOffset(offset);
-							return false;
-						}
-					}
-					dataLen = ioBuffer.getLength();
-					bufferIndex = 0;
-				}
-
-				// use CharacterUtils here to support < 3.1 UTF-16 code unit behavior if the char based methods are gone
-				final int c = charUtils.codePointAt(ioBuffer.getBuffer(), bufferIndex);
-				bufferIndex += Character.charCount(c);
-
-				if(!isTokenChar(c))
-					continue label0;
-
-				if(length == 0)
-					start = offset - 1;
-
-				if(isSyllables(c)) {
-					char[] chars = syllabify(c);
-
-					for(int k = 0; k < chars.length; k++) {
-						if(length == MAX_WORD_LEN) {
-							bufferIndex--;
-							length -= k;
-							continue label0;
-						}
-						//buffer[length++] = chars[k];
-						length += Character.toChars(chars[k], buffer, length);
-					}
-				} else {
-					length += Character.toChars(normalize(c), buffer, length);
-				}
-			} while(length != MAX_WORD_LEN);
-
-			break;
-		} while(length <= 0);
-
-		if(length > 0) {
-			termAtt.copyBuffer(buffer, 0, length);
-			offsetAtt.setOffset(correctOffset(start), correctOffset(start + length));
-			return true;
-		} else if(dataLen == -1) {
-			offset--;
-			return false;
-		}
-		return false;
-	}
-
 	@Override
 	public final void end() {
 		// set final offset
@@ -230,13 +163,6 @@ public class SyllabicTokenizer extends Tokenizer {
 		else
 			chars[2] = ' ';
 
-		System.out.println(chars[0]);
-		System.out.println(chars[1]);
-		System.out.println(chars[2]);
-//		System.out.println(n1);
-//		System.out.println(n2);
-//		System.out.println(n3);
-		
 		return chars;
 	}
 

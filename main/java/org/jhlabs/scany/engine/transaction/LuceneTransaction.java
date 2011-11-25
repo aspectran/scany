@@ -30,7 +30,7 @@ public class LuceneTransaction extends AbstractTransaction implements AnyTransac
 					} else if(job.getJobType() == JobType.MERGE) {
 						indexer.merge(job.getRecord());
 					} else if(job.getJobType() == JobType.DELETE) {
-						indexer.delete(job.getRecord().getRecordKey());
+						indexer.delete(job.getRecord());
 					}
 					
 					jobQueue.remove();
@@ -50,7 +50,7 @@ public class LuceneTransaction extends AbstractTransaction implements AnyTransac
 	}
 
 	public void rollback() throws AnyIndexerException {
-		throw new UnsupportedOperationException("Only local service.");
+		throw new UnsupportedOperationException();
 	}
 	
 }

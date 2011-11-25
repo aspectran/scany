@@ -17,6 +17,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
@@ -24,10 +26,9 @@ import org.apache.lucene.search.ScoreDoc;
 import org.jhlabs.scany.engine.entity.Attribute;
 import org.jhlabs.scany.engine.entity.AttributeMap;
 import org.jhlabs.scany.engine.entity.Record;
-import org.jhlabs.scany.engine.entity.RecordKey;
-import org.jhlabs.scany.engine.entity.RecordKeyException;
 import org.jhlabs.scany.engine.entity.RecordList;
 import org.jhlabs.scany.engine.entity.Relation;
+import org.jhlabs.scany.engine.index.RecordKeyException;
 import org.jhlabs.scany.engine.search.query.QueryTextParser;
 import org.jhlabs.scany.engine.search.query.SimpleQueryTextParser;
 import org.jhlabs.scany.engine.search.summarize.Summarizer;
@@ -40,6 +41,8 @@ import org.jhlabs.scany.engine.search.summarize.Summarizer;
  * @author Gulendol
  */
 public class SearchModel {
+
+	private final Log log = LogFactory.getLog(SearchModel.class);
 
 	private Relation relation;
 
@@ -153,6 +156,12 @@ public class SearchModel {
 		QueryTextParser parser = new SimpleQueryTextParser();
 		parsedQueryText = parser.parse(queryText);
 		queryKeywords = parser.getKeywords();
+		
+		if(log.isDebugEnabled()) {
+			log.debug("queryText: " + queryText);
+			log.debug("parsedQueryText: " + parsedQueryText);
+			log.debug("queryKeywords: " + queryKeywords);
+		}
 
 		return parsedQueryText;
 	}
@@ -195,11 +204,8 @@ public class SearchModel {
 		if(attribute == null)
 			throw new InvalidAttributeException(queryAttribute.getAttributeName());
 		
-		if(!RecordKey.RECORD_KEY.equals(attribute.getName())) {
-			if(!attribute.isIndexable() || !attribute.isAnalyzable()) {
-				throw new InvalidAttributeException(queryAttribute.getAttributeName(), "색인화 또는 토큰화된 속성이어야 합니다.");
-			}
-		}
+		if(!attribute.isIndexable() && !attribute.isAnalyzable())
+			throw new InvalidAttributeException(queryAttribute.getAttributeName(), "색인화 또는 토큰화된 속성이어야 합니다.");
 		
 		queryAttribute.setAttribute(attribute);
 		queryAttribute.setAnalyzer(attribute.getAnalyzer());
@@ -226,10 +232,6 @@ public class SearchModel {
 	public void addFilterAttribute(String attributeName, String keyword, boolean essential) {
 		addFilterAttribute(new FilterAttribute(attributeName, keyword, essential));
 	}
-
-	public void addFilterAttribute(RecordKey recordKey) {
-		addFilterAttribute(RecordKey.RECORD_KEY, recordKey.toString(), true);
-	}
 	
 	/**
 	 * 필터 컬럼을 추가한다.
@@ -249,11 +251,8 @@ public class SearchModel {
 		if(attribute == null)
 			throw new InvalidAttributeException(filterAttribute.getAttributeName());
 		
-		if(!RecordKey.RECORD_KEY.equals(attribute.getName())) {
-			if(!attribute.isIndexable() || !attribute.isAnalyzable()) {
-				throw new InvalidAttributeException(attribute.getName(), "색인화 또는 토큰화된 속성이어야 합니다.");
-			}
-		}
+		if(!attribute.isIndexable() && !attribute.isAnalyzable())
+			throw new InvalidAttributeException(attribute.getName(), "색인화 또는 토큰화된 속성이어야 합니다.");
 		
 		filterAttribute.setAttribute(attribute);
 		
@@ -300,11 +299,8 @@ public class SearchModel {
 		if(attribute == null)
 			throw new InvalidAttributeException(sortAttribute.getAttributeName());
 		
-		if(!RecordKey.RECORD_KEY.equals(attribute.getName())) {
-			if(!attribute.isIndexable() || !attribute.isAnalyzable()) {
-				throw new InvalidAttributeException(attribute.getName(), "색인화 또는 토큰화된 속성이어야 합니다.");
-			}
-		}
+		if(!attribute.isIndexable() && !attribute.isAnalyzable())
+			throw new InvalidAttributeException(attribute.getName(), "색인화 또는 토큰화된 속성이어야 합니다.");
 		
 		sortAttribute.setAttribute(attribute);
 
@@ -372,6 +368,9 @@ public class SearchModel {
 		RecordList recordList = new RecordList(end - start + 1);
 		
 		for(int i = start; i <= end; i++) {
+			if(i >= docs.length)
+				break;
+			
 			Document document = reader.document(docs[i].doc);
 			Record record = createRecord(document);
 			recordList.add(record);
@@ -403,12 +402,7 @@ public class SearchModel {
 	 * @throws RecordKeyException 
 	 */
 	public Record createRecord(Document document) throws RecordKeyException {
-		RecordKey recordKey = relation.newRecordKey();
-		recordKey.setRecordKeyString(document.get(RecordKey.RECORD_KEY));
-		
 		Record record = new Record();
-		record.setRecordKey(recordKey);
-		
 		AttributeMap attributeMap = relation.getAttributeMap();
 		
 		if(attributeMap != null) {

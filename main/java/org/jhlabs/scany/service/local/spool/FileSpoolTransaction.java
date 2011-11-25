@@ -15,11 +15,6 @@ import org.jhlabs.scany.engine.transaction.AnyTransaction;
  */
 public class FileSpoolTransaction implements AnyTransaction {
 
-	public void begin() {
-		// TODO Auto-generated method stub
-		
-	}
-
 	public void commit() {
 		// TODO Auto-generated method stub
 		
@@ -46,6 +41,11 @@ public class FileSpoolTransaction implements AnyTransaction {
 	}
 
 	public void delete(Record record) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void clear() {
 		// TODO Auto-generated method stub
 		
 	}

@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.jhlabs.scany.engine.entity.Record;
-import org.jhlabs.scany.engine.entity.RecordKey;
 import org.jhlabs.scany.engine.entity.RecordList;
 import org.jhlabs.scany.engine.search.summarize.Summarizer;
 
@@ -68,8 +67,6 @@ public interface AnySearcher {
 	public void setFilterAttributeList(List<FilterAttribute> filterAttributeList);
 
 	public void addFilterAttribute(String attributeName, String keyword, boolean essential);
-
-	public void addFilterAttribute(RecordKey recordKey);
 
 	/**
 	 * 필터 컬럼을 추가한다.

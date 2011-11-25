@@ -15,11 +15,11 @@ import org.jhlabs.scany.engine.index.AnyIndexerException;
  */
 public interface AnyTransaction {
 
-	public void begin();
-	
 	public void commit() throws AnyIndexerException;
 	
 	public void rollback() throws AnyIndexerException;
+	
+	public void clear();
 	
 	public void insert(Record record);
 	

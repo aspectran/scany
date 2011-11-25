@@ -11,7 +11,7 @@
 package org.jhlabs.scany.engine.index;
 
 import java.io.IOException;
-import java.util.Iterator;
+import java.util.List;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
@@ -21,17 +21,15 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
-import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.store.Directory;
 import org.jhlabs.scany.context.ScanyContext;
 import org.jhlabs.scany.engine.entity.Attribute;
 import org.jhlabs.scany.engine.entity.AttributeMap;
 import org.jhlabs.scany.engine.entity.Record;
-import org.jhlabs.scany.engine.entity.RecordKey;
 import org.jhlabs.scany.engine.entity.Relation;
-import org.jhlabs.scany.util.StringUtils;
+import org.jhlabs.scany.engine.search.FilterAttribute;
+import org.jhlabs.scany.engine.search.query.LuceneQueryBuilder;
 
 /**
  * 색인 추가(insert), 색인 갱신(update), 색인 삭제(delete) 기능을 담당한다.
@@ -85,164 +83,71 @@ public class LuceneIndexer implements AnyIndexer {
 		}
 	}
 
-	/**
-	 * 색인등록
-	 * 
-	 * @param record
-	 * @throws AnyIndexerException
-	 */
 	public void insert(Record record) throws AnyIndexerException {
-		RecordKey.populate(record, relation);
-
-		if(record.getRecordKey() == null)
-			throw new NullPointerException("Record Key is null.");
-
-		if(exists(record.getRecordKey()))
-			throw new RecordAlreadyExistsException("동일한 Primary Key를 가진 레코드(Record)가 이미 존재합니다.");
+		String keyName = relation.getRecordKeyPattern().getKeyName();
+		String keyValue = relation.getRecordKeyPattern().combine(record);
+		
+		if(exists(keyName, keyValue))
+			throw new RecordAlreadyExistsException(keyName, keyValue);
 
 		try {
-			// Primary Key 생성
-			RecordKey primaryKey = record.getRecordKey();
-
-			if(primaryKey.hasWildcard())
-				throw new IllegalArgumentException("PrimaryKey가 와일드카드 문자를 포함하고 있습니다.");
-
-			Document document = createDocument(record); 
-			
+			Document document = createDocument(keyName, keyValue, record); 
 			indexWriter.addDocument(document, analyzer);
-
 		} catch(Exception e) {
 			throw new AnyIndexerException("색인 등록(insert)에 실패했습니다.", e);
 		}
 	}
 
 	public void merge(Record record) throws AnyIndexerException {
-		if(exists(record.getRecordKey()))
+		String keyName = relation.getRecordKeyPattern().getKeyName();
+		String keyValue = relation.getRecordKeyPattern().combine(record);
+
+		if(exists(keyName, keyValue))
 			update(record);
 		else
 			insert(record);
 	}
 	
-	/**
-	 * 색인수정.
-	 * primaryKey에 해당하는 레코드를 삭제하고, 새로운 record를 insert한다.
-	 * 
-	 * @param recordKey 갱신 대상 레코드의 키
-	 * @param record 수정 대상 레코드
-	 * @throws AnyIndexerException
-	 */
-	public void update(Record record) throws AnyIndexerException {
+	private void update(String keyName, String keyValue, Record record) throws AnyIndexerException {
 		try {
-			RecordKey.populate(record, relation);
-
-			if(record.getRecordKey() == null)
-				throw new NullPointerException("Record Key is null.");
-
-			if(record.getRecordKey().hasWildcard())
-				throw new IllegalArgumentException("PrimaryKey가 와일드카드 문자를 포함하고 있습니다.");
-
-			Document document = createDocument(record); 
-			Term term = new Term(RecordKey.RECORD_KEY, record.getRecordKey().getRecordKeyString());
-
+			Document document = createDocument(keyName, keyValue, record); 
+			Term term = new Term(keyName, keyValue);
 			indexWriter.updateDocument(term, document, analyzer);
 		} catch(Exception e) {
 			throw new AnyIndexerException("색인 수정(update)에 실패했습니다.", e);
 		}
 	}
 	
-	public void delete(Record record) throws AnyIndexerException {
-		RecordKey.populate(record, relation);
+	public void update(Record record) throws AnyIndexerException {
+		String keyName = relation.getRecordKeyPattern().getKeyName();
+		String keyValue = relation.getRecordKeyPattern().combine(record);
 
-		if(record.getRecordKey() == null)
-			throw new NullPointerException("Record Key is null.");
-		
-		delete(record.getRecordKey());
+		update(keyName, keyValue, record);
+	}
+	
+	public void delete(Record record) throws AnyIndexerException {
+		String keyName = relation.getRecordKeyPattern().getKeyName();
+		String keyValue = relation.getRecordKeyPattern().combine(record);
+
+		delete(keyName, keyValue);
 	}
 
-	/**
-	 * 색인삭제. 와일드카드(*)를 사용한 하위 key 일괄 삭제 가능.
-	 * 
-	 * @param recordKey 삭제 대상 레코드의 키
-	 * @param isAutoOptimizeOff Auto Optimize 기능을 강제로 끌지 여부.
-	 * @throws AnyIndexerException
-	 */
-	public void delete(RecordKey recordKey) throws AnyIndexerException {
+	public void delete(String keyName, String keyValue) throws AnyIndexerException {
 		try {
-			String rkey = recordKey.getRecordKeyString();
-
-			/**
-			 * Term 선택 순서대로 속도에서 차이가 난다.
-			 * WildcardTerm은 속도가 아주 느리다.
-			 * --------------------------------
-			 * 0: Term 1: PrefixQuery 2: WildcardQuery
-			 */
-			int whatQuery = 0;
-
-			if(recordKey.hasWildcard()) {
-				int wildcardCnt = 0;
-
-				if(rkey.indexOf("?") != -1) {
-					wildcardCnt = 99;
-				} else {
-					wildcardCnt = StringUtils.search(rkey, "*");
-				}
-
-				if(wildcardCnt == 1) {
-					if(rkey.indexOf("*") == rkey.length() - 1) {
-						whatQuery = 1;
-
-						// PrefixTerm을 위해 "*" 제거
-						rkey = rkey.substring(0, rkey.length() - 1);
-					} else {
-						whatQuery = 2;
-					}
-				} else {
-					whatQuery = 2;
-				}
-			}
-
-			Term term = new Term(RecordKey.RECORD_KEY, rkey);
-
-			if(whatQuery == 0) {
-				indexWriter.deleteDocuments(term);
-			} else {
-				Query query = null;
-
-				if(whatQuery == 1) {
-					query = new PrefixQuery(term);
-				} else if(whatQuery == 2) {
-					query = new WildcardQuery(term);
-				}
-
-				indexWriter.deleteDocuments(query);
-			}
-/*			
-			} else {
-				synchronized(directory) {
-					indexSearcher = new IndexSearcher(directory);
-
-					Query query = null;
-
-					if(whatQuery == 1) {
-						query = new PrefixQuery(term);
-					} else if(whatQuery == 2) {
-						query = new WildcardQuery(term);
-					}
-					
-					TopDocs docs = indexSearcher.search(query, Integer.MAX_VALUE);
-
-					for(int i = 0; i < docs.scoreDocs.length; i++) {
-						Document doc = indexSearcher.doc(docs.scoreDocs[i].doc);
-						term = new Term(RecordKey.RECORD_KEY, doc.get(RecordKey.RECORD_KEY));
-
-						indexWriter.deleteDocuments(term);
-					}
-
-					indexSearcher.close();
-					indexSearcher = null;
-				}
-			}
-*/
+			Term term = new Term(keyName, keyValue);
+			indexWriter.deleteDocuments(term);
+		} catch(Exception e) {
+			throw new AnyIndexerException("색인 삭제(delete)에 실패했습니다.", e);
+		}
+	}
+	
+	public void delete(List<FilterAttribute> filterAttributeList) throws AnyIndexerException {
+		try {
+			LuceneQueryBuilder queryBuilder = new LuceneQueryBuilder();
+			queryBuilder.addQuery(filterAttributeList);
+			Query query = queryBuilder.build();
+				
+			indexWriter.deleteDocuments(query);
 		} catch(Exception e) {
 			throw new AnyIndexerException("색인 삭제(delete)에 실패했습니다.", e);
 		}
@@ -304,22 +209,14 @@ public class LuceneIndexer implements AnyIndexer {
 			throw new AnyIndexerException("색인 작업 종료에 실패했습니다.", e);
 		}
 	}
-
-	/**
-	 * 해당 Key가 존재하는 여부를 반환.
-	 * 와일드카드 문자가 포함된 primaryKey를 지정하면 안된다.
-	 * 
-	 * @param recordKey 레코드의 키
-	 * @return
-	 * @throws AnyIndexerException
-	 */
-	public boolean exists(RecordKey recordKey) throws AnyIndexerException {
+	
+	public boolean exists(String keyName, String keyValue) throws AnyIndexerException {
 		IndexReader indexReader = null;
 		
 		try {
 			indexReader = IndexReader.open(indexWriter, false);
 			
-			Term term = new Term(RecordKey.RECORD_KEY, recordKey.getRecordKeyString());
+			Term term = new Term(keyName, keyValue);
 
 			TermDocs termDocs = indexReader.termDocs(term);
 			
@@ -343,7 +240,7 @@ public class LuceneIndexer implements AnyIndexer {
 	 * @return Record
 	 * @throws AnyIndexerException
 	 */
-	private Document createDocument(Record record) throws AnyIndexerException {
+	private Document createDocument(String keyName, String keyValue, Record record) throws AnyIndexerException {
 		try {
 			AttributeMap attributeMap = relation.getAttributeMap();
 
@@ -353,16 +250,16 @@ public class LuceneIndexer implements AnyIndexer {
 			Document document = new Document();
 
 			// Record Key
-			Field field = new Field(RecordKey.RECORD_KEY, record.getRecordKey().getRecordKeyString(), Field.Store.YES, Field.Index.NOT_ANALYZED);
+			Field field = new Field(keyName, keyValue, Field.Store.YES, Field.Index.NOT_ANALYZED);
 			document.add(field);
-
-			Iterator<Attribute> iter = attributeMap.values().iterator();
 
 			Field.Index index = null;
 			Field.Store store = null;
 			
-			while(iter.hasNext()) {
-				Attribute attribute = iter.next();
+			for(Attribute attribute : attributeMap.values()) {
+				if(keyName.equals(attribute.getName()))
+					continue;
+				
 				String value = record.getValue(attribute.getName());
 
 				if(!attribute.isNullable() && value == null)

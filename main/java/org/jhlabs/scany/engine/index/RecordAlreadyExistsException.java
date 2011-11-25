@@ -35,6 +35,16 @@ public class RecordAlreadyExistsException extends AnyIndexerException {
 	 * @param msg
 	 *            A message to associate with the exception
 	 */
+	public RecordAlreadyExistsException(String keyName, String keyValue) {
+		super("Already exists record key [" + keyName + ":" + keyValue + "]");
+	}
+	
+	/**
+	 * Constructor to create exception with a message
+	 * 
+	 * @param msg
+	 *            A message to associate with the exception
+	 */
 	public RecordAlreadyExistsException(String msg) {
 		super(msg);
 	}

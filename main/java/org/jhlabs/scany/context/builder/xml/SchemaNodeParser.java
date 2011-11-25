@@ -150,6 +150,9 @@ public class SchemaNodeParser {
 				Relation relation = (Relation)assistant.peekObject();
 				relation.setDirectoryType(directoryType);
 				
+				if(text == null || text.length() ==0)
+					text = relation.getId();
+				
 				if(relativeDirectory == Boolean.TRUE) {
 					String basetDirectory = assistant.getBaseDirectory();
 					String directory = basetDirectory + "/" + text;
@@ -160,9 +163,9 @@ public class SchemaNodeParser {
 				}
 			}
 		});
-		parser.addNodelet("/schema/relation/recordKeyPattern", new EasyNodelet() {
+		parser.addNodelet("/schema/relation/recordKey", new EasyNodelet() {
 			public void process(Properties attributes, String text) throws Exception {
-				String separator = attributes.getProperty("separator");
+				String separator = attributes.getProperty("join");
 				
 				RecordKeyPattern recordKeyPattern = new RecordKeyPattern();
 				recordKeyPattern.setPattern(text, separator);

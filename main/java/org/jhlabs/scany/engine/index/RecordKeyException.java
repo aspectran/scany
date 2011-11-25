@@ -8,7 +8,7 @@
  * Contributors:
  *     Jeong Ju Ho - initial API and implementation
  ******************************************************************************/
-package org.jhlabs.scany.engine.entity;
+package org.jhlabs.scany.engine.index;
 
 
 /**
@@ -18,7 +18,7 @@ package org.jhlabs.scany.engine.entity;
  * @author Gulendol
  * 
  */
-public class RecordKeyException extends Exception {
+public class RecordKeyException extends AnyIndexerException {
 
 	/** @serial */
 	static final long serialVersionUID = -6281810821687331562L;

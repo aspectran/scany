@@ -11,7 +11,7 @@
 package org.jhlabs.scany.engine.entity;
 
 
-import org.jhlabs.scany.context.builder.ScanyContextConstant;
+import org.jhlabs.scany.engine.index.RecordKeyException;
 import org.jhlabs.scany.util.StringUtils;
 
 /**
@@ -22,7 +22,7 @@ import org.jhlabs.scany.util.StringUtils;
  */
 public class RecordKeyPattern {
 	
-	public static final String RECORD_KEY = "_r_key_";
+	private static final String RECORD_KEY = "_r_key_";
 	
 	private String pattern;
 	
@@ -50,82 +50,73 @@ public class RecordKeyPattern {
 	public String[] getKeyNames() {
 		return keyNames;
 	}
+	
+	public boolean isJoinRecordKey() {
+		return (keyNames != null && keyNames.length > 1);
+	}
+	
+	public String getKeyName() {
+		if(keyNames == null || keyNames.length == 0)
+			return null;
+		
+		if(keyNames.length > 1)
+			return RECORD_KEY;
+		else
+			return keyNames[0];
+	}
+	
+	public boolean isKeyMember(String attributeName) {
+		boolean exists = false;
+		
+		for(String keyName : keyNames) {
+			if(keyName.equals(attributeName)) {
+				exists = true;
+				break;
+			}
+		}
+		
+		return exists;
+	}
 
 	/**
 	 * 각 요소(Key)를 키패턴(KeyPattern)에 맞게 조합하여 PrimaryKey를 생성한다.
 	 * @param keyPattern
 	 * @return
-	 * @throws MultipartRequestzException
 	 */
-	public String combine(RecordKey recordKey) throws RecordKeyException {
-		try {
-			String[] keyValues = new String[keyNames.length];
-	
-			if(keyNames.length == 0)
-				throw new IllegalArgumentException("스키마 설정정보에서 KeyPattern이 지정되지 않았습니다.");
-			
-			for(int i = 0; i < keyNames.length; i++) {
-				keyValues[i] = recordKey.getKeyValue(keyNames[i]);
-				
-				if(keyValues[i] == null || keyValues[i].length() < 1)
-					throw new IllegalArgumentException("부적합한 Record Key입니다.");
-			}
-	
-			if(recordKey.hasWildcard()) {
-				for(int i = 0; i < ScanyContextConstant.WILDCARDS.length; i++) {
-					if(ScanyContextConstant.WILDCARDS[i].equals(keyValues[0].substring(0, 1)))
-						throw new IllegalArgumentException("PrimaryKey에서 와일드카드 문자('?', '*')는 첫번째 인자가 될 수 없습니다.");
-				}
+	public String combine(Record record) throws RecordKeyException {
+		String keyName = getKeyName();
 		
-				// groupId:*:* == > groupId:*
-				for(int i = keyValues.length - 1; i >= 0; i--) {
-					if(!"*".equals(keyValues[i]))
-						break;
+		if(keyName == null)
+			throw new IllegalArgumentException("레코드키가 정의되어 있지 않습니다.");
 		
-					keyValues[i] = null;
-				}
-			}
+		if(keyNames.length == 1) {
+			String keyValue = record.getValue(keyName);
 			
-			// 키조합
-			StringBuffer sb = new StringBuffer();
-			
-			for(int i = 0; i < keyValues.length; i++) {
-				if(keyValues[i] == null) {
-					sb.append("*");
-					break;
-				}
-				
-				sb.append(keyValues[i]);
-				
-				if(i < keyValues.length - 1)
-					sb.append(separator);
-			}
-			
-			return sb.toString();
+			if(keyValue == null)
+				throw new RecordKeyException("record key value is null.");
 
-		} catch(Exception e) {
-			throw new RecordKeyException("PrimaryKey를 조합하는 중 오류가 발생했습니다.", e);
+			return record.getValue(keyName);
 		}
-	}
+		
+		String[] keyValues = new String[keyNames.length];
 
-	/**
-	 * PrimaryKey를 각 요소(Key)로 분리한다.
-	 * @param primaryKey
-	 * @throws MultipartRequestzException
-	 */
-	public void separate(String recordKeyString, RecordKey recordKey) throws RecordKeyException {
-		try {
-			String[] keyNames = StringUtils.split(pattern, separator);
-			String[] keyValues = StringUtils.split(recordKeyString, separator);
-	
-			if(keyNames.length != keyValues.length)
+		for(int i = 0; i < keyNames.length; i++) {
+			keyValues[i] = record.getValue(keyNames[i]);
+			
+			if(keyValues[i] == null || keyValues[i].length() < 1)
 				throw new IllegalArgumentException("부적합한 Record Key입니다.");
-			
-			for(int i = 0; i < keyNames.length; i++) {
-				recordKey.setKeyValue(keyNames[i], keyValues[i]);
-			}
-		} catch(Exception e) {
-			throw new RecordKeyException("RecordKey를 분리하는 중 오류가 발생했습니다.", e);
 		}
+			
+		// 키조합
+		StringBuffer sb = new StringBuffer();
+		
+		for(int i = 0; i < keyValues.length; i++) {
+			sb.append(keyValues[i]);
+			
+			if(i < keyValues.length - 1)
+				sb.append(separator);
+		}
+		
+		return sb.toString();
 	}
 }
