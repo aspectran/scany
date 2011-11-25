@@ -17,7 +17,7 @@ public class ScanyServiceProviderFactory {
 		}
 	}
 
-	public static AnyService getAnyService() {
+	public static AnyService getService() {
 		return scanyServiceProvider.getAnyService();
 	}
 }

@@ -12,6 +12,7 @@ package org.jhlabs.scany.engine;
 
 import org.jhlabs.scany.ScanyServiceProviderFactory;
 import org.jhlabs.scany.engine.entity.Record;
+import org.jhlabs.scany.engine.index.AnyIndexer;
 import org.jhlabs.scany.engine.index.AnyIndexerException;
 import org.jhlabs.scany.engine.transaction.AnyTransaction;
 import org.jhlabs.scany.service.AnyService;
@@ -27,7 +28,7 @@ public class LuceneIndexerTest {
 	
 	@Test
 	public void insert() {
-		AnyService service = ScanyServiceProviderFactory.getAnyService();
+		AnyService service = ScanyServiceProviderFactory.getService();
 		AnyTransaction tran = null;
 
 		try {
@@ -45,6 +46,41 @@ public class LuceneIndexerTest {
 			}
 			
 			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void rollbackTest() throws AnyIndexerException {
+		AnyService service = ScanyServiceProviderFactory.getService();
+		AnyIndexer indexer = null;
+		
+		try {
+			indexer = service.getIndexer("relation01");
+			Record r = createRecord();
+			indexer.delete(createRecord());
+			indexer.commit();
+			r.setValue("title", "동해물과 백두산이 마르고 닳도록~");
+			indexer.update(r);
+			//indexer.delete(createRecord());
+			//indexer.insert(createRecord());
+			//indexer.insert(createRecord());
+			//indexer.rollback();
+		} catch(Exception e) {
+			indexer.rollback();
+			
+			try {
+				if(indexer != null)
+					indexer.close();
+			} catch(AnyIndexerException e1) {
+				e1.printStackTrace();
+			}
+			
+			e.printStackTrace();
+		} finally {
+			try {
+				if(indexer != null)
+					indexer.close();
+			} catch(Exception ignored) {}
 		}
 	}
 	
