@@ -8,8 +8,8 @@ import java.io.IOException;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.ScoreDoc;
-import org.jhlabs.scany.engine.entity.RecordKeyException;
 import org.jhlabs.scany.engine.entity.RecordList;
+import org.jhlabs.scany.engine.index.RecordKeyException;
 import org.jhlabs.scany.engine.search.SearchModel;
 
 /**

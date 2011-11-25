@@ -10,9 +10,12 @@
  ******************************************************************************/
 package org.jhlabs.scany.engine.search.query;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
@@ -26,7 +29,6 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TermRangeQuery;
 import org.apache.lucene.search.WildcardQuery;
 import org.jhlabs.scany.context.ScanyContext;
-import org.jhlabs.scany.engine.entity.RecordKey;
 import org.jhlabs.scany.engine.search.FilterAttribute;
 import org.jhlabs.scany.engine.search.FilterType;
 import org.jhlabs.scany.engine.search.QueryAttribute;
@@ -48,7 +50,9 @@ import org.jhlabs.scany.engine.search.QueryAttribute;
  */
 public class LuceneQueryBuilder {
 
-	private List<Query> queryList;
+	private final Log log = LogFactory.getLog(LuceneQueryBuilder.class);
+
+	private List<Query> queryList = new ArrayList<Query>();
 	
 	public LuceneQueryBuilder() {
 	}
@@ -111,6 +115,10 @@ public class LuceneQueryBuilder {
 				booleanQuery.add(query, BooleanClause.Occur.MUST);
 			else
 				booleanQuery.add(query, BooleanClause.Occur.SHOULD);
+		}
+		
+		if(log.isDebugEnabled()) {
+			log.debug("FilterAttribute " + booleanQuery);
 		}
 		
 		queryList.add(booleanQuery);
@@ -180,7 +188,7 @@ public class LuceneQueryBuilder {
 	public void addQuery(String queryText, List<QueryAttribute> queryAttributeList, Analyzer analyzer) throws ParseException {
 		if(queryText == null || queryText.length() == 0)
 			return;
-		
+
 		if(queryAttributeList != null && queryAttributeList.size() > 0) {
 			String[] attributeNames = new String[queryAttributeList.size()];
 			int index = 0;
@@ -193,11 +201,10 @@ public class LuceneQueryBuilder {
 			queryParser.setDefaultOperator(QueryParser.AND_OPERATOR);
 			Query query = queryParser.parse(queryText);
 			queryList.add(query);
-		} else {
-			QueryParser queryParser = new QueryParser(ScanyContext.LUCENE_VERSION, RecordKey.RECORD_KEY, analyzer);
-			queryParser.setDefaultOperator(QueryParser.AND_OPERATOR);
-			Query query = queryParser.parse(queryText);
-			queryList.add(query);
+
+			if(log.isDebugEnabled()) {
+				log.debug("QueryAttribute " + query);
+			}
 		}
 	}
 	

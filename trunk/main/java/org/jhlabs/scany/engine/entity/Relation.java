@@ -19,6 +19,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
 import org.jhlabs.scany.context.type.DirectoryType;
+import org.jhlabs.scany.engine.index.RecordKeyException;
 
 /**
  * 스키마 정보를 담고 있다.
@@ -212,16 +213,6 @@ public class Relation {
 	 */
 	public void setMaxMergeDocs(int maxMergeDocs) {
 		this.maxMergeDocs = maxMergeDocs;
-	}
-
-	public RecordKey newRecordKey() {
-		return new RecordKey(recordKeyPattern);
-	}
-	
-	public RecordKey newRecordKey(String recordKeyString) throws RecordKeyException {
-		RecordKey recordKey = new RecordKey(recordKeyPattern);
-		recordKey.setRecordKeyString(recordKeyString);
-		return recordKey;
 	}
 	
 	public Directory openDirectory() throws IOException {

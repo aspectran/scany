@@ -33,7 +33,7 @@ public class LocalService extends AbstractService implements AnyService {
 		this.localServiceRule = localServiceRule;
 	}
 	
-	public AnySearcher getSercher(String relationId) throws AnySearcherException {
+	public AnySearcher getSearcher(String relationId) throws AnySearcherException {
 		Relation relation = localServiceRule.getSchema().getRelation(relationId);
 		
 		if(relation == null)

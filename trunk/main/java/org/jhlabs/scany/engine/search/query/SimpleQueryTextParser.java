@@ -53,8 +53,6 @@ public class SimpleQueryTextParser implements QueryTextParser {
 	 */
 	private static final String DELIMITERS = "*~+-:!^?(){}[]\"'\\<>`=\t\n\r\f;@#$%&/,. ";
 
-	private Attribute[] queryAttributes;
-	
 	private String[] fields;
 	
 	public SimpleQueryTextParser() {
@@ -63,9 +61,6 @@ public class SimpleQueryTextParser implements QueryTextParser {
 	public String parse(String queryText) {
 		strainQueryString(queryText);
 
-		if(queryAttributes == null || queryAttributes.length == 0)
-			return null;
-		
 		StringBuffer sb = new StringBuffer();
 
 		for(int i = 0; i < fields.length; i++) {

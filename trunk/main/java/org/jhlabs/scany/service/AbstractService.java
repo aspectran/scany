@@ -19,7 +19,7 @@ public abstract class AbstractService {
 	
 	public abstract AnyTransaction getTransaction(String tableId);
 	
-	public abstract AnySearcher getSercher(String tableId) throws AnySearcherException;
+	public abstract AnySearcher getSearcher(String tableId) throws AnySearcherException;
 	
 	public abstract SearchModel getSearchModel(String relationId) throws AnySearcherException;
 	

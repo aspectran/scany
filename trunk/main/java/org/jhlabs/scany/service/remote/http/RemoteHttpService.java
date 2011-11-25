@@ -20,7 +20,7 @@ import org.jhlabs.scany.service.AnyService;
  */
 public class RemoteHttpService implements AnyService {
 
-	public AnySearcher getSercher(String relationId) throws AnySearcherException {
+	public AnySearcher getSearcher(String relationId) throws AnySearcherException {
 		// TODO Auto-generated method stub
 		return null;
 	}

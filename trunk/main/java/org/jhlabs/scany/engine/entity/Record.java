@@ -23,17 +23,7 @@ public class Record implements java.io.Serializable {
 
 	private static final long serialVersionUID = 478994437917671858L;
 
-	private RecordKey recordKey;
-
 	private Map<String, String> values = new HashMap<String, String>();
-
-	public RecordKey getRecordKey() {
-		return recordKey;
-	}
-
-	public void setRecordKey(RecordKey recordKey) {
-		this.recordKey = recordKey;
-	}
 
 	public Map<String, String> getValues() {
 		return values;

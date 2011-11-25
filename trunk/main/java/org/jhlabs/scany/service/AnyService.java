@@ -19,7 +19,7 @@ import org.jhlabs.scany.engine.transaction.AnyTransaction;
  */
 public interface AnyService {
 	
-	public AnySearcher getSercher(String relationId) throws AnySearcherException;
+	public AnySearcher getSearcher(String relationId) throws AnySearcherException;
 	
 	public SearchModel getSearchModel(String relationId) throws AnySearcherException;
 
