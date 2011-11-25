@@ -3,9 +3,13 @@
  */
 package org.jhlabs.scany.service.remote.tcp;
 
-import org.jhlabs.scany.context.rule.LocalServiceRule;
+import org.jhlabs.scany.engine.index.AnyIndexer;
+import org.jhlabs.scany.engine.index.AnyIndexerException;
 import org.jhlabs.scany.engine.search.AnySearcher;
+import org.jhlabs.scany.engine.search.AnySearcherException;
+import org.jhlabs.scany.engine.search.SearchModel;
 import org.jhlabs.scany.engine.transaction.AnyTransaction;
+import org.jhlabs.scany.service.AnyService;
 
 /**
  *
@@ -14,20 +18,25 @@ import org.jhlabs.scany.engine.transaction.AnyTransaction;
  * <p>Created: 2011. 11. 6. 오후 4:46:36</p>
  *
  */
-public class RemoteTcpService {
+public class RemoteTcpService implements AnyService {
 	
-	private LocalServiceRule localServiceRule;
+	public AnySearcher getSercher(String relationId) throws AnySearcherException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-	public RemoteTcpService(LocalServiceRule localServiceRule) {
-		this.localServiceRule = localServiceRule;
+	public SearchModel getSearchModel(String relationId) throws AnySearcherException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	public AnyTransaction getTransaction(String relationId) {
+		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	public AnySearcher getSercher(String relationId) {
-		return null;
+
+	public AnyIndexer getIndexer(String relationId) throws AnyIndexerException {
+		throw new UnsupportedOperationException("Only local service.");
 	}
 	
 }

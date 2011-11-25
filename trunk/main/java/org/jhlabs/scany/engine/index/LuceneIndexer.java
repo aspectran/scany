@@ -16,16 +16,13 @@ import java.util.Iterator;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
-import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.store.Directory;
 import org.jhlabs.scany.context.ScanyContext;
@@ -62,7 +59,7 @@ public class LuceneIndexer implements AnyIndexer {
 		initialize();
 	}
 
-	public Relation getRelation() {
+	protected Relation getRelation() {
 		return relation;
 	}
 
@@ -95,6 +92,11 @@ public class LuceneIndexer implements AnyIndexer {
 	 * @throws AnyIndexerException
 	 */
 	public void insert(Record record) throws AnyIndexerException {
+		RecordKey.populate(record, relation);
+
+		if(record.getRecordKey() == null)
+			throw new NullPointerException("Record Key is null.");
+
 		if(exists(record.getRecordKey()))
 			throw new RecordAlreadyExistsException("동일한 Primary Key를 가진 레코드(Record)가 이미 존재합니다.");
 
@@ -131,6 +133,11 @@ public class LuceneIndexer implements AnyIndexer {
 	 */
 	public void update(Record record) throws AnyIndexerException {
 		try {
+			RecordKey.populate(record, relation);
+
+			if(record.getRecordKey() == null)
+				throw new NullPointerException("Record Key is null.");
+
 			if(record.getRecordKey().hasWildcard())
 				throw new IllegalArgumentException("PrimaryKey가 와일드카드 문자를 포함하고 있습니다.");
 
@@ -142,6 +149,15 @@ public class LuceneIndexer implements AnyIndexer {
 			throw new AnyIndexerException("색인 수정(update)에 실패했습니다.", e);
 		}
 	}
+	
+	public void delete(Record record) throws AnyIndexerException {
+		RecordKey.populate(record, relation);
+
+		if(record.getRecordKey() == null)
+			throw new NullPointerException("Record Key is null.");
+		
+		delete(record.getRecordKey());
+	}
 
 	/**
 	 * 색인삭제. 와일드카드(*)를 사용한 하위 key 일괄 삭제 가능.
@@ -151,8 +167,6 @@ public class LuceneIndexer implements AnyIndexer {
 	 * @throws AnyIndexerException
 	 */
 	public void delete(RecordKey recordKey) throws AnyIndexerException {
-		IndexSearcher indexSearcher = null;
-
 		try {
 			String rkey = recordKey.getRecordKeyString();
 
@@ -191,7 +205,18 @@ public class LuceneIndexer implements AnyIndexer {
 
 			if(whatQuery == 0) {
 				indexWriter.deleteDocuments(term);
+			} else {
+				Query query = null;
 
+				if(whatQuery == 1) {
+					query = new PrefixQuery(term);
+				} else if(whatQuery == 2) {
+					query = new WildcardQuery(term);
+				}
+
+				indexWriter.deleteDocuments(query);
+			}
+/*			
 			} else {
 				synchronized(directory) {
 					indexSearcher = new IndexSearcher(directory);
@@ -203,7 +228,7 @@ public class LuceneIndexer implements AnyIndexer {
 					} else if(whatQuery == 2) {
 						query = new WildcardQuery(term);
 					}
-
+					
 					TopDocs docs = indexSearcher.search(query, Integer.MAX_VALUE);
 
 					for(int i = 0; i < docs.scoreDocs.length; i++) {
@@ -217,16 +242,9 @@ public class LuceneIndexer implements AnyIndexer {
 					indexSearcher = null;
 				}
 			}
-
+*/
 		} catch(Exception e) {
 			throw new AnyIndexerException("색인 삭제(delete)에 실패했습니다.", e);
-		} finally {
-			try {
-				if(indexSearcher != null)
-					indexSearcher.close();
-			} catch(Exception e2) {
-				e2.printStackTrace();
-			}
 		}
 	}
 
@@ -256,6 +274,32 @@ public class LuceneIndexer implements AnyIndexer {
 	public void close() throws AnyIndexerException {
 		try {
 			indexWriter.close();
+		} catch(IOException e) {
+			throw new AnyIndexerException("색인 작업 종료에 실패했습니다.", e);
+		}
+	}
+
+	/**
+	 * Commit.
+	 *
+	 * @throws AnyIndexerException the any indexer exception
+	 */
+	public void commit() throws AnyIndexerException {
+		try {
+			indexWriter.commit();
+		} catch(IOException e) {
+			throw new AnyIndexerException("색인 작업 종료에 실패했습니다.", e);
+		}
+	}
+	
+	/**
+	 * Rollback.
+	 *
+	 * @throws AnyIndexerException the any indexer exception
+	 */
+	public void rollback() throws AnyIndexerException {
+		try {
+			indexWriter.rollback();
 		} catch(IOException e) {
 			throw new AnyIndexerException("색인 작업 종료에 실패했습니다.", e);
 		}
@@ -335,7 +379,7 @@ public class LuceneIndexer implements AnyIndexer {
 						index = attribute.isIndexable() ? Field.Index.NOT_ANALYZED : Field.Index.NO;
 					}
 	
-					field = new Field(attribute.getName(), value, store, index, TermVector.NO);
+					field = new Field(attribute.getName(), value, store, index, (Field.TermVector)attribute.getWithTermVector().getType());
 					
 					// boost factor
 					field.setBoost(attribute.getBoost());

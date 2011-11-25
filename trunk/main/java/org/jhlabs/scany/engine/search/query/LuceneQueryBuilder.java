@@ -165,31 +165,6 @@ public class LuceneQueryBuilder {
 	 * @param analyzer the analyzer
 	 * @throws ParseException the parse exception
 	 */
-	public void addQuery_____(String queryText, List<String> queryAttributeList, Analyzer analyzer) throws ParseException {
-		if(queryText == null || queryText.length() == 0)
-			return;
-		
-		String firstAttrName;
-		
-		if(queryAttributeList == null || queryAttributeList.size() == 0)
-			firstAttrName = RecordKey.RECORD_KEY;
-		else
-			firstAttrName = queryAttributeList.get(0);
-		
-		QueryParser queryParser = new QueryParser(ScanyContext.LUCENE_VERSION, firstAttrName, analyzer);
-		queryParser.setDefaultOperator(QueryParser.AND_OPERATOR);
-		Query query = queryParser.parse(queryText);
-		queryList.add(query);
-	}
-	
-	/**
-	 * 토큰화된 컬럼을 검색하기 위한 질의를 만든다.
-	 *
-	 * @param queryText the query string
-	 * @param queryAttributeList the query attribute list
-	 * @param analyzer the analyzer
-	 * @throws ParseException the parse exception
-	 */
 	public void addQuery(String queryText, Analyzer analyzer) throws ParseException {
 		addQuery(queryText, null, analyzer);
 	}

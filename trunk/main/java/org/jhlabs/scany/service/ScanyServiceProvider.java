@@ -44,7 +44,7 @@ public class ScanyServiceProvider {
 			if(serviceMode == ServiceMode.LOCAL) {
 				anyService = new LocalService((LocalServiceRule)clientRule.getAnyServiceRule());
 			} else {
-				throw new ScanyContextException("Sorry! Scany " + serviceMode + " service is not support.");
+				throw new ScanyContextException("Sorry! Scany " + serviceMode + " service is not yet support.");
 			}
 		}
 		

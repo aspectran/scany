@@ -40,6 +40,9 @@ public class SyllabicTokenizer extends Tokenizer {
 
 	private static final int IO_BUFFER_SIZE = 1024;
 
+	private final char[] buffer = new char[MAX_WORD_LEN];
+
+	
 	  private final CharacterBuffer ioBuffer = CharacterUtils.newCharacterBuffer(IO_BUFFER_SIZE);
 
 	
@@ -59,7 +62,7 @@ public class SyllabicTokenizer extends Tokenizer {
 
 		int length = 0;
 		int start = offset;
-		char[] buffer = termAtt.buffer();
+		//char[] buffer = termAtt.buffer();
 
 		label0:
 		do {
@@ -109,9 +112,15 @@ public class SyllabicTokenizer extends Tokenizer {
 			break;
 		} while(length <= 0);
 
-		offsetAtt.setOffset(correctOffset(start), finalOffset = correctOffset(start + termAtt.length()));
-
-		return true;
+		if(length > 0) {
+			termAtt.copyBuffer(buffer, 0, length);
+			offsetAtt.setOffset(correctOffset(start), correctOffset(start + length));
+			return true;
+		} else if(dataLen == -1) {
+			offset--;
+			return false;
+		}
+		return false;
 	}
 
 	  @Override
