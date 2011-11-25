@@ -63,7 +63,6 @@ public class TestingPagingCollector {
 					"total hits [" + totalHitsRef.totalHits() + "] " +
 					"searches [" + progressRef.searchesPerformed() + "] " +
 					"position [" + progressRef.currentHitPosition() + "] " +
-					"record key [" + record.getRecordKey() + "]" +
 					"record values []");
 		}
 	}
