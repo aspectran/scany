@@ -60,7 +60,7 @@ public class LuceneIndexerTest {
 			indexer.delete(createRecord());
 			indexer.commit();
 			r.setValue("title", "동해물과 백두산이 마르고 닳도록~");
-			indexer.update(r);
+			indexer.insert(r);
 			//indexer.delete(createRecord());
 			//indexer.insert(createRecord());
 			//indexer.insert(createRecord());
