@@ -36,16 +36,17 @@
 				nullable="false" storable="true" indexable="true" analyzable="false"
 				>분류</attribute>
 			<attribute name="title"
-				nullable="false" storable="true" indexable="true" analyzable="true" queryable="true"
+				nullable="false" storable="true" indexable="true" analyzable="true" queryable="true" termVector="all"
 				boost="1.1"
+				analyzer="syllabic"
 				>제목</attribute>
 			<attribute name="content"
-				nullable="true" storable="true" indexable="true" analyzable="true" queryable="true"
+				nullable="true" storable="true" indexable="true" analyzable="true" queryable="true" termVector="all"
 				summarizer="summarizer"
 				boost="1.0"
 				>내용</attribute>
 			<attribute name="tag"
-				nullable="false" storable="true" indexable="true" analyzable="true" queryable="true"
+				nullable="false" storable="true" indexable="true" analyzable="true" queryable="true" termVector="all"
 				boost="1.2"
 				analyzer="csv"
 				>태그</attribute>
