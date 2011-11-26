@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 
 /**
@@ -17,7 +17,7 @@ import org.w3c.dom.Node;
  */
 public class EasyNodeletParser extends AbstractNodeletParser {
 	
-	private final Log log = LogFactory.getLog(EasyNodeletParser.class);
+	private static final Logger logger = LoggerFactory.getLogger(EasyNodeletParser.class);
 
 	private final static Properties EMPTY_ATTRIBUTES = new Properties();
 	
@@ -93,7 +93,7 @@ public class EasyNodeletParser extends AbstractNodeletParser {
 					attributes = NodeletUtils.parseAttributes(node);
 					text = NodeletUtils.getText(node);
 
-					if(log.isTraceEnabled()) {
+					if(logger.isTraceEnabled()) {
 						StringBuilder sb = new StringBuilder(pathString);
 						
 						if(attributes != null && attributes.size() > 0) {
@@ -104,7 +104,7 @@ public class EasyNodeletParser extends AbstractNodeletParser {
 							sb.append(" ").append(text);
 						}
 						
-						log.trace(sb.toString());
+						logger.trace(sb.toString());
 					}
 				} else {
 					attributes = EMPTY_ATTRIBUTES;
