@@ -30,9 +30,9 @@ public final class MessageFormat extends Type {
 	private static final Map<String, MessageFormat> types;
 	
 	static {
-		XML = new MessageFormat("local");
-		JSON = new MessageFormat("http");
-		BINARY = new MessageFormat("remote");
+		XML = new MessageFormat("xml");
+		JSON = new MessageFormat("json");
+		BINARY = new MessageFormat("binary");
 
 		types = new HashMap<String, MessageFormat>();
 		types.put(XML.toString(), XML);
