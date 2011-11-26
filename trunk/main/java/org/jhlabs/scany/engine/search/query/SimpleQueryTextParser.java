@@ -196,7 +196,6 @@ public class SimpleQueryTextParser implements QueryTextParser {
 		String upperOperator = operator.toUpperCase();
 		
 		for(int i = 0; i < OPERATORS.length; i++) {
-System.out.println(upperOperator + " = " + OPERATORS[i]);
 			if(upperOperator.equals(OPERATORS[i])) {
 				return i;
 			}
@@ -242,19 +241,14 @@ System.out.println(upperOperator + " = " + OPERATORS[i]);
 			token = st.nextToken();
 
 			op = whatOperator(token);
-			System.out.println("OPN: " + op);
 
 			// 연산자는 대문자로, 소문자로된 연산자는 키워드로 간주할 것이다.
 			if(op != -1 && !prevOp) {
 				tokens.add(OPERATOR_IMAGES[op]);
 				prevOp = true;
-				System.out.println("OP: " + OPERATOR_IMAGES[op]);
-
 			} else {
 				tokens.add(token);
 				prevOp = false;
-				System.out.println("NOP: " + token);
-
 			}
 		}
 		

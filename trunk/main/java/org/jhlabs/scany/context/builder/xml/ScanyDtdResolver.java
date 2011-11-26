@@ -26,19 +26,22 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
- * Offline entity resolver for the Translets DTDs
+ * Offline entity resolver for the Scany DTDs
  * 
  * <p>Created: 2008. 06. 14 오전 4:48:34</p>
  */
 public class ScanyDtdResolver implements EntityResolver {
 
 	private static final String SCANY_DTD = "org/jhlabs/scany/context/builder/xml/dtd/scany-2.0.dtd";
+	private static final String SCHEMA_DTD = "org/jhlabs/scany/context/builder/xml/dtd/schema-2.0.dtd";
 
 	private static final Map<String, String> doctypeMap = new HashMap<String, String>();
 
 	static {
-		doctypeMap.put("scany-1.dtd".toUpperCase(), SCANY_DTD);
-		doctypeMap.put("-//JHLabs.org//DTD Scany 1.0//EN".toUpperCase(), SCANY_DTD);
+		doctypeMap.put("scany-2.0.dtd".toUpperCase(), SCANY_DTD);
+		doctypeMap.put("-//JHLabs.org//DTD Scany 2.0//EN".toUpperCase(), SCANY_DTD);
+		doctypeMap.put("schema-2.0.dtd".toUpperCase(), SCHEMA_DTD);
+		doctypeMap.put("-//JHLabs.org//DTD Schema 2.0//EN".toUpperCase(), SCHEMA_DTD);
 	}
 
 	/**

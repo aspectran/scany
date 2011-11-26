@@ -6,7 +6,7 @@
 <!ELEMENT directory (#PCDATA)>
 <!ELEMENT characterEncoding (#PCDATA)>
 
-<!ELEMENT local (schema, directory, characterEncoding?, spooling?)>
+<!ELEMENT local (directory, schema, characterEncoding?, spooling?)>
 
 <!ELEMENT spooling (directory? | ftp? | jdbc? | jndi?)>
 
@@ -21,12 +21,12 @@ encryption CDATA #IMPLIED
 <!ELEMENT jdbc (#PCDATA)>
 <!ELEMENT jndi (#PCDATA)>
 
-<!ELEMENT client (local | remote)>
+<!ELEMENT client (local? | remote?)>
 <!ELEMENT remote (tcp? | http?)>
 
 <!ELEMENT tcp (connection, message?)>
 
-<!ELEMENT connection (host, timeout)>
+<!ELEMENT connection (host, timeout?)>
 <!ELEMENT host (#PCDATA)>
 <!ATTLIST host
 port CDATA #REQUIRED
