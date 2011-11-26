@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE schema PUBLIC "-//JHLabs.org//DTD Schema 2.0//EN"
-                           "./dtd/schema-2.0.dtd">
+                        "./dtd/schema-2.0.dtd">
                            
 <schema>
 
@@ -8,7 +8,7 @@
 		<analyzer id="bigram" class="org.jhlabs.scany.engine.analysis.bigram.BigramAnalyzer"/>
 		<analyzer id="csv" class="org.jhlabs.scany.engine.analysis.csv.CSVAnalyzer"/>
 		<analyzer id="syllabic" class="org.jhlabs.scany.engine.analysis.syllabic.SyllabicAnalyzer"/>
-		<analyzer id="standard" class="org.apache.lucene.analysis.WhitespaceAnalyzer"/>
+		<analyzer id="kr" class="org.jhlabs.scany.engine.analysis.kr.KoreanAnalyzer"/>
 	</analyzers>
 	
 	<summarizers>
@@ -24,7 +24,7 @@
 		<queryTextParser id="queryTextParser" class="org.jhlabs.scany.engine.search.query.SimpleQueryTextParser"/>
 	</queryTextParsers>
 	
-	<relation id="relation01" analyzer="standard" queryTextParser="queryTextParser">
+	<relation id="relation01" analyzer="kr" queryTextParser="queryTextParser">
 		<description>공지사항</description>
 		<directory relative="true"/>
 		<recordKey join="$">boardId$articleId</recordKey>
@@ -50,7 +50,7 @@
 				nullable="true" storable="true" indexable="true" analyzable="true" queryable="true" termVector="all"
 				summarizer="summarizer"
 				boost="1.0"
-				analyzer="bigram"
+				analyzer="kr"
 				>내용</attribute>
 			<attribute name="tag"
 				nullable="false" storable="true" indexable="true" analyzable="true" queryable="true" termVector="all"
