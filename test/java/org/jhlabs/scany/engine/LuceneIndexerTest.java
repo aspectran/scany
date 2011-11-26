@@ -42,7 +42,7 @@ public class LuceneIndexerTest {
 		}
 	}
 	
-	@ Test
+	//@Test
 	public void indexerTest() throws AnyIndexerException {
 		AnyService service = ScanyServiceProviderFactory.getService();
 		AnyIndexer indexer = null;
@@ -107,7 +107,7 @@ public class LuceneIndexerTest {
 		record.setValue("category", "cate01");
 		record.setValue("category", "cate01");
 		record.setValue("title", "감 오리하이 Apple scany +fff ");
-		record.setValue("content", "감자오리김치 gulendol@aaa.com");
+		record.setValue("content", "대나무감자오리김치 gulendol@aaa.com 하니코대");
 		record.setValue("tag", "aaa,bbb,ccc");
 		record.setValue("writer", "작성자");
 		record.setValue("date", "20111122170410");
