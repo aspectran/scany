@@ -1,66 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!ELEMENT schema (analyzers?, summarizers?, relation*)>
+<!ELEMENT schema (analyzers?, summarizers?, queryTextParsers?, relation*)>
 
-<!ELEMENT relation (#PCDATA)>
-<!ELEMENT characterEncoding (#PCDATA)>
+<!ELEMENT analyzers (analyzer*)>
+<!ELEMENT analyzer (properties?)>
+<!ATTLIST analyzer
+id CDATA #REQUIRED
+class CDATA #REQUIRED
+>
+
+<!ELEMENT properties (property*)>
+<!ELEMENT property (#PCDATA)>
+<!ATTLIST property
+name CDATA #REQUIRED
+>
+
+<!ELEMENT summarizers (summarizer*)>
+<!ELEMENT summarizer (properties?)>
+<!ATTLIST summarizer
+id CDATA #REQUIRED
+class CDATA #REQUIRED
+>
+
+<!ELEMENT queryTextParsers (queryTextParser*)>
+<!ELEMENT queryTextParser (properties?)>
+<!ATTLIST queryTextParser
+id CDATA #REQUIRED
+class CDATA #REQUIRED
+>
+
+<!ELEMENT relation (description, directory, recordKey, attributes)>
+<!ATTLIST relation
+id CDATA #REQUIRED
+analyzer CDATA #REQUIRED
+queryTextParser CDATA #IMPLIED
+>
+
+<!ELEMENT description (#PCDATA)>
 
 <!ELEMENT directory (#PCDATA)>
-<!ATTLIST host
-type (fs | ram) #IMPLIED
+<!ATTLIST directory
+relative (true | false) #IMPLIED
 >
 
-
-
-
-
-<!ELEMENT local (schema, directory, characterEncoding?, spooling?)>
-
-<!ELEMENT spooling (directory? | ftp? | jdbc? | jndi?)>
-
-<!ELEMENT ftp (connection, user, directory)>
-<!ELEMENT user (id, password)>
-<!ELEMENT id (#PCDATA)>
-<!ELEMENT password (#PCDATA)>
-<!ATTLIST password
-encryption CDATA #IMPLIED
+<!ELEMENT recordKey (#PCDATA)>
+<!ATTLIST recordKey
+join CDATA #IMPLIED
 >
 
-<!ELEMENT jdbc (#PCDATA)>
-<!ELEMENT jndi (#PCDATA)>
+<!ELEMENT attributes (attribute*)>
 
-<!ELEMENT client (local | remote)>
-<!ELEMENT remote (tcp? | http?)>
-
-<!ELEMENT tcp (connection, message?)>
-
-<!ELEMENT connection (host, timeout)>
-<!ELEMENT host (#PCDATA)>
-<!ATTLIST host
-port CDATA #REQUIRED
->
-<!ELEMENT timeout (#PCDATA)>
-
-<!ELEMENT message (keysign, body?)>
-<!ATTLIST message
-format (xml, json, binary) #IMPLIED
-encoding CDATA #IMPLIED
+<!ELEMENT attribute (#PCDATA)>
+<!ATTLIST attribute
+name CDATA #REQUIRED
+nullable (true | false) #IMPLIED
+storable (true | false) #IMPLIED
+indexable (true | false) #IMPLIED
+analyzable (true | false) #IMPLIED
+queryable (true | false) #IMPLIED
+termVector (no | yes | withPositions | withOffsets | withPositionsOffsets | all) #IMPLIED
+boost CDATA #IMPLIED
+analyzer CDATA #IMPLIED
+summarizer CDATA #IMPLIED
 >
 
-<!ELEMENT keysign (#PCDATA)>
-<!ATTLIST keysign
-encryption (true, false) #IMPLIED
-compressable (true, false) #IMPLIED
->
-
-<!ELEMENT body EMPTY>
-<!ATTLIST body
-encryption (true, false) #IMPLIED
-compressable (true, false) #IMPLIED
->
-
-<!ELEMENT http (url, timeout?, message)>
-<!ELEMENT url (#PCDATA)>
-
-<!ELEMENT server (remote, optimizing?)>
-<!ELEMENT optimizing (#PCDATA)>

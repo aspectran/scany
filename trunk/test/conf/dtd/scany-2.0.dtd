@@ -6,7 +6,7 @@
 <!ELEMENT directory (#PCDATA)>
 <!ELEMENT characterEncoding (#PCDATA)>
 
-<!ELEMENT local (schema, directory, characterEncoding?, spooling?)>
+<!ELEMENT local (directory, schema, characterEncoding?, spooling?)>
 
 <!ELEMENT spooling (directory? | ftp? | jdbc? | jndi?)>
 
@@ -21,12 +21,12 @@ encryption CDATA #IMPLIED
 <!ELEMENT jdbc (#PCDATA)>
 <!ELEMENT jndi (#PCDATA)>
 
-<!ELEMENT client (local | remote)>
+<!ELEMENT client (local? | remote?)>
 <!ELEMENT remote (tcp? | http?)>
 
 <!ELEMENT tcp (connection, message?)>
 
-<!ELEMENT connection (host, timeout)>
+<!ELEMENT connection (host, timeout?)>
 <!ELEMENT host (#PCDATA)>
 <!ATTLIST host
 port CDATA #REQUIRED
@@ -35,20 +35,20 @@ port CDATA #REQUIRED
 
 <!ELEMENT message (keysign, body?)>
 <!ATTLIST message
-format (xml, json, binary) #IMPLIED
+format (xml | json | binary) #IMPLIED
 encoding CDATA #IMPLIED
 >
 
 <!ELEMENT keysign (#PCDATA)>
 <!ATTLIST keysign
-encryption (true, false) #IMPLIED
-compressable (true, false) #IMPLIED
+encryption (true | false) #IMPLIED
+compressable (true | false) #IMPLIED
 >
 
 <!ELEMENT body EMPTY>
 <!ATTLIST body
-encryption (true, false) #IMPLIED
-compressable (true, false) #IMPLIED
+encryption (true | false) #IMPLIED
+compressable (true | false) #IMPLIED
 >
 
 <!ELEMENT http (url, timeout?, message)>

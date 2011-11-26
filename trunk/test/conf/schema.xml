@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
-
+<!DOCTYPE schema PUBLIC "-//JHLabs.org//DTD Schema 2.0//EN"
+                           "./dtd/schema-2.0.dtd">
+                           
 <schema>
 
 	<analyzers>
@@ -22,11 +24,10 @@
 		<queryTextParser id="queryTextParser" class="org.jhlabs.scany.engine.search.query.SimpleQueryTextParser"/>
 	</queryTextParsers>
 	
-	<relation id="relation01" analyzer="standard" queryTextParser="">
+	<relation id="relation01" analyzer="standard" queryTextParser="queryTextParser">
 		<description>공지사항</description>
 		<directory relative="true"/>
 		<recordKey join="$">boardId$articleId</recordKey>
-		<queryTextParser></queryTextParser>
 		<attributes>
 			<attribute name="boardId"
 				nullable="false" storable="true" indexable="true" analyzable="false"
