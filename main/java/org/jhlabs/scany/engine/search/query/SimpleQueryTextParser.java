@@ -14,9 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.jhlabs.scany.engine.entity.Attribute;
-import org.jhlabs.scany.util.StringUtils;
-
 /**
  * 사용자가 입력한 질의 문장을 분석하여 검색단어와 질의 연산자를 구분하는 역할을 한다.
  * 질의에 방해되는 특수문자를 제거하고, 검색단어와 질의 연산자를 구분하여
@@ -78,15 +75,14 @@ public class SimpleQueryTextParser implements QueryTextParser {
 			}
 			
 			if(op != -1) {
-				sb.append(fields[i]);
-				continue;
-			}
-			
-			if(isOperator(fields[i], false)) {
-				fields[i] = '\"' + fields[i] + '\"';
-			}
+				sb.append(OPERATORS[op]);
+			} else {
+				if(isOperator(fields[i], false)) {
+					fields[i] = '\"' + fields[i] + '\"';
+				}
 
-			sb.append(fields[i]);
+				sb.append(fields[i]);
+			}
 /*
 			sb.append('(');
 
@@ -199,8 +195,9 @@ public class SimpleQueryTextParser implements QueryTextParser {
 	private int whatOperator(String operator) {
 		String upperOperator = operator.toUpperCase();
 		
-		for(int i = 0; i < OPERATOR_IMAGES.length; i++) {
-			if(upperOperator.equals(OPERATOR_IMAGES[i])) {
+		for(int i = 0; i < OPERATORS.length; i++) {
+System.out.println(upperOperator + " = " + OPERATORS[i]);
+			if(upperOperator.equals(OPERATORS[i])) {
 				return i;
 			}
 		}
@@ -229,7 +226,7 @@ public class SimpleQueryTextParser implements QueryTextParser {
 	 * @param queryString 질의문
 	 */
 	private void strainQueryString(String queryString) {
-		if(StringUtils.isEmpty(queryString)) {
+		if(queryString == null || queryString.length() == 0) {
 			fields = new String[0];
 			return;
 		}
@@ -245,14 +242,19 @@ public class SimpleQueryTextParser implements QueryTextParser {
 			token = st.nextToken();
 
 			op = whatOperator(token);
-			
+			System.out.println("OPN: " + op);
+
 			// 연산자는 대문자로, 소문자로된 연산자는 키워드로 간주할 것이다.
 			if(op != -1 && !prevOp) {
 				tokens.add(OPERATOR_IMAGES[op]);
 				prevOp = true;
+				System.out.println("OP: " + OPERATOR_IMAGES[op]);
+
 			} else {
 				tokens.add(token);
 				prevOp = false;
+				System.out.println("NOP: " + token);
+
 			}
 		}
 		

@@ -63,6 +63,7 @@ public class SchemaNodeParser {
 		addRootNodelets();
 		addAnalyzersNodelets();
 		addSummarizersNodelets();
+		addQueryTextParsersNodelets();
 		addRelationNodelets();
 	}
 
@@ -105,6 +106,10 @@ public class SchemaNodeParser {
 	
 	private void addSummarizersNodelets() {
 		parser.addNodelet("/schema", new SummarizersNodeletAdder(assistant));
+	}
+	
+	private void addQueryTextParsersNodelets() {
+		parser.addNodelet("/schema", new QueryTextParsersNodeletAdder(assistant));
 	}
 	
 	private void addRelationNodelets() {

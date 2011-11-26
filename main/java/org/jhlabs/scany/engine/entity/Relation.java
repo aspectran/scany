@@ -19,7 +19,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
 import org.jhlabs.scany.context.type.DirectoryType;
-import org.jhlabs.scany.engine.index.RecordKeyException;
+import org.jhlabs.scany.engine.search.query.QueryTextParser;
 
 /**
  * 스키마 정보를 담고 있다.
@@ -46,6 +46,10 @@ public class Relation {
 	private String analyzerId;
 	
 	private Analyzer analyzer;
+	
+	private String queryTextParserId;
+	
+	private QueryTextParser queryTextParser;
 	
 	private Analyzer perFieldAnalyzer;
 	
@@ -177,6 +181,22 @@ public class Relation {
 
 	public void setPerFieldAnalyzer(Analyzer perFieldAnalyzer) {
 		this.perFieldAnalyzer = perFieldAnalyzer;
+	}
+
+	public String getQueryTextParserId() {
+		return queryTextParserId;
+	}
+
+	public void setQueryTextParserId(String queryTextParserId) {
+		this.queryTextParserId = queryTextParserId;
+	}
+
+	public QueryTextParser getQueryTextParser() {
+		return queryTextParser;
+	}
+
+	public void setQueryTextParser(QueryTextParser queryTextParser) {
+		this.queryTextParser = queryTextParser;
 	}
 
 	/**

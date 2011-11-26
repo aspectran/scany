@@ -11,6 +11,7 @@
 package org.jhlabs.scany.engine.search;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.search.BooleanClause;
 import org.jhlabs.scany.engine.entity.Attribute;
 
 
@@ -26,6 +27,10 @@ public class QueryAttribute {
 
 	private String attributeName;
 	
+	private String keyword;
+	
+	private BooleanClause.Occur booleanClauseOccur;
+	
 	private String analyzerId;
 	
 	private Analyzer analyzer;
@@ -40,12 +45,41 @@ public class QueryAttribute {
 		this.analyzerId = analyzerId;
 	}
 
+	public QueryAttribute(String attributeName, String analyzerId, String keyword) {
+		this.attributeName = attributeName;
+		this.analyzerId = analyzerId;
+		this.keyword = keyword;
+	}
+	
+	public QueryAttribute(String attributeName, String analyzerId, String keyword, BooleanClause.Occur booleanClauseOccur) {
+		this.attributeName = attributeName;
+		this.analyzerId = analyzerId;
+		this.keyword = keyword;
+		this.booleanClauseOccur = booleanClauseOccur;
+	}
+	
 	public String getAttributeName() {
 		return attributeName;
 	}
 
 	public void setAttributeName(String attributeName) {
 		this.attributeName = attributeName;
+	}
+
+	public String getKeyword() {
+		return keyword;
+	}
+
+	public void setKeyword(String keyword) {
+		this.keyword = keyword;
+	}
+
+	public BooleanClause.Occur getBooleanClauseOccur() {
+		return booleanClauseOccur;
+	}
+
+	public void setBooleanClauseOccur(BooleanClause.Occur booleanClauseOccur) {
+		this.booleanClauseOccur = booleanClauseOccur;
 	}
 
 	public String getAnalyzerId() {

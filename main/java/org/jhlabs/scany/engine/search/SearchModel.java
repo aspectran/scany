@@ -153,7 +153,14 @@ public class SearchModel {
 	}
 
 	public String setQueryText(String queryText) {
-		QueryTextParser parser = new SimpleQueryTextParser();
+		QueryTextParser parser;
+		
+		if(relation.getQueryTextParser() == null) {
+			parser = new SimpleQueryTextParser();
+		} else {
+			parser = relation.getQueryTextParser();
+		}
+
 		parsedQueryText = parser.parse(queryText);
 		queryKeywords = parser.getKeywords();
 		

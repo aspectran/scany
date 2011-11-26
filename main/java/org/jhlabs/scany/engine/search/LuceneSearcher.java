@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
@@ -194,9 +195,16 @@ public class LuceneSearcher extends SearchModel implements AnySearcher {
 		try {
 			setQueryText(queryText);
 			
+			Analyzer analyzer;
+			
+			if(getRelation().getPerFieldAnalyzer() != null)
+				analyzer = getRelation().getPerFieldAnalyzer();
+			else
+				analyzer = getRelation().getAnalyzer();
+			
 			LuceneQueryBuilder queryBuilder = new LuceneQueryBuilder();
 			queryBuilder.addQuery(getFilterAttributeList());
-			queryBuilder.addQuery(getParsedQueryText(), getQueryAttributeList(), getRelation().getAnalyzer());
+			queryBuilder.addQuery(getParsedQueryText(), getQueryAttributeList(), analyzer);
 
 			Query query = queryBuilder.build();
 			
@@ -217,9 +225,16 @@ public class LuceneSearcher extends SearchModel implements AnySearcher {
 			Directory directory = searchModel.getRelation().openDirectory();
 			indexSearcher = new IndexSearcher(directory);
 			
+			Analyzer analyzer;
+			
+			if(searchModel.getRelation().getPerFieldAnalyzer() != null)
+				analyzer = searchModel.getRelation().getPerFieldAnalyzer();
+			else
+				analyzer = searchModel.getRelation().getAnalyzer();
+			
 			LuceneQueryBuilder queryBuilder = new LuceneQueryBuilder();
 			queryBuilder.addQuery(searchModel.getFilterAttributeList());
-			queryBuilder.addQuery(searchModel.getParsedQueryText(), searchModel.getQueryAttributeList(), searchModel.getRelation().getAnalyzer());
+			queryBuilder.addQuery(searchModel.getParsedQueryText(), searchModel.getQueryAttributeList(), analyzer);
 			
 			Query query = queryBuilder.build();
 			query = indexSearcher.rewrite(query);
