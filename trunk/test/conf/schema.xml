@@ -18,10 +18,15 @@
 		</summarizer>
 	</summarizers>
 	
-	<relation id="relation01" analyzer="standard">
+	<queryTextParsers>
+		<queryTextParser id="queryTextParser" class="org.jhlabs.scany.engine.search.query.SimpleQueryTextParser"/>
+	</queryTextParsers>
+	
+	<relation id="relation01" analyzer="standard" queryTextParser="">
 		<description>공지사항</description>
 		<directory relative="true"/>
 		<recordKey join="$">boardId$articleId</recordKey>
+		<queryTextParser></queryTextParser>
 		<attributes>
 			<attribute name="boardId"
 				nullable="false" storable="true" indexable="true" analyzable="false"
