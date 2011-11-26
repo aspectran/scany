@@ -85,7 +85,7 @@ public class LuceneIndexerTest {
 		try {
 			AnySearcher searcher = service.getSearcher("relation01");
 			searcher.addSortAttribute("articleId", SortFieldType.INT, false);
-			RecordList recordList = searcher.search("감자");
+			RecordList recordList = searcher.search("감자 and (or 백두)");
 			
 			for(Record record : recordList) {
 				System.out.println("articleId: " + record.getValue("articleId"));
