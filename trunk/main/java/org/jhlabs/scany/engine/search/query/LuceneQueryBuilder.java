@@ -20,7 +20,6 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.NumericRangeQuery;
@@ -176,7 +175,11 @@ public class LuceneQueryBuilder {
 	public void addQuery(String queryText, Analyzer analyzer) throws ParseException {
 		addQuery(queryText, null, analyzer);
 	}
-		
+
+	public void addQuery(List<QueryAttribute> queryAttributeList, Analyzer analyzer) throws ParseException {
+		addQuery(null, queryAttributeList, analyzer);
+	}
+	
 	/**
 	 * 토큰화된 컬럼을 검색하기 위한 질의를 만든다.
 	 *
@@ -186,20 +189,27 @@ public class LuceneQueryBuilder {
 	 * @throws ParseException the parse exception
 	 */
 	public void addQuery(String queryText, List<QueryAttribute> queryAttributeList, Analyzer analyzer) throws ParseException {
-		if(queryText == null || queryText.length() == 0)
-			return;
-
 		if(queryAttributeList != null && queryAttributeList.size() > 0) {
-			String[] attributeNames = new String[queryAttributeList.size()];
+			String[] queries = new String[queryAttributeList.size()];
+			String[] fields = new String[queryAttributeList.size()];
+			BooleanClause.Occur[] flags = new BooleanClause.Occur[queryAttributeList.size()];
 			int index = 0;
 			
 			for(QueryAttribute queryAttribute : queryAttributeList) {
-				attributeNames[index++] = queryAttribute.getAttributeName();
+				queries[index] = queryAttribute.getKeyword();
+				fields[index] = queryAttribute.getAttributeName();
+				flags[index] = queryAttribute.getBooleanClauseOccur();
+				
+				if(queries[index] == null)
+					queries[index] = (queryText == null ? "" : queryText);
+				
+				if(flags[index] == null)
+					flags[index] = BooleanClause.Occur.SHOULD;
+				
+				index++;
 			}
 			
-			QueryParser queryParser = new MultiFieldQueryParser(ScanyContext.LUCENE_VERSION, attributeNames, analyzer);
-			queryParser.setDefaultOperator(QueryParser.AND_OPERATOR);
-			Query query = queryParser.parse(queryText);
+			Query query = MultiFieldQueryParser.parse(ScanyContext.LUCENE_VERSION, queries, fields, flags, analyzer);
 			queryList.add(query);
 
 			if(log.isDebugEnabled()) {
