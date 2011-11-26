@@ -35,30 +35,18 @@ import org.jhlabs.scany.engine.search.summarize.Summarizer;
 import org.jhlabs.scany.util.xml.EasyNodelet;
 import org.jhlabs.scany.util.xml.EasyNodeletParser;
 
-/**
- * Translet Map Parser.
- * 
- * <p>Created: 2008. 06. 14 오전 4:39:24</p>
- */
 public class SchemaNodeParser {
 	
 	private final EasyNodeletParser parser = new EasyNodeletParser();
 
 	private final SchemaConfigAssistant assistant;
 	
-	/**
-	 * Instantiates a new translet map parser.
-	 * 
-	 * @param assistant the assistant for Context Builder
-	 */
 	public SchemaNodeParser(SchemaConfigAssistant assistant) {
-		//super(log);
-		
 		this.assistant = assistant;
 		this.assistant.clearObjectStack();
 
-		parser.setValidation(false);
-		//parser.setEntityResolver(new ScanyDtdResolver());
+		parser.setValidation(true);
+		parser.setEntityResolver(new ScanyDtdResolver());
 
 		addRootNodelets();
 		addAnalyzersNodelets();

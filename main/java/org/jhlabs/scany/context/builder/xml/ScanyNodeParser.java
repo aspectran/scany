@@ -24,11 +24,6 @@ import org.jhlabs.scany.context.rule.ServerRule;
 import org.jhlabs.scany.util.xml.EasyNodelet;
 import org.jhlabs.scany.util.xml.EasyNodeletParser;
 
-/**
- * Translet Map Parser.
- * 
- * <p>Created: 2008. 06. 14 오전 4:39:24</p>
- */
 public class ScanyNodeParser {
 	
 	private final EasyNodeletParser parser = new EasyNodeletParser();
@@ -41,13 +36,11 @@ public class ScanyNodeParser {
 	 * @param assistant the assistant for Context Builder
 	 */
 	public ScanyNodeParser(ScanyConfigAssistant assistant) {
-		//super(log);
-		
 		this.assistant = assistant;
 		this.assistant.clearObjectStack();
 
-		parser.setValidation(false);
-		//parser.setEntityResolver(new ScanyDtdResolver());
+		parser.setValidation(true);
+		parser.setEntityResolver(new ScanyDtdResolver());
 
 		addRootNodelets();
 		addLocalNodelets();
