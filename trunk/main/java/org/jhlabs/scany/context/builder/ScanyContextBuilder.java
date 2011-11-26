@@ -16,8 +16,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jhlabs.scany.context.ScanyContext;
 import org.jhlabs.scany.context.ScanyContextException;
 import org.jhlabs.scany.context.builder.xml.ScanyNodeParser;
@@ -25,6 +23,8 @@ import org.jhlabs.scany.context.builder.xml.SchemaNodeParser;
 import org.jhlabs.scany.context.rule.ClientRule;
 import org.jhlabs.scany.context.rule.LocalServiceRule;
 import org.jhlabs.scany.context.type.ServiceMode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -33,7 +33,7 @@ import org.jhlabs.scany.context.type.ServiceMode;
  */
 public class ScanyContextBuilder {
 
-	private static Log log = LogFactory.getLog(ScanyContextBuilder.class);
+	private static final Logger logger = LoggerFactory.getLogger(ScanyContextBuilder.class);
 
 	public ScanyContext build(String contextConfigLocation) throws ScanyContextException, IOException {
 		File file = new File(contextConfigLocation);
@@ -65,7 +65,7 @@ public class ScanyContextBuilder {
 			
 			return scanyContext;
 		} catch(Exception e) {
-			log.error("Scany configuration error.", e);
+			logger.error("Scany configuration error.", e);
 			throw new ScanyContextBuilderException("Scany configuration error", e);
 		}
 	}

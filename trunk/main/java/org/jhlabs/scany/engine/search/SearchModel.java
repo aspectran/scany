@@ -17,8 +17,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
@@ -32,6 +30,8 @@ import org.jhlabs.scany.engine.index.RecordKeyException;
 import org.jhlabs.scany.engine.search.query.QueryTextParser;
 import org.jhlabs.scany.engine.search.query.SimpleQueryTextParser;
 import org.jhlabs.scany.engine.search.summarize.Summarizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -42,7 +42,7 @@ import org.jhlabs.scany.engine.search.summarize.Summarizer;
  */
 public class SearchModel {
 
-	private final Log log = LogFactory.getLog(SearchModel.class);
+	private static final Logger logger = LoggerFactory.getLogger(SearchModel.class);
 
 	private Relation relation;
 
@@ -164,10 +164,10 @@ public class SearchModel {
 		parsedQueryText = parser.parse(queryText);
 		queryKeywords = parser.getKeywords();
 		
-		if(log.isDebugEnabled()) {
-			log.debug("queryText: " + queryText);
-			log.debug("parsedQueryText: " + parsedQueryText);
-			log.debug("queryKeywords: " + queryKeywords);
+		if(logger.isDebugEnabled()) {
+			logger.debug("queryText: {}", queryText);
+			logger.debug("parsedQueryText: {}", parsedQueryText);
+			logger.debug("queryKeywords: {}", queryKeywords);
 		}
 
 		return parsedQueryText;

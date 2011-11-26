@@ -10,8 +10,11 @@
  ******************************************************************************/
 package org.jhlabs.scany.engine.entity;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.jhlabs.scany.util.BeanUtils;
 
 /**
  * 레코드 정보를 담고 있다.
@@ -39,6 +42,23 @@ public class Record implements java.io.Serializable {
 	
 	public String setValue(String attributeName, String value) {
 		return values.put(attributeName, value);
+	}
+	
+	public void bind(Object object) throws InvocationTargetException {
+		String[] propertyNames = BeanUtils.getReadablePropertyNames(object);
+		
+		for(String name : propertyNames) {
+			Object value = BeanUtils.getObject(object, name);
+			
+			if(value != null)
+				setValue(name, value.toString());
+		}
+	}
+	
+	public static Record extract(Object object) throws InvocationTargetException {
+		Record record = new Record();
+		record.bind(object);
+		return record;
 	}
 	
 }

@@ -14,8 +14,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
@@ -31,6 +29,8 @@ import org.jhlabs.scany.context.ScanyContext;
 import org.jhlabs.scany.engine.search.FilterAttribute;
 import org.jhlabs.scany.engine.search.FilterType;
 import org.jhlabs.scany.engine.search.QueryAttribute;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 검색 조항을 모두 조합한 후 하나의 Query를 반환한다.
@@ -49,7 +49,7 @@ import org.jhlabs.scany.engine.search.QueryAttribute;
  */
 public class LuceneQueryBuilder {
 
-	private final Log log = LogFactory.getLog(LuceneQueryBuilder.class);
+	private static final Logger logger = LoggerFactory.getLogger(LuceneQueryBuilder.class);
 
 	private List<Query> queryList = new ArrayList<Query>();
 	
@@ -116,9 +116,7 @@ public class LuceneQueryBuilder {
 				booleanQuery.add(query, BooleanClause.Occur.SHOULD);
 		}
 		
-		if(log.isDebugEnabled()) {
-			log.debug("FilterAttribute " + booleanQuery);
-		}
+		logger.debug("FilterAttribute {}", booleanQuery);
 		
 		queryList.add(booleanQuery);
 	}
@@ -212,9 +210,7 @@ public class LuceneQueryBuilder {
 			Query query = MultiFieldQueryParser.parse(ScanyContext.LUCENE_VERSION, queries, fields, flags, analyzer);
 			queryList.add(query);
 
-			if(log.isDebugEnabled()) {
-				log.debug("QueryAttribute " + query);
-			}
+			logger.debug("QueryAttribute {}", query);
 		}
 	}
 	
