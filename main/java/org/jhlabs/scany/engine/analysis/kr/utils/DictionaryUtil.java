@@ -23,9 +23,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import org.jhlabs.scany.engine.analysis.kr.morph.CompoundEntry;
-import org.jhlabs.scany.engine.analysis.kr.morph.MorphException;
-import org.jhlabs.scany.engine.analysis.kr.morph.WordEntry;
+import org.jhlabs.scany.engine.analysis.kr.ma.CompoundEntry;
+import org.jhlabs.scany.engine.analysis.kr.ma.MorphException;
+import org.jhlabs.scany.engine.analysis.kr.ma.WordEntry;
 
 public class DictionaryUtil {
 	
@@ -51,12 +51,10 @@ public class DictionaryUtil {
 		dictionary = new Trie<String, WordEntry>(true);
 		List<String> strList = null;
 		List<String> compounds = null;
-		String encoding = null;
 		try {
-			encoding = KoreanEnv.getInstance().getValue(KoreanEnv.ENCODING);
-			strList = FileUtil.readLines(KoreanEnv.getInstance().getValue(KoreanEnv.FILE_DICTIONARY),encoding);
-			strList.addAll(FileUtil.readLines(KoreanEnv.getInstance().getValue(KoreanEnv.FILE_EXTENSION),encoding));
-			compounds = FileUtil.readLines(KoreanEnv.getInstance().getValue(KoreanEnv.FILE_COMPOUNDS),encoding);			
+			strList = FileUtil.readLines(KoreanEnv.getInstance().getValue(KoreanEnv.FILE_DICTIONARY),KoreanEnv.ENCODING);
+			strList.addAll(FileUtil.readLines(KoreanEnv.getInstance().getValue(KoreanEnv.FILE_EXTENSION),KoreanEnv.ENCODING));
+			compounds = FileUtil.readLines(KoreanEnv.getInstance().getValue(KoreanEnv.FILE_COMPOUNDS),KoreanEnv.ENCODING);			
 		} catch (IOException e) {			
 			new MorphException(e.getMessage(),e);
 		} catch (Exception e) {

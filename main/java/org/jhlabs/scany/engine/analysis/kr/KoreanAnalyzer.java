@@ -35,6 +35,7 @@ import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.util.Version;
 import org.jhlabs.scany.context.ScanyContext;
+import org.jhlabs.scany.engine.analysis.kr.snowball.SnowballFilter;
 
 /**
  * Filters {@link StandardTokenizer} with {@link StandardFilter}, {@link
@@ -114,13 +115,12 @@ public final class KoreanAnalyzer extends Analyzer {
 	}
 
 	public TokenStream tokenStream(String fieldName, Reader reader) {
-		TokenStream result = null;
-		KoreanTokenizer tokenStream = new KoreanTokenizer(matchVersion, reader);
-		result = tokenStream;
-		result = new KoreanFilter(tokenStream, bigrammable, hasOrigin);
-		result = new LowerCaseFilter(matchVersion, result);
-		result = new StopFilter(matchVersion, result, stopSet);
-		return result;
+		final KoreanTokenizer src = new KoreanTokenizer(matchVersion, reader);
+		TokenStream tok = new KoreanFilter(src, bigrammable, hasOrigin);
+		tok = new LowerCaseFilter(matchVersion, tok);
+		tok = new StopFilter(matchVersion, tok, stopSet);
+		tok = new SnowballFilter(tok);
+		return tok;
 	}
 
 	/**

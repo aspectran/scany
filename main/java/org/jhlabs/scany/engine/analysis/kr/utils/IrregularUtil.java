@@ -17,8 +17,8 @@ package org.jhlabs.scany.engine.analysis.kr.utils;
  * limitations under the License.
  */
 
-import org.jhlabs.scany.engine.analysis.kr.morph.MorphException;
-import org.jhlabs.scany.engine.analysis.kr.morph.WordEntry;
+import org.jhlabs.scany.engine.analysis.kr.ma.MorphException;
+import org.jhlabs.scany.engine.analysis.kr.ma.WordEntry;
 
 /**
  * 

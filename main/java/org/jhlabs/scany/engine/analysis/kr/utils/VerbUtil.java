@@ -21,10 +21,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.jhlabs.scany.engine.analysis.kr.morph.AnalysisOutput;
-import org.jhlabs.scany.engine.analysis.kr.morph.MorphException;
-import org.jhlabs.scany.engine.analysis.kr.morph.PatternConstants;
-import org.jhlabs.scany.engine.analysis.kr.morph.WordEntry;
+import org.jhlabs.scany.engine.analysis.kr.ma.AnalysisOutput;
+import org.jhlabs.scany.engine.analysis.kr.ma.MorphException;
+import org.jhlabs.scany.engine.analysis.kr.ma.PatternConstants;
+import org.jhlabs.scany.engine.analysis.kr.ma.WordEntry;
 
 public class VerbUtil {
 

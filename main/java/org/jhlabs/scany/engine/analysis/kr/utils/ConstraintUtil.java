@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import java.util.Map;
 
-import org.jhlabs.scany.engine.analysis.kr.morph.PatternConstants;
+import org.jhlabs.scany.engine.analysis.kr.ma.PatternConstants;
 
 /**
  * 결합이 가능한 조건을 처리하는 클래스
