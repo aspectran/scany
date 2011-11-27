@@ -107,7 +107,7 @@ public class LuceneIndexerTest {
 		record.setValue("category", "cate01");
 		record.setValue("category", "cate01");
 		record.setValue("title", "감 오리하이 Apple scany +fff ");
-		record.setValue("content", "대나무감자오리김치 gulendol@aaa.com 하니코대");
+		record.setValue("content", "010-2742-2595 a112,  N.T.N. Boy's bags. you're beatifuly girls. justipied beatifule beautify 잘 할 수 있는 우리나라 대나무감자오리김치 gulendol@aaa.com 하니코대");
 		record.setValue("tag", "aaa,bbb,ccc");
 		record.setValue("writer", "작성자");
 		record.setValue("date", "20111122170410");
