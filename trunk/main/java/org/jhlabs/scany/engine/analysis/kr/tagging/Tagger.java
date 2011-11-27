@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.jhlabs.scany.engine.analysis.kr.morph.AnalysisOutput;
-import org.jhlabs.scany.engine.analysis.kr.morph.MorphException;
-import org.jhlabs.scany.engine.analysis.kr.morph.PatternConstants;
+import org.jhlabs.scany.engine.analysis.kr.ma.AnalysisOutput;
+import org.jhlabs.scany.engine.analysis.kr.ma.MorphException;
+import org.jhlabs.scany.engine.analysis.kr.ma.PatternConstants;
 import org.jhlabs.scany.engine.analysis.kr.utils.ConstraintUtil;
 import org.jhlabs.scany.engine.analysis.kr.utils.FileUtil;
 import org.jhlabs.scany.engine.analysis.kr.utils.KoreanEnv;

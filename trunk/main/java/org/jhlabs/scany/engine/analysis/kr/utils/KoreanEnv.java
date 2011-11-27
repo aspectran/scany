@@ -22,13 +22,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
 
-import org.jhlabs.scany.engine.analysis.kr.morph.MorphException;
+import org.jhlabs.scany.engine.analysis.kr.ma.MorphException;
 
 public class KoreanEnv {
 
 	public static final String FILE_SYLLABLE_FEATURE = "syllable.dic";
 	
-	public static final String FILE_DICTIONARY = "dictionary.dic";	
+	public static final String FILE_DICTIONARY = "total.dic";	
 	
 	public static final String FILE_JOSA = "josa.dic";
 	
@@ -50,7 +50,7 @@ public class KoreanEnv {
 
 	public static final String ENCODING = "utf-8";
 	
-	private Properties defaults = null;
+	private Properties defaults;
 
 	/**
 	 * The props member gets its values from the configuration in the property file.
@@ -85,8 +85,8 @@ public class KoreanEnv {
 		defaults = new Properties();
 		
 		defaults.setProperty(FILE_SYLLABLE_FEATURE,"org/jhlabs/scany/engine/analysis/kr/dic/syllable.dic");
-		defaults.setProperty(FILE_DICTIONARY,"org/jhlabs/scany/engine/analysis/kr/dic/dictionary.dic");
-		defaults.setProperty(FILE_DICTIONARY,"org/jhlabs/scany/engine/analysis/kr/dic/extension.dic");		
+		defaults.setProperty(FILE_DICTIONARY,"org/jhlabs/scany/engine/analysis/kr/dic/total.dic");
+		defaults.setProperty(FILE_EXTENSION,"org/jhlabs/scany/engine/analysis/kr/dic/extension.dic");		
 		defaults.setProperty(FILE_JOSA,"org/jhlabs/scany/engine/analysis/kr/dic/josa.dic");	
 		defaults.setProperty(FILE_EOMI,"org/jhlabs/scany/engine/analysis/kr/dic/eomi.dic");	
 		defaults.setProperty(FILE_PREFIX,"org/jhlabs/scany/engine/analysis/kr/dic/prefix.dic");		
@@ -94,9 +94,8 @@ public class KoreanEnv {
 		defaults.setProperty(FILE_COMPOUNDS,"org/jhlabs/scany/engine/analysis/kr/dic/compounds.dic");	
 		defaults.setProperty(FILE_UNCOMPOUNDS,"org/jhlabs/scany/engine/analysis/kr/dic/uncompounds.dic");
 		defaults.setProperty(FILE_CJ,"org/jhlabs/scany/engine/analysis/kr/dic/cj.dic");
-	 }
+	}
 
-	
 	/**
 	 * Given a property file name, load the property file and return an object
 	 * representing the property values.

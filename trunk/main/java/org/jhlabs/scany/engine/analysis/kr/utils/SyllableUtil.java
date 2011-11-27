@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jhlabs.scany.engine.analysis.kr.morph.MorphException;
+import org.jhlabs.scany.engine.analysis.kr.ma.MorphException;
 
 public class SyllableUtil {
 

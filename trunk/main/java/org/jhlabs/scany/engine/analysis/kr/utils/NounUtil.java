@@ -21,12 +21,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.jhlabs.scany.engine.analysis.kr.morph.AnalysisOutput;
-import org.jhlabs.scany.engine.analysis.kr.morph.CompoundEntry;
-import org.jhlabs.scany.engine.analysis.kr.morph.CompoundNounAnalyzer;
-import org.jhlabs.scany.engine.analysis.kr.morph.MorphException;
-import org.jhlabs.scany.engine.analysis.kr.morph.PatternConstants;
-import org.jhlabs.scany.engine.analysis.kr.morph.WordEntry;
+import org.jhlabs.scany.engine.analysis.kr.ma.AnalysisOutput;
+import org.jhlabs.scany.engine.analysis.kr.ma.CompoundEntry;
+import org.jhlabs.scany.engine.analysis.kr.ma.CompoundNounAnalyzer;
+import org.jhlabs.scany.engine.analysis.kr.ma.MorphException;
+import org.jhlabs.scany.engine.analysis.kr.ma.PatternConstants;
+import org.jhlabs.scany.engine.analysis.kr.ma.WordEntry;
 
 public class NounUtil {
 

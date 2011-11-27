@@ -30,7 +30,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jhlabs.scany.engine.analysis.kr.morph.MorphException;
+import org.jhlabs.scany.engine.analysis.kr.ma.MorphException;
 
 /**
  * file utility class
