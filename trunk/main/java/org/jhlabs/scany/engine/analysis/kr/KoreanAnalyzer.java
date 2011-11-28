@@ -17,8 +17,6 @@ package org.jhlabs.scany.engine.analysis.kr;
  * limitations under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
 import java.io.Reader;
 import java.util.Arrays;
 import java.util.List;
@@ -30,7 +28,6 @@ import org.apache.lucene.analysis.LowerCaseFilter;
 import org.apache.lucene.analysis.StopAnalyzer;
 import org.apache.lucene.analysis.StopFilter;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.WordlistLoader;
 import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.util.Version;
@@ -44,83 +41,51 @@ import org.jhlabs.scany.engine.analysis.kr.snowball.SnowballFilter;
  * @version $Id: KoreanAnalyzer.java,v 1.4 2009/12/22 01:48:56 smlee0818 Exp $
  */
 public final class KoreanAnalyzer extends Analyzer {
-	private Set<?> stopSet;
+	
+	private static final Version matchVersion = ScanyContext.LUCENE_VERSION;
 
-	//	 private final CharArraySet stopSet;
-
-	private boolean bigrammable = true;
-
-	private boolean hasOrigin = true;
+	/** Default maximum allowed token length */
+	public static final int DEFAULT_MAX_TOKEN_LENGTH = 255;
 
 	/** An array containing some common English words that are usually not
 	useful for searching. */
 	//	  public static final String[] STOP_WORDS = StopAnalyzer.ENGLISH_STOP_WORDS;
 	//	  public static final String[] KOR_STOP_WORDS = new String[]{"이","그","저","것","수","등","들"};
-	public static final Set<?> STOP_WORDS_SET = StopAnalyzer.ENGLISH_STOP_WORDS_SET;
+	public static final Set<?> ENGLISH_STOP_WORDS_SET = StopAnalyzer.ENGLISH_STOP_WORDS_SET;
 
 	/** An unmodifiable set containing some common Korean words that are not usually useful
 	  for searching.*/
 	public static final Set<?> KOR_STOP_WORDS_SET;
 
-	private final Version matchVersion;
+	private Set<?> stopWordsSet;
 
-	public static final String DIC_ENCODING = "UTF-8";
+	public static String characterEncoding = "UTF-8";
 
-	/** Default maximum allowed token length */
-	public static final int DEFAULT_MAX_TOKEN_LENGTH = 255;
-	
 	private String dictionaryLocation;
 
+	private boolean bigrammable = true;
+
+	private boolean hasOrigin = true;
+	
 	static {
 		final List<String> korStopWords = Arrays.asList("이", "그", "저", "것", "수", "등", "들");
-		final CharArraySet stopSet = new CharArraySet(Version.LUCENE_32, korStopWords.size(), false);
+		final CharArraySet stopSet = new CharArraySet(matchVersion, korStopWords.size(), false);
 		stopSet.addAll(korStopWords);
 		KOR_STOP_WORDS_SET = CharArraySet.unmodifiableSet(stopSet);
 	}
 
 	public KoreanAnalyzer() {
-		this(ScanyContext.LUCENE_VERSION, STOP_WORDS_SET);
+		final CharArraySet stopWordsSet = new CharArraySet(matchVersion, KOR_STOP_WORDS_SET.size() + ENGLISH_STOP_WORDS_SET.size(), false);
+		stopWordsSet.addAll(KOR_STOP_WORDS_SET);
+		stopWordsSet.addAll(ENGLISH_STOP_WORDS_SET);
+		this.stopWordsSet = stopWordsSet;
 	}
-
-	public KoreanAnalyzer(Version matchVersion) {
-		this(matchVersion, STOP_WORDS_SET);
-	}
-
-	public KoreanAnalyzer(Version matchVersion, Set<?> stopWords) {
-		final CharArraySet stopSets = new CharArraySet(matchVersion, stopWords.size(), false);
-		stopSets.addAll(KOR_STOP_WORDS_SET);
-		stopSets.addAll(stopWords);
-
-		this.stopSet = stopSets;
-		this.matchVersion = matchVersion;
-	}
-
-	/** Builds an analyzer with the stop words from the given file.
-	 * @see WordlistLoader#getWordSet(File)
-	 */
-	public KoreanAnalyzer(Version matchVersion, File stopwords) throws IOException {
-		this(matchVersion, KoreanWordlistLoader.getWordSet(stopwords));
-	}
-
-	/** Builds an analyzer with the stop words from the given file.
-	 * @see WordlistLoader#getWordSet(File)
-	 */
-	public KoreanAnalyzer(Version matchVersion, File stopwords, String encoding) throws IOException {
-		this(matchVersion, KoreanWordlistLoader.getWordSet(stopwords, encoding));
-	}
-
-	/** Builds an analyzer with the stop words from the given reader.
-	 * @see WordlistLoader#getWordSet(Reader)
-	*/
-	public KoreanAnalyzer(Version matchVersion, Reader stopwords) throws IOException {
-		this(matchVersion, KoreanWordlistLoader.getWordSet(stopwords));
-	}
-
+	
 	public TokenStream tokenStream(String fieldName, Reader reader) {
 		final KoreanTokenizer src = new KoreanTokenizer(matchVersion, reader);
 		TokenStream tok = new KoreanFilter(src, bigrammable, hasOrigin);
 		tok = new LowerCaseFilter(matchVersion, tok);
-		tok = new StopFilter(matchVersion, tok, stopSet);
+		tok = new StopFilter(matchVersion, tok, stopWordsSet);
 		tok = new SnowballFilter(tok);
 		return tok;
 	}
@@ -128,18 +93,18 @@ public final class KoreanAnalyzer extends Analyzer {
 	/**
 	 * determine whether the bigram index term is returned or not if a input word is failed to analysis
 	 * If true is set, the bigram index term is returned. If false is set, the bigram index term is not returned.
-	 * @param is
+	 * @param bigrammable
 	 */
-	public void setBigrammable(boolean is) {
-		bigrammable = is;
+	public void setBigrammable(boolean bigrammable) {
+		this.bigrammable = bigrammable;
 	}
 
 	/**
 	 * determin whether the original term is returned or not if a input word is analyzed morphically.
-	 * @param has
+	 * @param hasOrigin
 	 */
-	public void setHasOrigin(boolean has) {
-		hasOrigin = has;
+	public void setHasOrigin(boolean hasOrigin) {
+		this.hasOrigin = hasOrigin;
 	}
 
 	public String getDictionaryLocation() {
