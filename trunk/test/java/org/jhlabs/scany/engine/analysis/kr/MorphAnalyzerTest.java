@@ -11,6 +11,7 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
@@ -20,7 +21,7 @@ import org.jhlabs.scany.engine.analysis.kr.ma.AnalysisOutput;
 import org.jhlabs.scany.engine.analysis.kr.ma.MorphAnalyzer;
 import org.jhlabs.scany.engine.analysis.kr.ma.MorphAnalyzerManager;
 import org.jhlabs.scany.engine.analysis.kr.ma.WordEntry;
-import org.jhlabs.scany.engine.analysis.kr.utils.DictionaryUtil;
+import org.jhlabs.scany.engine.analysis.kr.util.DictionaryUtil;
 
 public class MorphAnalyzerTest extends TestCase {
 
