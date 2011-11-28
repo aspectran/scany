@@ -68,6 +68,8 @@ public final class KoreanAnalyzer extends Analyzer {
 
 	/** Default maximum allowed token length */
 	public static final int DEFAULT_MAX_TOKEN_LENGTH = 255;
+	
+	private String dictionaryLocation;
 
 	static {
 		final List<String> korStopWords = Arrays.asList("이", "그", "저", "것", "수", "등", "들");
@@ -139,4 +141,13 @@ public final class KoreanAnalyzer extends Analyzer {
 	public void setHasOrigin(boolean has) {
 		hasOrigin = has;
 	}
+
+	public String getDictionaryLocation() {
+		return dictionaryLocation;
+	}
+
+	public void setDictionaryLocation(String dictionaryLocation) {
+		this.dictionaryLocation = dictionaryLocation;
+	}
+	
 }

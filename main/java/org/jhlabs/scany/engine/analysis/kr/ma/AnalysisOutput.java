@@ -21,10 +21,10 @@ import java.util.ArrayList;
 
 import java.util.List;
 
-import org.jhlabs.scany.engine.analysis.kr.utils.MorphUtil;
-import org.jhlabs.scany.engine.analysis.kr.utils.Utilities;
+import org.jhlabs.scany.engine.analysis.kr.util.Utilities;
 
 import org.jhlabs.scany.engine.analysis.kr.ma.PatternConstants;
+import org.jhlabs.scany.engine.analysis.kr.ma.rule.MorphRule;
 
 public class AnalysisOutput implements Cloneable {
 

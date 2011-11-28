@@ -7,11 +7,11 @@ import java.util.List;
 import org.jhlabs.scany.engine.analysis.kr.ma.AnalysisOutput;
 import org.jhlabs.scany.engine.analysis.kr.ma.MorphException;
 import org.jhlabs.scany.engine.analysis.kr.ma.PatternConstants;
-import org.jhlabs.scany.engine.analysis.kr.utils.ConstraintUtil;
-import org.jhlabs.scany.engine.analysis.kr.utils.FileUtil;
-import org.jhlabs.scany.engine.analysis.kr.utils.KoreanEnv;
-import org.jhlabs.scany.engine.analysis.kr.utils.StringUtil;
-import org.jhlabs.scany.engine.analysis.kr.utils.Trie;
+import org.jhlabs.scany.engine.analysis.kr.ma.rule.ConstraintRule;
+import org.jhlabs.scany.engine.analysis.kr.util.FileUtil;
+import org.jhlabs.scany.engine.analysis.kr.util.KoreanEnv;
+import org.jhlabs.scany.engine.analysis.kr.util.StringUtil;
+import org.jhlabs.scany.engine.analysis.kr.util.Trie;
 
 
 /**
@@ -249,10 +249,10 @@ public class Tagger {
 		
 		for(int i=0;i<strs.length;i++) {
 			
-			if("E".equals(strs[i])&&ConstraintUtil.isEomiPhrase(ptn))
+			if("E".equals(strs[i])&&ConstraintRule.isEomiPhrase(ptn))
 				return true;
 			else if("J".equals(strs[i])&&
-					(ConstraintUtil.isJosaNounPhrase(ptn)||ptn==PatternConstants.PTN_N)) 
+					(ConstraintRule.isJosaNounPhrase(ptn)||ptn==PatternConstants.PTN_N)) 
 				return true;			
 			else if(strs[i].equals(strPtn)) 
 				return true;

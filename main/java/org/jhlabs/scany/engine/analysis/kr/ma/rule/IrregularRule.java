@@ -1,4 +1,4 @@
-package org.jhlabs.scany.engine.analysis.kr.utils;
+package org.jhlabs.scany.engine.analysis.kr.ma.rule;
 
 /**
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -19,6 +19,8 @@ package org.jhlabs.scany.engine.analysis.kr.utils;
 
 import org.jhlabs.scany.engine.analysis.kr.ma.MorphException;
 import org.jhlabs.scany.engine.analysis.kr.ma.WordEntry;
+import org.jhlabs.scany.engine.analysis.kr.util.DictionaryUtil;
+import org.jhlabs.scany.engine.analysis.kr.util.Utilities;
 
 /**
  * 
@@ -27,7 +29,7 @@ import org.jhlabs.scany.engine.analysis.kr.ma.WordEntry;
  * @author S.M.Lee
  *
  */
-public class IrregularUtil {
+public class IrregularRule {
 	
 	// ㅂ 불규칙
 	public static final char IRR_TYPE_BIUP = 'B';
@@ -61,7 +63,7 @@ public class IrregularUtil {
 		if(end==null) end="";
 		char[] jasos = new char[0];		
 
-		if(end.length()>0) jasos = MorphUtil.decompose(end.charAt(0));
+		if(end.length()>0) jasos = MorphRule.decompose(end.charAt(0));
 
 		if(end.startsWith("ㄴ")) {			
 			String[] irrs = restoreBIrregular(start,end);
@@ -145,12 +147,12 @@ public class IrregularUtil {
 	    
 	    if(!(start.endsWith("오")||start.endsWith("우"))) return null;
 	    
-	    char convEnd = MorphUtil.makeChar(end.charAt(0), 0);
+	    char convEnd = MorphRule.makeChar(end.charAt(0), 0);
 		if("ㅁ".equals(end)||"ㄴ".equals(end)||"ㄹ".equals(end)||
 				convEnd=='아'||convEnd=='어') { // 도우(돕), 고오(곱), 스러우(스럽) 등으로 변형되므로 반드시 2자 이상임
 			
 			char ch = start.charAt(start.length()-2);
-			ch = MorphUtil.makeChar(ch, 17);
+			ch = MorphRule.makeChar(ch, 17);
 		
 			if(start.length()>2) 
 				start = Utilities.arrayToString(new String[]{start.substring(0,start.length()-2),Character.toString(ch)});
@@ -177,10 +179,10 @@ public class IrregularUtil {
 		if(start==null||"".equals(start)) return null;
 		
 		char ch = start.charAt(start.length()-1);
-		char[] jasos = MorphUtil.decompose(ch);
+		char[] jasos = MorphRule.decompose(ch);
 		if(jasos.length!=3||jasos[2]!='ㄹ') return null;
 		
-		ch = MorphUtil.makeChar(ch, 7);
+		ch = MorphRule.makeChar(ch, 7);
 		if(start.length()>1) 
 			start = Utilities.arrayToString(new String[]{start.substring(0,start.length()-1),Character.toString(ch)});
 		else
@@ -204,10 +206,10 @@ public class IrregularUtil {
 		if(start==null||"".equals(start)) return null;
 		
 		char ch = start.charAt(start.length()-1);
-		char[] jasos = MorphUtil.decompose(ch);
+		char[] jasos = MorphRule.decompose(ch);
 		if(jasos.length!=2) return null;
 		
-		ch = MorphUtil.makeChar(ch, 19);
+		ch = MorphRule.makeChar(ch, 19);
 		if(start.length()>1) 
 			start = start.substring(0,start.length()-1)+ch;
 		else
@@ -235,14 +237,14 @@ public class IrregularUtil {
 		char ch1 = start.charAt(start.length()-2);
 		char ch2 = start.charAt(start.length()-1);
 		
-		char[] jasos1 = MorphUtil.decompose(ch1);
+		char[] jasos1 = MorphRule.decompose(ch1);
 		
 
 		if(((jasos1.length==3&&jasos1[2]=='ㄹ')||jasos1.length==2)&&(ch2=='러'||ch2=='라')) {
 	
 			StringBuffer sb = new StringBuffer();
 			
-			ch1 = MorphUtil.makeChar(ch1, 0);
+			ch1 = MorphRule.makeChar(ch1, 0);
 			if(start.length()>2) 
 				sb.append(start.substring(0,start.length()-2)).append(ch1).append("르");
 			else
@@ -271,7 +273,7 @@ public class IrregularUtil {
 	        
 	    if(!(end.charAt(0)=='ㄴ'||end.charAt(0)=='ㄹ'||end.charAt(0)=='ㅂ'||end.charAt(0)=='오'||end.charAt(0)=='시')) return null;
 	    
-	    char convEnd = MorphUtil.makeChar(start.charAt(start.length()-1), 8);
+	    char convEnd = MorphRule.makeChar(start.charAt(start.length()-1), 8);
 	    start = start.substring(0,start.length()-1)+convEnd;
 
 		WordEntry entry = DictionaryUtil.getVerb(start);
@@ -295,11 +297,11 @@ public class IrregularUtil {
 		char ch1 = start.charAt(start.length()-1);
 		char ch2 = start.charAt(start.length()-2);
 		
-		char[] jasos1 = MorphUtil.decompose(ch1);
-		char[] jasos2 = MorphUtil.decompose(ch2);
+		char[] jasos1 = MorphRule.decompose(ch1);
+		char[] jasos2 = MorphRule.decompose(ch2);
 		if(jasos1[0]!='ㄹ'||jasos2[0]!='ㄹ') return null;
 		
-		ch2 = MorphUtil.makeChar(ch2, 0);
+		ch2 = MorphRule.makeChar(ch2, 0);
 		if(start.length()>2) 
 			start = start.substring(0,start.length()-1);
 		else
@@ -324,14 +326,14 @@ public class IrregularUtil {
 		char ch1 = end.charAt(0);
 		char ch2 = start.charAt(start.length()-1);
 		
-		char[] jasos1 = MorphUtil.decompose(ch1);
-		char[] jasos2 = MorphUtil.decompose(ch2);
+		char[] jasos1 = MorphRule.decompose(ch1);
+		char[] jasos2 = MorphRule.decompose(ch2);
 		
 		if(jasos1.length==1) {
-			ch2 = MorphUtil.makeChar(ch2, 27);
+			ch2 = MorphRule.makeChar(ch2, 27);
 		}else {
 			if(jasos2.length!=2||jasos2[1]!='ㅐ') return null;
-			ch2 = MorphUtil.makeChar(ch2, 0, 27);
+			ch2 = MorphRule.makeChar(ch2, 0, 27);
 		}
 						
 		if(start.length()>1) 
@@ -356,10 +358,10 @@ public class IrregularUtil {
 	private static String[] restoreUIrregular(String start, String end) throws MorphException {
 		if(start==null||"".equals(start)) return null;
 		char ch = start.charAt(start.length()-1);		
-		char[] jasos = MorphUtil.decompose(ch);
+		char[] jasos = MorphRule.decompose(ch);
 		if(!(jasos.length==2&&jasos[1]=='ㅓ')) return null;
 		
-		ch = MorphUtil.makeChar(ch, 18,0);
+		ch = MorphRule.makeChar(ch, 18,0);
 
 		if(start.length()>1) 
 			start = start.substring(0,start.length()-1)+ch;

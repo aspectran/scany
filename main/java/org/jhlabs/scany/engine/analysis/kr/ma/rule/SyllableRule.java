@@ -1,4 +1,4 @@
-package org.jhlabs.scany.engine.analysis.kr.utils;
+package org.jhlabs.scany.engine.analysis.kr.ma.rule;
 
 /**
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -22,8 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jhlabs.scany.engine.analysis.kr.ma.MorphException;
+import org.jhlabs.scany.engine.analysis.kr.util.FileUtil;
+import org.jhlabs.scany.engine.analysis.kr.util.KoreanEnv;
 
-public class SyllableUtil {
+public class SyllableRule {
 
 	public static int IDX_JOSA1 = 0; // 조사의 첫음절로 사용되는 음절 48개
 	public static int IDX_JOSA2 = 1; // 조사의 두 번째 이상의 음절로 사용되는 음절 58개

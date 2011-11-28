@@ -1,4 +1,4 @@
-package org.jhlabs.scany.engine.analysis.kr.utils;
+package org.jhlabs.scany.engine.analysis.kr.ma.rule;
 
 /**
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -27,8 +27,9 @@ import org.jhlabs.scany.engine.analysis.kr.ma.CompoundNounAnalyzer;
 import org.jhlabs.scany.engine.analysis.kr.ma.MorphException;
 import org.jhlabs.scany.engine.analysis.kr.ma.PatternConstants;
 import org.jhlabs.scany.engine.analysis.kr.ma.WordEntry;
+import org.jhlabs.scany.engine.analysis.kr.util.DictionaryUtil;
 
-public class NounUtil {
+public class NounRule {
 
 	private static final List DNouns = new ArrayList();
 
@@ -55,7 +56,7 @@ public class NounUtil {
 		if(strlen < 2)
 			return false;
 
-		char[] chrs = MorphUtil.decompose(o.getStem().charAt(strlen - 1));
+		char[] chrs = MorphRule.decompose(o.getStem().charAt(strlen - 1));
 		boolean success = false;
 
 		if(o.getStem().charAt(strlen - 1) != '기' && !(chrs.length == 3 && chrs[2] == 'ㅁ'))
@@ -71,10 +72,10 @@ public class NounUtil {
 			end = "음";
 		}
 
-		String[] eomis = EomiUtil.splitEomi(start, end);
+		String[] eomis = EomiRule.splitEomi(start, end);
 		if(eomis[0] == null)
 			return false;
-		String[] pomis = EomiUtil.splitPomi(eomis[0]);
+		String[] pomis = EomiRule.splitPomi(eomis[0]);
 		o.setStem(pomis[0]);
 		o.addElist(eomis[1]);
 		o.setPomi(pomis[1]);
@@ -111,7 +112,7 @@ public class NounUtil {
 	 */
 	public static boolean analysisVMJ(AnalysisOutput o, List candidates) throws MorphException {
 
-		String[] irrs = IrregularUtil.restoreIrregularVerb(o.getStem(), o.getElist().get(0));
+		String[] irrs = IrregularRule.restoreIrregularVerb(o.getStem(), o.getElist().get(0));
 		if(irrs != null) {
 			o.setStem(irrs[0]);
 			o.setElist(irrs[1], 0);
@@ -137,7 +138,7 @@ public class NounUtil {
 	 */
 	public static boolean analysisVMXMJ(AnalysisOutput o, List candidates) throws MorphException {
 
-		int idxXVerb = VerbUtil.endsWithXVerb(o.getStem());
+		int idxXVerb = VerbRule.endsWithXVerb(o.getStem());
 
 		if(idxXVerb != -1) { // 2. 사랑받아보다
 			String eogan = o.getStem().substring(0, idxXVerb);
@@ -145,14 +146,14 @@ public class NounUtil {
 
 			String[] stomis = null;
 			if(eogan.endsWith("아") || eogan.equals("어"))
-				stomis = EomiUtil
+				stomis = EomiRule
 						.splitEomi(eogan.substring(0, eogan.length() - 1), eogan.substring(eogan.length() - 1));
 			else
-				stomis = EomiUtil.splitEomi(eogan, "");
+				stomis = EomiRule.splitEomi(eogan, "");
 			if(stomis[0] == null)
 				return false;
 
-			String[] irrs = IrregularUtil.restoreIrregularVerb(stomis[0], stomis[1]);
+			String[] irrs = IrregularRule.restoreIrregularVerb(stomis[0], stomis[1]);
 			if(irrs != null) {
 				o.setStem(irrs[0]);
 				o.addElist(irrs[1]);
@@ -184,7 +185,7 @@ public class NounUtil {
 	 */
 	public static boolean analysisNSMJ(AnalysisOutput o, List candidates) throws MorphException {
 
-		int idxVbSfix = VerbUtil.endsWithVerbSuffix(o.getStem());
+		int idxVbSfix = VerbRule.endsWithVerbSuffix(o.getStem());
 		if(idxVbSfix != -1) { // 1. 사랑받다 (PTN_NSM)
 			o.setVsfx(o.getStem().substring(idxVbSfix));
 			o.setStem(o.getStem().substring(0, idxVbSfix));
@@ -366,11 +367,11 @@ public class NounUtil {
 
 			String josa = input.substring(i);
 
-			char[] feature = SyllableUtil.getFeature(josa.charAt(0));
+			char[] feature = SyllableRule.getFeature(josa.charAt(0));
 			if(josaFlag && DictionaryUtil.existJosa(josa))
 				return true;
 
-			if(josaFlag && feature[SyllableUtil.IDX_JOSA2] == '0')
+			if(josaFlag && feature[SyllableRule.IDX_JOSA2] == '0')
 				josaFlag = false;
 			if(!josaFlag)
 				break;
