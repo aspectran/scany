@@ -7,8 +7,8 @@ import junit.framework.TestCase;
 import org.jhlabs.scany.engine.analysis.kr.ma.AnalysisOutput;
 import org.jhlabs.scany.engine.analysis.kr.ma.MorphException;
 import org.jhlabs.scany.engine.analysis.kr.ma.WordSpaceAnalyzer;
-import org.jhlabs.scany.engine.analysis.kr.utils.DictionaryUtil;
-import org.jhlabs.scany.engine.analysis.kr.utils.SyllableUtil;
+import org.jhlabs.scany.engine.analysis.kr.ma.rule.SyllableRule;
+import org.jhlabs.scany.engine.analysis.kr.util.DictionaryUtil;
 
 public class SyllableTest extends TestCase {
 
@@ -61,8 +61,8 @@ public class SyllableTest extends TestCase {
 
 
 		for(int ws=0, es=1, ee=0; es<chrs.length; ) {
-			char[] f = SyllableUtil.getFeature(chrs[es]);
-			if(f[SyllableUtil.IDX_JOSA1]=='1') {
+			char[] f = SyllableRule.getFeature(chrs[es]);
+			if(f[SyllableRule.IDX_JOSA1]=='1') {
 
 				ee = guessJosa(str, chrs, ws, es);
 				if(es!=ee) {
@@ -72,7 +72,7 @@ public class SyllableTest extends TestCase {
 				}
 			}
 
-			if(f[SyllableUtil.IDX_EOGAN]=='1') {
+			if(f[SyllableRule.IDX_EOGAN]=='1') {
 				ee = guessEomi(str, chrs, ws,es);
 				if(es!=ee) {
 					System.out.println(str.substring(ws,ee));
@@ -91,8 +91,8 @@ public class SyllableTest extends TestCase {
 
 		if(DictionaryUtil.existJosa(str.substring(es,es+1))) ne++;
 		for(int i=ne;i<str.length();i++) {
-			char[] f = SyllableUtil.getFeature(chrs[i]);
-			if(f[SyllableUtil.IDX_JOSA2]!='1') break;
+			char[] f = SyllableRule.getFeature(chrs[i]);
+			if(f[SyllableRule.IDX_JOSA2]!='1') break;
 			if(DictionaryUtil.existJosa(str.substring(es,i+1))) ne = i+1;
 		}
 		return ne;
@@ -103,8 +103,8 @@ public class SyllableTest extends TestCase {
 		int ne = es+1;
 
 		for(int i=ne;i<str.length();i++) {
-			char[] f = SyllableUtil.getFeature(chrs[i]);
-			if(f[SyllableUtil.IDX_EOGAN]!='1') break;
+			char[] f = SyllableRule.getFeature(chrs[i]);
+			if(f[SyllableRule.IDX_EOGAN]!='1') break;
 			ne++;
 		}
 

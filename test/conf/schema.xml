@@ -8,7 +8,13 @@
 		<analyzer id="bigram" class="org.jhlabs.scany.engine.analysis.bigram.BigramAnalyzer"/>
 		<analyzer id="csv" class="org.jhlabs.scany.engine.analysis.csv.CSVAnalyzer"/>
 		<analyzer id="syllabic" class="org.jhlabs.scany.engine.analysis.syllabic.SyllabicAnalyzer"/>
-		<analyzer id="kr" class="org.jhlabs.scany.engine.analysis.kr.KoreanAnalyzer"/>
+		<analyzer id="kr" class="org.jhlabs.scany.engine.analysis.kr.KoreanAnalyzer">
+			<properties>
+				<property name="characterEncoding">UTF-8</property>
+				<property name="dictionaryLocation">/c:/ADE_JHLabs/workspace/scany-test/dic</property>
+				<property name="bigrammable">true</property>
+			</properties>
+		</analyzer>
 	</analyzers>
 	
 	<summarizers>
