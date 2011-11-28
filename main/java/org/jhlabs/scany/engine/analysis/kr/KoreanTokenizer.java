@@ -84,7 +84,6 @@ public final class KoreanTokenizer extends Tokenizer {
 		init(input, matchVersion);
 	}
 
-	@SuppressWarnings("deprecation")
 	private void init(Reader input, Version matchVersion) {
 		if (matchVersion.onOrAfter(Version.LUCENE_24)) {
 			replaceInvalidAcronym = true;
@@ -98,7 +97,6 @@ public final class KoreanTokenizer extends Tokenizer {
 		typeAtt = addAttribute(TypeAttribute.class);
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public boolean incrementToken() throws IOException {
 		clearAttributes();
