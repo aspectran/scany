@@ -25,15 +25,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import org.jhlabs.scany.engine.analysis.kr.utils.ConstraintUtil;
-import org.jhlabs.scany.engine.analysis.kr.utils.DictionaryUtil;
-import org.jhlabs.scany.engine.analysis.kr.utils.EomiUtil;
-import org.jhlabs.scany.engine.analysis.kr.utils.IrregularUtil;
-import org.jhlabs.scany.engine.analysis.kr.utils.KoreanEnv;
-import org.jhlabs.scany.engine.analysis.kr.utils.MorphUtil;
-import org.jhlabs.scany.engine.analysis.kr.utils.NounUtil;
-import org.jhlabs.scany.engine.analysis.kr.utils.SyllableUtil;
-import org.jhlabs.scany.engine.analysis.kr.utils.VerbUtil;
+import org.jhlabs.scany.engine.analysis.kr.ma.rule.ConstraintRule;
+import org.jhlabs.scany.engine.analysis.kr.ma.rule.EomiRule;
+import org.jhlabs.scany.engine.analysis.kr.ma.rule.IrregularRule;
+import org.jhlabs.scany.engine.analysis.kr.ma.rule.MorphRule;
+import org.jhlabs.scany.engine.analysis.kr.ma.rule.NounRule;
+import org.jhlabs.scany.engine.analysis.kr.ma.rule.SyllableRule;
+import org.jhlabs.scany.engine.analysis.kr.ma.rule.VerbRule;
+import org.jhlabs.scany.engine.analysis.kr.util.DictionaryUtil;
+import org.jhlabs.scany.engine.analysis.kr.util.KoreanEnv;
 
 public class MorphAnalyzer {
 
@@ -80,7 +80,7 @@ public class MorphAnalyzer {
 	public List analyze(String input, int pos) throws MorphException {		
 
 		List<AnalysisOutput> candidates = new ArrayList();				
-		boolean isVerbOnly = MorphUtil.hasVerbOnly(input);
+		boolean isVerbOnly = MorphRule.hasVerbOnly(input);
 
 		analysisByRule(input, candidates);		
 		
@@ -146,7 +146,7 @@ public class MorphAnalyzer {
 				hasCorrectNoun=true;
 //				if(o.getCNounList().size()>0) correctCnoun = true;
 			}else if(o.getPos()==PatternConstants.POS_NOUN&&o.getCNounList().size()>0&&!hasCorrect&&!hasCorrectNoun) {
-				double curatio = NounUtil.countFoundNouns(o);
+				double curatio = NounRule.countFoundNouns(o);
 				if(ratio<curatio&&(compound==null||(compound!=null&&compound.getJosa()==null))) {
 					ratio  = curatio;
 					compound = o;
@@ -185,8 +185,8 @@ public class MorphAnalyzer {
 			String stem = input.substring(0,i);
 			String eomi = input.substring(i);
 
-			char[] feature =  SyllableUtil.getFeature(eomi.charAt(0));		
-			if(!isVerbOnly&&josaFlag&&feature[SyllableUtil.IDX_JOSA1]=='1') {				
+			char[] feature =  SyllableRule.getFeature(eomi.charAt(0));		
+			if(!isVerbOnly&&josaFlag&&feature[SyllableRule.IDX_JOSA1]=='1') {				
 				analysisWithJosa(stem,eomi,candidates);
 			}
 			
@@ -194,8 +194,8 @@ public class MorphAnalyzer {
 				analysisWithEomi(stem,eomi,candidates);
 			}			
 			
-			if(josaFlag&&feature[SyllableUtil.IDX_JOSA2]=='0') josaFlag = false;
-			if(eomiFlag&&feature[SyllableUtil.IDX_EOMI2]=='0') eomiFlag = false;
+			if(josaFlag&&feature[SyllableRule.IDX_JOSA2]=='0') josaFlag = false;
+			if(eomiFlag&&feature[SyllableRule.IDX_EOMI2]=='0') eomiFlag = false;
 			
 			if(!josaFlag&&!eomiFlag) break;
 		}
@@ -238,7 +238,7 @@ public class MorphAnalyzer {
 			}
 			
 			if(entry.getFeature(WordEntry.IDX_VERB)!='1') return;
-		} else if(candidates.size()==0||!NounUtil.endsWith2Josa(word)) {
+		} else if(candidates.size()==0||!NounRule.endsWith2Josa(word)) {
 			output.setScore(AnalysisOutput.SCORE_ANALYSIS);
 			candidates.add(output);
 		}
@@ -259,17 +259,17 @@ public class MorphAnalyzer {
 	
 		if(stem==null||stem.length()==0) return;	
 		
-		char[] chrs = MorphUtil.decompose(stem.charAt(stem.length()-1));
+		char[] chrs = MorphRule.decompose(stem.charAt(stem.length()-1));
 		if(!DictionaryUtil.existJosa(end)||
-				(chrs.length==3&&ConstraintUtil.isTwoJosa(end))||
-				(chrs.length==2&&(ConstraintUtil.isThreeJosa(end))||"".equals(end))) return; // 연결이 가능한 조사가 아니면...
+				(chrs.length==3&&ConstraintRule.isTwoJosa(end))||
+				(chrs.length==2&&(ConstraintRule.isThreeJosa(end))||"".equals(end))) return; // 연결이 가능한 조사가 아니면...
 
 		AnalysisOutput output = new AnalysisOutput(stem, end, null, PatternConstants.PTN_NJ);
 		output.setPos(PatternConstants.POS_NOUN);
 		
 		boolean success = false;
 		try {
-			success = NounUtil.analysisMJ(output.clone(), candidates);
+			success = NounRule.analysisMJ(output.clone(), candidates);
 		} catch (CloneNotSupportedException e) {
 			throw new MorphException(e.getMessage(),e);
 		}
@@ -282,7 +282,7 @@ public class MorphAnalyzer {
 				output.setPatn(PatternConstants.PTN_ADVJ);
 			}
 		}else {
-			if(MorphUtil.hasVerbOnly(stem)) return;
+			if(MorphRule.hasVerbOnly(stem)) return;
 		}
 		
 		candidates.add(output);
@@ -305,10 +305,10 @@ public class MorphAnalyzer {
 	 */
 	public void analysisWithEomi(String stem, String end, List candidates) throws MorphException {
 		
-		String[] morphs = EomiUtil.splitEomi(stem, end);
+		String[] morphs = EomiRule.splitEomi(stem, end);
 		if(morphs[0]==null) return; // 어미가 사전에 등록되어 있지 않다면....
 
-		String[] pomis = EomiUtil.splitPomi(morphs[0]);
+		String[] pomis = EomiRule.splitPomi(morphs[0]);
 
 		AnalysisOutput o = new AnalysisOutput(pomis[0],null,morphs[1],PatternConstants.PTN_VM);
 		o.setPomi(pomis[1]);
@@ -316,16 +316,16 @@ public class MorphAnalyzer {
 		try {		
 
 			WordEntry entry = DictionaryUtil.getVerb(o.getStem());	
-			if(entry!=null&&!("을".equals(end)&&entry.getFeature(WordEntry.IDX_REGURA)==IrregularUtil.IRR_TYPE_LIUL)) {							
+			if(entry!=null&&!("을".equals(end)&&entry.getFeature(WordEntry.IDX_REGURA)==IrregularRule.IRR_TYPE_LIUL)) {							
 				AnalysisOutput output = o.clone();
 				output.setScore(AnalysisOutput.SCORE_CORRECT);
-				MorphUtil.buildPtnVM(output, candidates);
+				MorphRule.buildPtnVM(output, candidates);
 				
-				char[] features = SyllableUtil.getFeature(stem.charAt(stem.length()-1)); // ㄹ불규칙일 경우
-				if(features[SyllableUtil.IDX_YNPLN]=='0'||morphs[1].charAt(0)!='ㄴ') 	return;
+				char[] features = SyllableRule.getFeature(stem.charAt(stem.length()-1)); // ㄹ불규칙일 경우
+				if(features[SyllableRule.IDX_YNPLN]=='0'||morphs[1].charAt(0)!='ㄴ') 	return;
 			}
 
-			String[] irrs = IrregularUtil.restoreIrregularVerb(o.getStem(), o.getPomi()==null?o.getEomi():o.getPomi());
+			String[] irrs = IrregularRule.restoreIrregularVerb(o.getStem(), o.getPomi()==null?o.getEomi():o.getPomi());
 
 			if(irrs!=null) { // 불규칙동사인 경우
 				AnalysisOutput output = o.clone();
@@ -338,20 +338,20 @@ public class MorphAnalyzer {
 //				entry = DictionaryUtil.getVerb(output.getStem());
 //				if(entry!=null && VerbUtil.constraintVerb(o.getStem(), o.getPomi()==null?o.getEomi():o.getPomi())) { // 4. 돕다 (PTN_VM)
 				output.setScore(AnalysisOutput.SCORE_CORRECT);
-				MorphUtil.buildPtnVM(output, candidates);
+				MorphRule.buildPtnVM(output, candidates);
 //				}				
 			}
 
-			if(VerbUtil.ananlysisNSM(o.clone(), candidates)) return;
+			if(VerbRule.ananlysisNSM(o.clone(), candidates)) return;
 			
-			if(VerbUtil.ananlysisNSMXM(o.clone(), candidates)) return;
+			if(VerbRule.ananlysisNSMXM(o.clone(), candidates)) return;
 			
 		    // [체언 + '에서/에서부터' + '이' +  어미]
-			if(VerbUtil.ananlysisNJCM(o.clone(),candidates)) return;			
+			if(VerbRule.ananlysisNJCM(o.clone(),candidates)) return;			
 			
-			if(VerbUtil.analysisVMCM(o.clone(),candidates)) return;	
+			if(VerbRule.analysisVMCM(o.clone(),candidates)) return;	
 
-			VerbUtil.analysisVMXM(o.clone(), candidates);
+			VerbRule.analysisVMXM(o.clone(), candidates);
 			
 		} catch (CloneNotSupportedException e) {
 			throw new MorphException(e.getMessage(),e);
@@ -412,7 +412,7 @@ public class MorphAnalyzer {
 				   return false;
 			   }
 		   } else {
-			   if(NounUtil.confirmDNoun(o)&&o.getScore()!=AnalysisOutput.SCORE_CORRECT) {
+			   if(NounRule.confirmDNoun(o)&&o.getScore()!=AnalysisOutput.SCORE_CORRECT) {
 				   confirmCNoun(o);
 			   }
 			   if(o.getScore()==AnalysisOutput.SCORE_CORRECT) success = true;
@@ -428,7 +428,7 @@ public class MorphAnalyzer {
 		   List<CompoundEntry> cnouns = o.getCNounList();
 		   
 		   if("화해".equals(cnouns.get(cnouns.size()-1).getWord())) {
-			   if(!ConstraintUtil.canHaheCompound(cnouns.get(cnouns.size()-2).getWord())) return false;
+			   if(!ConstraintRule.canHaheCompound(cnouns.get(cnouns.size()-2).getWord())) return false;
 		   }else if(o.getPatn()==PatternConstants.PTN_NSM) {			   
 			   if("내".equals(o.getVsfx())&&cnouns.get(cnouns.size()-1).getWord().length()!=1) {
 				   WordEntry entry = DictionaryUtil.getWord(cnouns.get(cnouns.size()-1).getWord());

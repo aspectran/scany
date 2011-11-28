@@ -1,4 +1,4 @@
-package org.jhlabs.scany.engine.analysis.kr.utils;
+package org.jhlabs.scany.engine.analysis.kr.util;
 
 import java.util.ArrayList;
 import java.util.Iterator;

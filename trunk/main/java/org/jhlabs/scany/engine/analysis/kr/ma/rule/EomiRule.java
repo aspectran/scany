@@ -1,4 +1,4 @@
-package org.jhlabs.scany.engine.analysis.kr.utils;
+package org.jhlabs.scany.engine.analysis.kr.ma.rule;
 
 /**
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -23,8 +23,9 @@ import java.util.List;
 import org.jhlabs.scany.engine.analysis.kr.ma.AnalysisOutput;
 import org.jhlabs.scany.engine.analysis.kr.ma.MorphException;
 import org.jhlabs.scany.engine.analysis.kr.ma.PatternConstants;
+import org.jhlabs.scany.engine.analysis.kr.util.DictionaryUtil;
 
-public class EomiUtil {
+public class EomiRule {
 
 	
 	public static final String RESULT_FAIL = "0";
@@ -56,22 +57,22 @@ public class EomiUtil {
 		
 			if(i!=term.length()) {
 				eomi = term.substring(i);
-				efeature  = SyllableUtil.getFeature(eomi.charAt(0));				
+				efeature  = SyllableRule.getFeature(eomi.charAt(0));				
 			} else {
-				efeature = SyllableUtil.getFeature(stem.charAt(i-1));
+				efeature = SyllableRule.getFeature(stem.charAt(i-1));
 				eomi="";
 			}
 
-			if(SyllableUtil.isAlpanumeric(stem.charAt(i-1))) break;
+			if(SyllableRule.isAlpanumeric(stem.charAt(i-1))) break;
 			
-			char[] jasos = MorphUtil.decompose(stem.charAt(i-1));
+			char[] jasos = MorphRule.decompose(stem.charAt(i-1));
 	
 			if(!"".equals(eomi)&&!DictionaryUtil.existEomi(eomi)) {
 				// do not anything.
 			} else if(jasos.length>2&&
 					(jasos[2]=='ㄴ'||jasos[2]=='ㄹ'||jasos[2]=='ㅁ'||jasos[2]=='ㅂ')&&
 					DictionaryUtil.combineAndEomiCheck(jasos[2], eomi)!=null) {
-				result[0] = Character.toString(MorphUtil.makeChar(stem.charAt(i-1), 0));
+				result[0] = Character.toString(MorphRule.makeChar(stem.charAt(i-1), 0));
 				if(i!=0) result[0] = stem.substring(0,i-1)+result[0];
 				result[1] = Character.toString(jasos[2]);
 			}else if(i>0&&(stem.endsWith("하")&&"여".equals(eomi))||
@@ -82,32 +83,32 @@ public class EomiUtil {
 			}else if(jasos.length==2&&(!stem.endsWith("아")&&!stem.endsWith("어"))&&
 					(jasos[1]=='ㅏ'||jasos[1]=='ㅓ'||jasos[1]=='ㅔ'||jasos[1]=='ㅐ')&&
 					(DictionaryUtil.combineAndEomiCheck('어', eomi)!=null)) {		
-				char[] chs = MorphUtil.decompose(stem.charAt(stem.length()-1));				
+				char[] chs = MorphRule.decompose(stem.charAt(stem.length()-1));				
 				result[0] = stem;
 				result[1] = "어"+eomi;
 			}else if((jasos[1]=='ㅘ'||jasos[1]=='ㅝ'||jasos[1]=='ㅕ'||jasos[1]=='ㅐ'||jasos[1]=='ㅒ')&&
 					(DictionaryUtil.combineAndEomiCheck('어', eomi)!=null)) {				
 				String end = "";				
 				if(jasos[1]=='ㅘ')
-					end=MorphUtil.makeChar(stem.charAt(i-1), 8, 0)+"아";	
+					end=MorphRule.makeChar(stem.charAt(i-1), 8, 0)+"아";	
 				else if(jasos[1]=='ㅝ')
-					end=MorphUtil.makeChar(stem.charAt(i-1), 13, 0)+"어";	
+					end=MorphRule.makeChar(stem.charAt(i-1), 13, 0)+"어";	
 				else if(jasos[1]=='ㅕ')
-					end=Character.toString(MorphUtil.makeChar(stem.charAt(i-1), 6, 0));
+					end=Character.toString(MorphRule.makeChar(stem.charAt(i-1), 6, 0));
 				else if(jasos[1]=='ㅐ')
-					end=MorphUtil.makeChar(stem.charAt(i-1), 0, 0)+"어";	
+					end=MorphRule.makeChar(stem.charAt(i-1), 0, 0)+"어";	
 				else if(jasos[1]=='ㅒ')
-					end=MorphUtil.makeChar(stem.charAt(i-1), 20, 0)+"애";										
+					end=MorphRule.makeChar(stem.charAt(i-1), 20, 0)+"애";										
 				
 				if(jasos.length==3) {					
-					end = end.substring(0,end.length()-1)+MorphUtil.replaceJongsung(end.charAt(end.length()-1),stem.charAt(i-1));
+					end = end.substring(0,end.length()-1)+MorphRule.replaceJongsung(end.charAt(end.length()-1),stem.charAt(i-1));
 				}
 				
 				if(stem.length()<2) result[0] = end;
 				else result[0] = stem.substring(0,stem.length()-1)+end;
 				result[1] = eomi;	
 				
-			}else if(efeature!=null&&efeature[SyllableUtil.IDX_EOMI1]!='0'&&
+			}else if(efeature!=null&&efeature[SyllableRule.IDX_EOMI1]!='0'&&
 				DictionaryUtil.existEomi(eomi)) {
 				if(!(((jasos.length==2&&jasos[0]=='ㄹ')||(jasos.length==3&&jasos[2]=='ㄹ'))&&eomi.equals("러"))) { // ㄹ 불규칙은 예외
 					result[0] = stem;
@@ -115,7 +116,7 @@ public class EomiUtil {
 				}
 			}
 
-			if(efeature!=null&&efeature[SyllableUtil.IDX_EOMI2]=='0') break;
+			if(efeature!=null&&efeature[SyllableRule.IDX_EOMI2]=='0') break;
 		}	
 
 		return result;
@@ -140,7 +141,7 @@ public class EomiUtil {
 		String pomi = "";
 		int index = len-1;
 	
-		char[] jaso = MorphUtil.decompose(chrs[index]);
+		char[] jaso = MorphRule.decompose(chrs[index]);
 		if(chrs[index]!='시'&&chrs[index]!='ㅆ'&&jaso[jaso.length-1]!='ㅆ') return results;  // 선어말어미가 발견되지 않았다
 		
 		if(chrs[index]=='겠') {
@@ -149,7 +150,7 @@ public class EomiUtil {
 			if(--index<=0||
 					(chrs[index]!='시'&&chrs[index]!='ㅆ'&&jaso[jaso.length-1]!='ㅆ')) 
 				return results; // 다음이거나 선어말어미가 없다면...
-			jaso = MorphUtil.decompose(chrs[index]);
+			jaso = MorphRule.decompose(chrs[index]);
 		}
 
 		if(chrs[index]=='었') { // 시었, ㅆ었, 었
@@ -158,18 +159,18 @@ public class EomiUtil {
 			if(--index<=0||
 					(chrs[index]!='시'&&chrs[index]!='ㅆ'&&jaso[jaso.length-1]!='ㅆ')) 
 				return results; // 다음이거나 선어말어미가 없다면...				
-			jaso = MorphUtil.decompose(chrs[index]);
+			jaso = MorphRule.decompose(chrs[index]);
 		}
 
 		if(chrs[index]=='였'){
-			pomi = MorphUtil.replaceJongsung('어',chrs[index])+pomi;	
+			pomi = MorphRule.replaceJongsung('어',chrs[index])+pomi;	
 			if(index>0&&chrs[index-1]=='하') 
 				stem = stem.substring(0,index);	
 			else
 				 stem = stem.substring(0,index)+"이";
 			setPomiResult(results,stem,pomi);	
 		}else if(chrs[index]=='셨'){
-				pomi = MorphUtil.replaceJongsung('어',chrs[index])+pomi;	
+				pomi = MorphRule.replaceJongsung('어',chrs[index])+pomi;	
 				stem = stem.substring(0,index);		
 				setPomiResult(results,stem,"시"+pomi);				
 		}else if(chrs[index]=='았'||chrs[index]=='었') {
@@ -177,43 +178,43 @@ public class EomiUtil {
 			setPomiResult(results,stem.substring(0,index),pomi);		
 			if(--index<=0||
 					(chrs[index]!='시'&&chrs[index]!='으')) return results; // 다음이거나 선어말어미가 없다면...				
-			jaso = MorphUtil.decompose(chrs[index]);		
+			jaso = MorphRule.decompose(chrs[index]);		
 		}else if(jaso.length==3&&jaso[2]=='ㅆ') {
 		
 			 if(jaso[0]=='ㅎ'&&jaso[1]=='ㅐ') {			 
-				pomi = MorphUtil.replaceJongsung('어',chrs[index])+pomi;	
+				pomi = MorphRule.replaceJongsung('어',chrs[index])+pomi;	
 				stem = stem.substring(0,index)+"하";	
 			}else if(jaso[0]!='ㅇ'&&(jaso[1]=='ㅏ'||jaso[1]=='ㅓ'||jaso[1]=='ㅔ'||jaso[1]=='ㅐ')) {		
 				pomi = "었"+pomi;
-				stem = stem.substring(0,index)+MorphUtil.makeChar(chrs[index], 0);				
+				stem = stem.substring(0,index)+MorphRule.makeChar(chrs[index], 0);				
 			}else if(jaso[0]!='ㅇ'&&(jaso[1]=='ㅙ')) {
 				pomi = "었"+pomi;
-				stem = stem.substring(0,index)+MorphUtil.makeChar(chrs[index],11, 0);				
+				stem = stem.substring(0,index)+MorphRule.makeChar(chrs[index],11, 0);				
 			} else if(jaso[1]=='ㅘ') {			
-				pomi = MorphUtil.replaceJongsung('아',chrs[index])+pomi;	
-				stem = stem.substring(0,index)+MorphUtil.makeChar(chrs[index],8, 0);
+				pomi = MorphRule.replaceJongsung('아',chrs[index])+pomi;	
+				stem = stem.substring(0,index)+MorphRule.makeChar(chrs[index],8, 0);
 			} else if(jaso[1]=='ㅝ') {
-				pomi = MorphUtil.replaceJongsung('어',chrs[index])+pomi;	
-				stem = stem.substring(0,index)+MorphUtil.makeChar(chrs[index],13, 0);
+				pomi = MorphRule.replaceJongsung('어',chrs[index])+pomi;	
+				stem = stem.substring(0,index)+MorphRule.makeChar(chrs[index],13, 0);
 			} else if(jaso[1]=='ㅕ') {					
-				pomi = MorphUtil.replaceJongsung('어',chrs[index])+pomi;				
-				stem = stem.substring(0,index)+MorphUtil.makeChar(chrs[index],20, 0);					
+				pomi = MorphRule.replaceJongsung('어',chrs[index])+pomi;				
+				stem = stem.substring(0,index)+MorphRule.makeChar(chrs[index],20, 0);					
 			} else if(jaso[1]=='ㅐ') {
-				pomi = MorphUtil.replaceJongsung('어',chrs[index])+pomi;
+				pomi = MorphRule.replaceJongsung('어',chrs[index])+pomi;
 				stem = stem.substring(0,index);
 			} else if(jaso[1]=='ㅒ') {
-				pomi = MorphUtil.replaceJongsung('애',chrs[index])+pomi;	
+				pomi = MorphRule.replaceJongsung('애',chrs[index])+pomi;	
 				stem = stem.substring(0,index);
 			} else {
 				pomi = "었"+pomi;
 			}
 			setPomiResult(results,stem,pomi);				
 			if(chrs[index]!='시'&&chrs[index]!='으') return results; // 다음이거나 선어말어미가 없다면...				
-			jaso = MorphUtil.decompose(chrs[index]);				
+			jaso = MorphRule.decompose(chrs[index]);				
 		}
 
 		char[] nChrs = null;
-		if(index>0) nChrs = MorphUtil.decompose(chrs[index-1]);
+		if(index>0) nChrs = MorphRule.decompose(chrs[index-1]);
 		else nChrs = new char[2];
 
 		if(nChrs.length==2&&chrs[index]=='시'&&(chrs.length<=index+1||
@@ -222,10 +223,10 @@ public class EomiUtil {
 			pomi = chrs[index]+pomi;	
 			setPomiResult(results,stem.substring(0,index),pomi);			
 			if(--index==0||chrs[index]!='으') return results; // 다음이거나 선어말어미가 없다면...				
-			jaso = MorphUtil.decompose(chrs[index]);
+			jaso = MorphRule.decompose(chrs[index]);
 		}
 		
-		if(index>0) nChrs = MorphUtil.decompose(chrs[index-1]);
+		if(index>0) nChrs = MorphRule.decompose(chrs[index-1]);
 		else nChrs = new char[2];
 		if(chrs.length>index+1&&nChrs.length==3&&(chrs[index+1]=='셨'||chrs[index+1]=='시')&&chrs[index]=='으') {
 			pomi = chrs[index]+pomi;	
@@ -284,21 +285,21 @@ public class EomiUtil {
 	private static void irregularStem(List results, String stem, String ending) {	
 
 		char feCh = ending.charAt(0);
-		char[] fechJaso =  MorphUtil.decompose(feCh);
+		char[] fechJaso =  MorphRule.decompose(feCh);
 		char ls = stem.charAt(stem.length()-1);
-		char[] lsJaso = MorphUtil.decompose(ls);
+		char[] lsJaso = MorphRule.decompose(ls);
 	
 		if(feCh=='아'||feCh=='어'||feCh=='으') {
 			if(lsJaso[lsJaso.length-1]=='ㄹ') { // ㄷ 불규칙
 				results.add(
 						new String[]{stem.substring(0,stem.length()-1)+
-								MorphUtil.makeChar(stem.charAt(stem.length()-1),7)
+								MorphRule.makeChar(stem.charAt(stem.length()-1),7)
 								,ending
 								,String.valueOf(PatternConstants.IRR_TYPE_DI)});
 			} else if(lsJaso.length==2) { // ㅅ 불규칙
 				results.add(
 						new String[]{stem.substring(0,stem.length()-1)+
-								MorphUtil.makeChar(stem.charAt(stem.length()-1),19)
+								MorphRule.makeChar(stem.charAt(stem.length()-1),19)
 								,ending
 								,String.valueOf(PatternConstants.IRR_TYPE_SI)});				
 			}			
@@ -308,7 +309,7 @@ public class EomiUtil {
 				&&(ls=='우')) { // ㅂ 불규칙
 			results.add(
 					new String[]{stem.substring(0,stem.length()-1)+
-							MorphUtil.makeChar(stem.charAt(stem.length()-1),17)
+							MorphRule.makeChar(stem.charAt(stem.length()-1),17)
 							,ending
 							,String.valueOf(PatternConstants.IRR_TYPE_BI)});				
 		}
@@ -318,7 +319,7 @@ public class EomiUtil {
 
 			results.add(
 					new String[]{stem.substring(0,stem.length()-1)+
-							MorphUtil.makeChar(stem.charAt(stem.length()-1),8)
+							MorphRule.makeChar(stem.charAt(stem.length()-1),8)
 							,ending
 							,String.valueOf(PatternConstants.IRR_TYPE_LI)});			
 		}
@@ -329,7 +330,7 @@ public class EomiUtil {
 					&&!"나".equals(stem)) { // ㅎ 불규칙, 그러나 [낳다]는 ㅎ 불규칙이 아니다.
 			results.add(
 					new String[]{stem.substring(0,stem.length()-1)+
-							MorphUtil.makeChar(stem.charAt(stem.length()-1),27)
+							MorphRule.makeChar(stem.charAt(stem.length()-1),27)
 							,ending
 							,String.valueOf(PatternConstants.IRR_TYPE_HI)});			
 		}		
@@ -381,7 +382,7 @@ public class EomiUtil {
 	private static void irregularAO(List results, String stem, String ending) {
 		
 		char ls = stem.charAt(stem.length()-1);
-		char[] lsJaso = MorphUtil.decompose(ls);
+		char[] lsJaso = MorphRule.decompose(ls);
 		
 		if(lsJaso.length<2) return;
 		
@@ -389,46 +390,46 @@ public class EomiUtil {
 			if(stem.endsWith("도와")||stem.endsWith("고와")) { // '곱다', '돕다'의 'ㅂ' 불규칙
 				results.add(
 						new String[]{stem.substring(0,stem.length()-2)+
-								MorphUtil.makeChar(stem.charAt(stem.length()-2),17) // + 'ㅂ'
+								MorphRule.makeChar(stem.charAt(stem.length()-2),17) // + 'ㅂ'
 								,makeTesnseEomi("아",ending)
 								,String.valueOf(PatternConstants.IRR_TYPE_BI)});					
 			}else { // '와' 축약
 				results.add(
 						new String[]{stem.substring(0,stem.length()-1)+
-								MorphUtil.makeChar(stem.charAt(stem.length()-1),8,0) // 자음 + ㅗ 
+								MorphRule.makeChar(stem.charAt(stem.length()-1),8,0) // 자음 + ㅗ 
 								,makeTesnseEomi("아",ending)
 								,String.valueOf(PatternConstants.IRR_TYPE_WA)});				
 			}
 		} else if(stem.endsWith("퍼")) {
 			results.add(
 					new String[]{stem.substring(0,stem.length()-1)+
-							MorphUtil.makeChar(stem.charAt(stem.length()-1),18,0) // 자음 + - 
+							MorphRule.makeChar(stem.charAt(stem.length()-1),18,0) // 자음 + - 
 							,makeTesnseEomi("어",ending)
 							,String.valueOf(PatternConstants.IRR_TYPE_WA)});	
 		} else if(lsJaso[1]=='ㅝ') {
 			if(stem.length()>=2) // 'ㅂ' 불규칙
 				results.add(
 					new String[]{stem.substring(0,stem.length()-2)+
-						MorphUtil.makeChar(stem.charAt(stem.length()-2),17) // + 'ㅂ'
+						MorphRule.makeChar(stem.charAt(stem.length()-2),17) // + 'ㅂ'
 					   ,makeTesnseEomi("어",ending)
 					   ,String.valueOf(PatternConstants.IRR_TYPE_BI)});	
 
 			results.add(
 					new String[]{stem.substring(0,stem.length()-1)+
-							MorphUtil.makeChar(stem.charAt(stem.length()-1),13,0) // 자음 + ㅗ 
+							MorphRule.makeChar(stem.charAt(stem.length()-1),13,0) // 자음 + ㅗ 
 							,makeTesnseEomi("어",ending)
 							,String.valueOf(PatternConstants.IRR_TYPE_WA)});	
 		} else if(stem.length()>=2&&ls=='라') {
-			char[] ns = MorphUtil.decompose(stem.charAt(stem.length()-2));
+			char[] ns = MorphRule.decompose(stem.charAt(stem.length()-2));
 			if(ns.length==3&&ns[2]=='ㄹ') { // 르 불규칙
 				results.add(
 						new String[]{stem.substring(0,stem.length()-2)+
-							MorphUtil.makeChar(stem.charAt(stem.length()-2),0) + "르"
+							MorphRule.makeChar(stem.charAt(stem.length()-2),0) + "르"
 						   ,makeTesnseEomi("아",ending)
 						   ,String.valueOf(PatternConstants.IRR_TYPE_RO)});					
 			}			
 		} else if(stem.length()>=2&&ls=='러') {
-			char[] ns = MorphUtil.decompose(stem.charAt(stem.length()-2));
+			char[] ns = MorphRule.decompose(stem.charAt(stem.length()-2));
 			if(stem.charAt(stem.length()-2)=='르') { // 러 불규칙
 				results.add(
 						new String[]{stem.substring(0,stem.length()-1)
@@ -437,33 +438,33 @@ public class EomiUtil {
 			} else if(ns.length==3&&ns[2]=='ㄹ') { // 르 불규칙
 				results.add(
 						new String[]{stem.substring(0,stem.length()-2)+
-							MorphUtil.makeChar(stem.charAt(stem.length()-2),0) + "르"
+							MorphRule.makeChar(stem.charAt(stem.length()-2),0) + "르"
 						   ,makeTesnseEomi("어",ending)
 						   ,String.valueOf(PatternConstants.IRR_TYPE_RO)});	
 			}
 		} else if(stem.endsWith("펴")||stem.endsWith("켜")) {
 			results.add(
 					new String[]{stem.substring(0,stem.length()-1)+
-						MorphUtil.makeChar(stem.charAt(stem.length()-1),20,0)
+						MorphRule.makeChar(stem.charAt(stem.length()-1),20,0)
 					   ,makeTesnseEomi("어",ending)
 					   ,String.valueOf(PatternConstants.IRR_TYPE_EI)});	
 		} else if(stem.endsWith("해")) {
 			results.add(
 					new String[]{stem.substring(0,stem.length()-1)+
-						MorphUtil.makeChar(stem.charAt(stem.length()-1),0,0)
+						MorphRule.makeChar(stem.charAt(stem.length()-1),0,0)
 					   ,makeTesnseEomi("어",ending)
 					   ,String.valueOf(PatternConstants.IRR_TYPE_EI)});				
 		} else if(lsJaso.length==2&&lsJaso[1]=='ㅏ') {
 			results.add(
 					new String[]{stem.substring(0,stem.length()-1)+
-						MorphUtil.makeChar(stem.charAt(stem.length()-1),18,0)
+						MorphRule.makeChar(stem.charAt(stem.length()-1),18,0)
 					   ,makeTesnseEomi("어",ending)
 					   ,String.valueOf(PatternConstants.IRR_TYPE_UO)});	
 		} else if(lsJaso.length==2&&lsJaso[1]=='ㅓ') {
 			// 으 탈락
 			results.add(
 					new String[]{stem.substring(0,stem.length()-1)+
-						MorphUtil.makeChar(stem.charAt(stem.length()-1),18,0)
+						MorphRule.makeChar(stem.charAt(stem.length()-1),18,0)
 					   ,makeTesnseEomi("어",ending)
 					   ,String.valueOf(PatternConstants.IRR_TYPE_UO)});	
 			//	 아 불규칙
@@ -474,25 +475,25 @@ public class EomiUtil {
 		} else if(lsJaso[1]=='ㅕ') {
 			results.add(
 					new String[]{stem.substring(0,stem.length()-1)+
-						MorphUtil.makeChar(stem.charAt(stem.length()-1),20,0)
+						MorphRule.makeChar(stem.charAt(stem.length()-1),20,0)
 					   ,makeTesnseEomi("어",ending)
 					   ,String.valueOf(PatternConstants.IRR_TYPE_EI)});	
 		} else if(lsJaso[1]=='ㅙ') {
 			results.add(
 					new String[]{stem.substring(0,stem.length()-1)+
-						MorphUtil.makeChar(stem.charAt(stem.length()-1),11,0)
+						MorphRule.makeChar(stem.charAt(stem.length()-1),11,0)
 					   ,makeTesnseEomi("어",ending)
 					   ,String.valueOf(PatternConstants.IRR_TYPE_OE)});	
 		} else if(lsJaso[1]=='ㅐ') {
 			results.add(
 					new String[]{stem.substring(0,stem.length()-1)+
-						MorphUtil.makeChar(stem.charAt(stem.length()-1),0,27)
+						MorphRule.makeChar(stem.charAt(stem.length()-1),0,27)
 					   ,makeTesnseEomi("아",ending)
 					   ,String.valueOf(PatternConstants.IRR_TYPE_HI)});
 		} else if(lsJaso[1]=='ㅒ') {
 			results.add(
 					new String[]{stem.substring(0,stem.length()-1)+
-						MorphUtil.makeChar(stem.charAt(stem.length()-1),2,27)
+						MorphRule.makeChar(stem.charAt(stem.length()-1),2,27)
 					   ,makeTesnseEomi("아",ending)
 					   ,String.valueOf(PatternConstants.IRR_TYPE_HI)});							
 		}
@@ -512,19 +513,19 @@ public class EomiUtil {
 
 		if(endword.charAt(0)=='ㅆ') {
 			return preword.substring(0,preword.length()-1)+
-				MorphUtil.makeChar(preword.charAt(preword.length()-1),20)+endword.substring(1,endword.length());		
+				MorphRule.makeChar(preword.charAt(preword.length()-1),20)+endword.substring(1,endword.length());		
 		} else if(endword.charAt(0)=='ㄴ') {
 			return preword.substring(0,preword.length()-1)+
-			MorphUtil.makeChar(preword.charAt(preword.length()-1),4)+endword.substring(1,endword.length());
+			MorphRule.makeChar(preword.charAt(preword.length()-1),4)+endword.substring(1,endword.length());
 		} else if(endword.charAt(0)=='ㄹ') {
 			return preword.substring(0,preword.length()-1)+
-			MorphUtil.makeChar(preword.charAt(preword.length()-1),8)+endword.substring(1,endword.length());	
+			MorphRule.makeChar(preword.charAt(preword.length()-1),8)+endword.substring(1,endword.length());	
 		} else if(endword.charAt(0)=='ㅁ') {
 			return preword.substring(0,preword.length()-1)+
-			MorphUtil.makeChar(preword.charAt(preword.length()-1),16)+endword.substring(1,endword.length());					
+			MorphRule.makeChar(preword.charAt(preword.length()-1),16)+endword.substring(1,endword.length());					
 		} else if(endword.charAt(0)=='ㅂ') {
 			return preword.substring(0,preword.length()-1)+
-			MorphUtil.makeChar(preword.charAt(preword.length()-1),17)+endword.substring(1,endword.length());
+			MorphRule.makeChar(preword.charAt(preword.length()-1),17)+endword.substring(1,endword.length());
 		}
 		return preword+endword;		
 	}
@@ -540,7 +541,7 @@ public class EomiUtil {
 	   int len = stem.length();
 	   if(len<2||!stem.endsWith("이")) return false;
 	  
-	   char[] jasos = MorphUtil.decompose(stem.charAt(len-2));
+	   char[] jasos = MorphRule.decompose(stem.charAt(len-2));
 	   if(jasos.length==3&&jasos[2]=='ㅁ')
 		   return true;
 	   else {
@@ -564,18 +565,18 @@ public class EomiUtil {
 	 */
 	public static boolean IsNLMBSyl(char ech, char lch) throws MorphException {
 	
-		char[] features = SyllableUtil.getFeature(ech);
+		char[] features = SyllableRule.getFeature(ech);
 
 		switch(lch) {
 
 			case 'ㄴ' :
-				return (features[SyllableUtil.IDX_YNPNA]=='1' || features[SyllableUtil.IDX_YNPLN]=='1');				
+				return (features[SyllableRule.IDX_YNPNA]=='1' || features[SyllableRule.IDX_YNPLN]=='1');				
 			case 'ㄹ' :
-				return (features[SyllableUtil.IDX_YNPLA]=='1');
+				return (features[SyllableRule.IDX_YNPLA]=='1');
 			case 'ㅁ' :
-				return (features[SyllableUtil.IDX_YNPMA]=='1');		
+				return (features[SyllableRule.IDX_YNPMA]=='1');		
 			case 'ㅂ' :
-				return (features[SyllableUtil.IDX_YNPBA]=='1');					
+				return (features[SyllableRule.IDX_YNPBA]=='1');					
 		}
 	
 		return false;
@@ -602,15 +603,15 @@ public class EomiUtil {
 		if(strlen==0) return strs;
 
 		char estem = stem.charAt(strlen-1);
-		char[] chrs = MorphUtil.decompose(estem);
+		char[] chrs = MorphRule.decompose(estem);
 		if(chrs.length==1) return strs; // 한글이 아니라면...
 
 		if((chrs.length==3)&&(chrs[2]=='ㄴ'||chrs[2]=='ㄹ'||chrs[2]=='ㅁ'||chrs[2]=='ㅂ')&&
-				EomiUtil.IsNLMBSyl(estem,chrs[2])&&
+				EomiRule.IsNLMBSyl(estem,chrs[2])&&
 				DictionaryUtil.combineAndEomiCheck(chrs[2], end)!=null) {		
 			strs[1] = Character.toString(chrs[2]);
 			if(end.length()>0) strs[1] += end;
-			strs[0] = stem.substring(0,strlen-1) + MorphUtil.makeChar(estem, 0);	
+			strs[0] = stem.substring(0,strlen-1) + MorphRule.makeChar(estem, 0);	
 		} else if(estem=='해'&&DictionaryUtil.existEomi("어"+end)) {			
 			strs[0] = stem.substring(0,strlen-1)+"하";
 			strs[1] = "어"+end;	
@@ -619,7 +620,7 @@ public class EomiUtil {
 			strs[1] = "이"+end;				
 		} else if(chrs[0]!='ㅇ'&&
 				(chrs[1]=='ㅏ'||chrs[1]=='ㅓ'||chrs[1]=='ㅔ'||chrs[1]=='ㅐ')&&
-				(chrs.length==2 || SyllableUtil.getFeature(estem)[SyllableUtil.IDX_YNPAH]=='1')&&
+				(chrs.length==2 || SyllableRule.getFeature(estem)[SyllableRule.IDX_YNPAH]=='1')&&
 				(DictionaryUtil.combineAndEomiCheck('어', end)!=null)) {		
 		
 			strs[0] = stem;
@@ -636,17 +637,17 @@ public class EomiUtil {
 			if(strlen>1) sb.append(stem.substring(0,strlen-1));
 			
 			if(chrs[1]=='ㅘ')
-				sb.append(MorphUtil.makeChar(estem, 8, 0)).append(MorphUtil.replaceJongsung('아',estem));	
+				sb.append(MorphRule.makeChar(estem, 8, 0)).append(MorphRule.replaceJongsung('아',estem));	
 			else if(chrs[1]=='ㅝ')
-				sb.append(MorphUtil.makeChar(estem, 13, 0)).append(MorphUtil.replaceJongsung('어',estem));	
+				sb.append(MorphRule.makeChar(estem, 13, 0)).append(MorphRule.replaceJongsung('어',estem));	
 			else if(chrs[1]=='ㅙ')
-				sb.append(MorphUtil.makeChar(estem, 11, 0)).append(MorphUtil.replaceJongsung('어',estem));				
+				sb.append(MorphRule.makeChar(estem, 11, 0)).append(MorphRule.replaceJongsung('어',estem));				
 			else if(chrs[1]=='ㅕ')
-				sb.append(Character.toString(MorphUtil.makeChar(estem, 20, 0))).append(MorphUtil.replaceJongsung('어',estem));
+				sb.append(Character.toString(MorphRule.makeChar(estem, 20, 0))).append(MorphRule.replaceJongsung('어',estem));
 			else if(chrs[1]=='ㅐ')
-				sb.append(MorphUtil.makeChar(estem, 0, 0)).append(MorphUtil.replaceJongsung('어',estem));
+				sb.append(MorphRule.makeChar(estem, 0, 0)).append(MorphRule.replaceJongsung('어',estem));
 			else if(chrs[1]=='ㅒ')
-				sb.append(MorphUtil.makeChar(estem, 20, 0)).append(MorphUtil.replaceJongsung('애',estem));	
+				sb.append(MorphRule.makeChar(estem, 20, 0)).append(MorphRule.replaceJongsung('애',estem));	
 			
 		
 			strs[0] = sb.toString();

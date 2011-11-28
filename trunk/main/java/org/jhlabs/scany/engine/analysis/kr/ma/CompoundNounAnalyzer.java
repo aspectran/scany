@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.jhlabs.scany.engine.analysis.kr.utils.DictionaryUtil;
+import org.jhlabs.scany.engine.analysis.kr.util.DictionaryUtil;
 
 /**
  * 복합명사를 분해한다.

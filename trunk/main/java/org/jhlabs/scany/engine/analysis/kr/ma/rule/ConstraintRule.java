@@ -1,4 +1,4 @@
-package org.jhlabs.scany.engine.analysis.kr.utils;
+package org.jhlabs.scany.engine.analysis.kr.ma.rule;
 
 import java.util.HashMap;
 
@@ -11,7 +11,7 @@ import org.jhlabs.scany.engine.analysis.kr.ma.PatternConstants;
  * @author smlee
  *
  */
-public class ConstraintUtil {
+public class ConstraintRule {
 
 	private static Map hahes = new HashMap(); // "글로벌화해 ", "민족화해" 처럼 화해와 결합이 가능한 명사
 	static {
@@ -99,7 +99,7 @@ public class ConstraintUtil {
 		
 		if(eomiPnouns.get(eomi)!=null) return true;
 		
-		char[] chrs = MorphUtil.decompose(eomi.charAt(eomi.length()-1));
+		char[] chrs = MorphRule.decompose(eomi.charAt(eomi.length()-1));
 		if(chrs.length==3  && eomiPnouns.get(Character.toString(chrs[2]))!=null) return true;
 		
 		return true;

@@ -1,4 +1,4 @@
-package org.jhlabs.scany.engine.analysis.kr.utils;
+package org.jhlabs.scany.engine.analysis.kr.ma.rule;
 
 /**
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -23,8 +23,9 @@ import org.jhlabs.scany.engine.analysis.kr.ma.AnalysisOutput;
 import org.jhlabs.scany.engine.analysis.kr.ma.MorphException;
 import org.jhlabs.scany.engine.analysis.kr.ma.PatternConstants;
 import org.jhlabs.scany.engine.analysis.kr.ma.WordEntry;
+import org.jhlabs.scany.engine.analysis.kr.util.DictionaryUtil;
 
-public class MorphUtil {
+public class MorphRule {
 
 	private static final char[] CHOSEONG = {
 		'ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ',
@@ -127,7 +128,7 @@ public class MorphUtil {
 		if(output.getScore() == AnalysisOutput.SCORE_CORRECT) {
 			candidates.add(output);
 		} else {
-			String[] irrs = IrregularUtil.restoreIrregularVerb(output.getStem(), end);
+			String[] irrs = IrregularRule.restoreIrregularVerb(output.getStem(), end);
 			if(irrs != null) {
 				output.setScore(AnalysisOutput.SCORE_CORRECT);
 				output.setStem(irrs[0]);
@@ -146,7 +147,7 @@ public class MorphUtil {
 	public static void buildPtnCM(AnalysisOutput output, List candidates) throws MorphException {
 
 		char ch = output.getStem().charAt(output.getStem().length() - 2);
-		char[] jasos = MorphUtil.decompose(ch);
+		char[] jasos = MorphRule.decompose(ch);
 		if(jasos.length == 3 || ch == '기') {
 			buildPtnVMCM(output, candidates);
 		} else {
@@ -161,7 +162,7 @@ public class MorphUtil {
 		output.setPos(PatternConstants.POS_VERB);
 
 		char ch = stem.charAt(stem.length() - 2);
-		char[] jasos = MorphUtil.decompose(ch);
+		char[] jasos = MorphRule.decompose(ch);
 
 		if(ch == '기') {
 			output.addElist("기");
@@ -173,7 +174,7 @@ public class MorphUtil {
 		} else if(jasos[2] == 'ㅁ') {
 			if(stem.length() > 1)
 				stem = stem.substring(0, stem.length() - 2);
-			stem += MorphUtil.makeChar(ch, 0);
+			stem += MorphRule.makeChar(ch, 0);
 			output.addElist("ㅁ");
 			output.addElist("이");
 			output.setStem(stem);
@@ -181,7 +182,7 @@ public class MorphUtil {
 			if(DictionaryUtil.getVerb(stem) != null)
 				candidates.add(output);
 			else {
-				String[] morphs = IrregularUtil.restoreIrregularVerb(stem, "ㅁ");
+				String[] morphs = IrregularRule.restoreIrregularVerb(stem, "ㅁ");
 				if(morphs != null) {
 					output.setScore(AnalysisOutput.SCORE_CORRECT);
 					output.setStem(morphs[0]);
@@ -194,8 +195,8 @@ public class MorphUtil {
 	public static boolean hasVerbOnly(String input) throws MorphException {
 
 		for(int i = input.length() - 1; i >= 0; i--) {
-			char[] feature = SyllableUtil.getFeature(input.charAt(i));
-			if(feature[SyllableUtil.IDX_WDSURF] == '1' && input.length() > i)
+			char[] feature = SyllableRule.getFeature(input.charAt(i));
+			if(feature[SyllableRule.IDX_WDSURF] == '1' && input.length() > i)
 				return true;
 		}
 		return false;

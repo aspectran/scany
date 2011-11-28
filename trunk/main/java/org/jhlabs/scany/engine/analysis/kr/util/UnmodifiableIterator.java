@@ -1,4 +1,4 @@
-package org.jhlabs.scany.engine.analysis.kr.utils;
+package org.jhlabs.scany.engine.analysis.kr.util;
 
 /**
  * Licensed to the Apache Software Foundation (ASF) under one or more

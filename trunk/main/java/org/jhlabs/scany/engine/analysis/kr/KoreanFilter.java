@@ -38,7 +38,7 @@ import org.jhlabs.scany.engine.analysis.kr.ma.MorphAnalyzer;
 import org.jhlabs.scany.engine.analysis.kr.ma.MorphException;
 import org.jhlabs.scany.engine.analysis.kr.ma.PatternConstants;
 import org.jhlabs.scany.engine.analysis.kr.ma.WordSpaceAnalyzer;
-import org.jhlabs.scany.engine.analysis.kr.utils.DictionaryUtil;
+import org.jhlabs.scany.engine.analysis.kr.util.DictionaryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,20 +84,26 @@ public class KoreanFilter extends TokenFilter {
 	}
 
 	/**
+	 * Instantiates a new korean filter.
 	 *
-	 * @param input
-	 *            input token stream
-	 * @param bigram
-	 *            Whether the bigram index term return or not.
+	 * @param input input token stream
+	 * @param bigrammable the bigrammable
 	 */
-	public KoreanFilter(TokenStream input, boolean bigram) {
+	public KoreanFilter(TokenStream input, boolean bigrammable) {
 		this(input);
-		bigrammable = bigram;
+		this.bigrammable = bigrammable;
 	}
 
-	public KoreanFilter(TokenStream input, boolean bigram, boolean has) {
+	/**
+	 * Instantiates a new korean filter.
+	 *
+	 * @param input the input
+	 * @param bigram the bigram
+	 * @param hasOrigin the has origin
+	 */
+	public KoreanFilter(TokenStream input, boolean bigram, boolean hasOrigin) {
 		this(input, bigram);
-		hasOrigin = has;
+		this.hasOrigin = hasOrigin;
 	}
 
 	/*

@@ -1,4 +1,4 @@
-package org.jhlabs.scany.engine.analysis.kr.utils;
+package org.jhlabs.scany.engine.analysis.kr.ma.rule;
 
 /**
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -25,8 +25,9 @@ import org.jhlabs.scany.engine.analysis.kr.ma.AnalysisOutput;
 import org.jhlabs.scany.engine.analysis.kr.ma.MorphException;
 import org.jhlabs.scany.engine.analysis.kr.ma.PatternConstants;
 import org.jhlabs.scany.engine.analysis.kr.ma.WordEntry;
+import org.jhlabs.scany.engine.analysis.kr.util.DictionaryUtil;
 
-public class VerbUtil {
+public class VerbRule {
 
 	public static final Map verbSuffix = new HashMap();
 
@@ -81,8 +82,8 @@ public class VerbUtil {
 
    public static boolean constraintVerb(String start, String end) {
 
-	   char[] schs = MorphUtil.decompose(start.charAt(start.length()-1));
-	   char[] echs = MorphUtil.decompose(end.charAt(0));
+	   char[] schs = MorphRule.decompose(start.charAt(start.length()-1));
+	   char[] echs = MorphRule.decompose(end.charAt(0));
 
 	   if(schs.length==3&&schs[2]=='ㄹ'&&echs[0]=='ㄹ') return false;
 
@@ -133,7 +134,7 @@ public class VerbUtil {
    public static boolean ananlysisNSM(AnalysisOutput o, List candidates) throws MorphException {
 
 	    if(o.getStem().endsWith("스러우")) o.setStem(o.getStem().substring(0,o.getStem().length()-3)+"스럽");
-		int idxVbSfix = VerbUtil.endsWithVerbSuffix(o.getStem());
+		int idxVbSfix = VerbRule.endsWithVerbSuffix(o.getStem());
 		if(idxVbSfix<1) return false;
 
 		o.setVsfx(o.getStem().substring(idxVbSfix));
@@ -171,21 +172,21 @@ public class VerbUtil {
 
    public static boolean ananlysisNSMXM(AnalysisOutput o, List candidates) throws MorphException {
 
-		int idxXVerb = VerbUtil.endsWithXVerb(o.getStem());
+		int idxXVerb = VerbRule.endsWithXVerb(o.getStem());
 		if(idxXVerb==-1) return false;
 
 		String eogan = o.getStem().substring(0,idxXVerb);
 		String[] stomis = null;
 
 		if((eogan.endsWith("아")||eogan.endsWith("어"))&&eogan.length()>1)
-			stomis = EomiUtil.splitEomi(eogan.substring(0,eogan.length()-1),eogan.substring(eogan.length()-1));
+			stomis = EomiRule.splitEomi(eogan.substring(0,eogan.length()-1),eogan.substring(eogan.length()-1));
 		else
-			stomis = EomiUtil.splitEomi(eogan,"");
+			stomis = EomiRule.splitEomi(eogan,"");
 
 		if(stomis[0]==null) return false;
 
 		o.addElist(stomis[1]);
-		int idxVbSfix = VerbUtil.endsWithVerbSuffix(stomis[0]);
+		int idxVbSfix = VerbRule.endsWithVerbSuffix(stomis[0]);
 		if(idxVbSfix==-1) return false;
 
 		o.setXverb(o.getStem().substring(idxXVerb));
@@ -217,7 +218,7 @@ public class VerbUtil {
 
 	   if(!o.getStem().endsWith("이")) return false;
 
-	   char[] chrs = MorphUtil.decompose(o.getStem().charAt(strlen-2));
+	   char[] chrs = MorphRule.decompose(o.getStem().charAt(strlen-2));
 	   boolean success = false;
 
 	   if(strlen>2&&o.getStem().endsWith("기이")) {
@@ -225,11 +226,11 @@ public class VerbUtil {
 		   o.addElist("기");
 		   success = true;
 	   } else if(chrs.length>2&&chrs[2]=='ㅁ'){
-		   String[] eres = EomiUtil.splitEomi(o.getStem().substring(0,strlen-1), "");
+		   String[] eres = EomiRule.splitEomi(o.getStem().substring(0,strlen-1), "");
 			if(eres[0]==null) return false;
 
 		   o.addElist(eres[1]);
-		   String[] irrs = IrregularUtil.restoreIrregularVerb(eres[0], eres[1]);
+		   String[] irrs = IrregularRule.restoreIrregularVerb(eres[0], eres[1]);
 
 		   if(irrs!=null) o.setStem(irrs[0]);
 		   else o.setStem(eres[0]);
@@ -264,7 +265,7 @@ public class VerbUtil {
     */
    public static boolean analysisVMXM(AnalysisOutput o, List candidates) throws MorphException {
 
-		int idxXVerb = VerbUtil.endsWithXVerb(o.getStem());
+		int idxXVerb = VerbRule.endsWithXVerb(o.getStem());
 
 		if(idxXVerb==-1) return false;
 
@@ -274,14 +275,14 @@ public class VerbUtil {
 
 		String[] stomis = null;
 		if(eogan.endsWith("아")||eogan.endsWith("어")) {
-			stomis = EomiUtil.splitEomi(eogan.substring(0,eogan.length()-1),eogan.substring(eogan.length()-1));
+			stomis = EomiRule.splitEomi(eogan.substring(0,eogan.length()-1),eogan.substring(eogan.length()-1));
 			if(stomis[0]==null) return false;
 		}else {
-			stomis =  EomiUtil.splitEomi(eogan, "");
+			stomis =  EomiRule.splitEomi(eogan, "");
 			if(stomis[0]==null||!(stomis[1].startsWith("아")||stomis[1].startsWith("어"))) return false;
 		}
 
-		String[] irrs = IrregularUtil.restoreIrregularVerb(stomis[0], stomis[1]);
+		String[] irrs = IrregularRule.restoreIrregularVerb(stomis[0], stomis[1]);
 		if(irrs!=null) {
 			o.setStem(irrs[0]);
 			o.addElist(irrs[1]);
