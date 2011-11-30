@@ -33,6 +33,8 @@ import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.util.Version;
 import org.jhlabs.scany.context.ScanyContext;
 import org.jhlabs.scany.engine.analysis.kr.snowball.SnowballFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Filters {@link StandardTokenizer} with {@link StandardFilter}, {@link
@@ -41,6 +43,8 @@ import org.jhlabs.scany.engine.analysis.kr.snowball.SnowballFilter;
  * @version $Id: KoreanAnalyzer.java,v 1.4 2009/12/22 01:48:56 smlee0818 Exp $
  */
 public final class KoreanAnalyzer extends Analyzer {
+	
+	private static final Logger logger = LoggerFactory.getLogger(KoreanAnalyzer.class);
 	
 	private static final Version matchVersion = ScanyContext.LUCENE_VERSION;
 
@@ -61,7 +65,7 @@ public final class KoreanAnalyzer extends Analyzer {
 
 	public static String characterEncoding = "UTF-8";
 
-	private String dictionaryLocation;
+	public static String dictionaryLocation;
 
 	private boolean bigrammable = true;
 
@@ -99,6 +103,10 @@ public final class KoreanAnalyzer extends Analyzer {
 		this.bigrammable = bigrammable;
 	}
 
+	public void setBigrammable(String bigrammable) {
+		setBigrammable(Boolean.valueOf(bigrammable));
+	}
+	
 	/**
 	 * determin whether the original term is returned or not if a input word is analyzed morphically.
 	 * @param hasOrigin
@@ -107,12 +115,14 @@ public final class KoreanAnalyzer extends Analyzer {
 		this.hasOrigin = hasOrigin;
 	}
 
-	public String getDictionaryLocation() {
-		return dictionaryLocation;
+	public void setDictionaryLocation(String dictionaryLocation) {
+		KoreanAnalyzer.dictionaryLocation = dictionaryLocation;
+		logger.trace("KoreanAnalyzer.dictionaryLocation: {}", KoreanAnalyzer.dictionaryLocation);
 	}
 
-	public void setDictionaryLocation(String dictionaryLocation) {
-		this.dictionaryLocation = dictionaryLocation;
+	public static void setCharacterEncoding(String characterEncoding) {
+		KoreanAnalyzer.characterEncoding = characterEncoding;
+		logger.trace("KoreanAnalyzer.characterEncoding: {}", KoreanAnalyzer.characterEncoding);
 	}
 	
 }

@@ -17,9 +17,9 @@ package org.jhlabs.scany.engine.analysis.kr.ma.rule;
  * limitations under the License.
  */
 
+import org.jhlabs.scany.engine.analysis.kr.dic.Dictionary;
 import org.jhlabs.scany.engine.analysis.kr.ma.MorphException;
 import org.jhlabs.scany.engine.analysis.kr.ma.WordEntry;
-import org.jhlabs.scany.engine.analysis.kr.util.DictionaryUtil;
 import org.jhlabs.scany.engine.analysis.kr.util.Utilities;
 
 /**
@@ -159,7 +159,7 @@ public class IrregularRule {
 			else
 				start = Character.toString(ch);		
 
-			WordEntry entry = DictionaryUtil.getVerb(start);
+			WordEntry entry = Dictionary.getVerb(start);
 			if(entry!=null&&entry.getFeature(WordEntry.IDX_REGURA)==IRR_TYPE_BIUP)
 				return new String[]{start,end};			
 		}
@@ -188,7 +188,7 @@ public class IrregularRule {
 		else
 			start = Character.toString(ch);
 		
-		WordEntry entry = DictionaryUtil.getVerb(start);
+		WordEntry entry = Dictionary.getVerb(start);
 		if(entry!=null&&entry.getFeature(WordEntry.IDX_REGURA)==IRR_TYPE_DI)
 			return new String[]{start,end};
 		
@@ -215,7 +215,7 @@ public class IrregularRule {
 		else
 			start = Character.toString(ch);
 		
-		WordEntry entry = DictionaryUtil.getVerb(start);
+		WordEntry entry = Dictionary.getVerb(start);
 		if(entry!=null&&entry.getFeature(WordEntry.IDX_REGURA)==IRR_TYPE_SIUT)
 			return new String[]{start,end};
 
@@ -250,7 +250,7 @@ public class IrregularRule {
 			else
 				sb.append(Character.toString(ch1)).append("르");
 
-			WordEntry entry = DictionaryUtil.getVerb(sb.toString());
+			WordEntry entry = Dictionary.getVerb(sb.toString());
 			if(entry!=null&&entry.getFeature(WordEntry.IDX_REGURA)==IRR_TYPE_LOO)
 				return new String[]{sb.toString(),end};		
 			
@@ -276,7 +276,7 @@ public class IrregularRule {
 	    char convEnd = MorphRule.makeChar(start.charAt(start.length()-1), 8);
 	    start = start.substring(0,start.length()-1)+convEnd;
 
-		WordEntry entry = DictionaryUtil.getVerb(start);
+		WordEntry entry = Dictionary.getVerb(start);
 		if(entry!=null)
 			return new String[]{start,end};	
 		
@@ -307,7 +307,7 @@ public class IrregularRule {
 		else
 			start = Character.toString(ch2);
 
-		WordEntry entry = DictionaryUtil.getVerb(start);
+		WordEntry entry = Dictionary.getVerb(start);
 		if(entry!=null&&entry.getFeature(WordEntry.IDX_REGURA)==IRR_TYPE_RU)
 			return new String[]{start,end};
 		
@@ -341,7 +341,7 @@ public class IrregularRule {
 		else
 			start = Character.toString(ch2);
 
-		WordEntry entry = DictionaryUtil.getVerb(start);
+		WordEntry entry = Dictionary.getVerb(start);
 		if(entry!=null&&entry.getFeature(WordEntry.IDX_REGURA)==IRR_TYPE_HIOOT)
 			return new String[]{start,end};
 		
@@ -368,7 +368,7 @@ public class IrregularRule {
 		else
 			start = Character.toString(ch);
 
-		WordEntry entry = DictionaryUtil.getVerb(start);
+		WordEntry entry = Dictionary.getVerb(start);
 		if(entry!=null)	return new String[]{start,end};
 	
 		return null;

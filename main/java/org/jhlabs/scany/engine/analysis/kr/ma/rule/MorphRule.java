@@ -19,11 +19,11 @@ package org.jhlabs.scany.engine.analysis.kr.ma.rule;
 
 import java.util.List;
 
+import org.jhlabs.scany.engine.analysis.kr.dic.Dictionary;
 import org.jhlabs.scany.engine.analysis.kr.ma.AnalysisOutput;
 import org.jhlabs.scany.engine.analysis.kr.ma.MorphException;
 import org.jhlabs.scany.engine.analysis.kr.ma.PatternConstants;
 import org.jhlabs.scany.engine.analysis.kr.ma.WordEntry;
-import org.jhlabs.scany.engine.analysis.kr.util.DictionaryUtil;
 
 public class MorphRule {
 
@@ -169,7 +169,7 @@ public class MorphRule {
 			output.addElist("이");
 			output.setStem(stem.substring(0, stem.length() - 2));
 
-			if(DictionaryUtil.getVerb(output.getStem()) != null)
+			if(Dictionary.getVerb(output.getStem()) != null)
 				candidates.add(output);
 		} else if(jasos[2] == 'ㅁ') {
 			if(stem.length() > 1)
@@ -179,7 +179,7 @@ public class MorphRule {
 			output.addElist("이");
 			output.setStem(stem);
 
-			if(DictionaryUtil.getVerb(stem) != null)
+			if(Dictionary.getVerb(stem) != null)
 				candidates.add(output);
 			else {
 				String[] morphs = IrregularRule.restoreIrregularVerb(stem, "ㅁ");
@@ -195,7 +195,7 @@ public class MorphRule {
 	public static boolean hasVerbOnly(String input) throws MorphException {
 
 		for(int i = input.length() - 1; i >= 0; i--) {
-			char[] feature = SyllableRule.getFeature(input.charAt(i));
+			char[] feature = Dictionary.getSyllableFeature(input.charAt(i));
 			if(feature[SyllableRule.IDX_WDSURF] == '1' && input.length() > i)
 				return true;
 		}

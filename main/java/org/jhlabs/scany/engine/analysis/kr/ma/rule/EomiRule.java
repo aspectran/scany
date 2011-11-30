@@ -20,10 +20,10 @@ package org.jhlabs.scany.engine.analysis.kr.ma.rule;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jhlabs.scany.engine.analysis.kr.dic.Dictionary;
 import org.jhlabs.scany.engine.analysis.kr.ma.AnalysisOutput;
 import org.jhlabs.scany.engine.analysis.kr.ma.MorphException;
 import org.jhlabs.scany.engine.analysis.kr.ma.PatternConstants;
-import org.jhlabs.scany.engine.analysis.kr.util.DictionaryUtil;
 
 public class EomiRule {
 
@@ -57,9 +57,9 @@ public class EomiRule {
 		
 			if(i!=term.length()) {
 				eomi = term.substring(i);
-				efeature  = SyllableRule.getFeature(eomi.charAt(0));				
+				efeature  = Dictionary.getSyllableFeature(eomi.charAt(0));				
 			} else {
-				efeature = SyllableRule.getFeature(stem.charAt(i-1));
+				efeature = Dictionary.getSyllableFeature(stem.charAt(i-1));
 				eomi="";
 			}
 
@@ -67,11 +67,11 @@ public class EomiRule {
 			
 			char[] jasos = MorphRule.decompose(stem.charAt(i-1));
 	
-			if(!"".equals(eomi)&&!DictionaryUtil.existEomi(eomi)) {
+			if(!"".equals(eomi)&&!Dictionary.existEomi(eomi)) {
 				// do not anything.
 			} else if(jasos.length>2&&
 					(jasos[2]=='ㄴ'||jasos[2]=='ㄹ'||jasos[2]=='ㅁ'||jasos[2]=='ㅂ')&&
-					DictionaryUtil.combineAndEomiCheck(jasos[2], eomi)!=null) {
+					Dictionary.combineAndEomiCheck(jasos[2], eomi)!=null) {
 				result[0] = Character.toString(MorphRule.makeChar(stem.charAt(i-1), 0));
 				if(i!=0) result[0] = stem.substring(0,i-1)+result[0];
 				result[1] = Character.toString(jasos[2]);
@@ -82,12 +82,12 @@ public class EomiRule {
 				result[1] = eomi;			
 			}else if(jasos.length==2&&(!stem.endsWith("아")&&!stem.endsWith("어"))&&
 					(jasos[1]=='ㅏ'||jasos[1]=='ㅓ'||jasos[1]=='ㅔ'||jasos[1]=='ㅐ')&&
-					(DictionaryUtil.combineAndEomiCheck('어', eomi)!=null)) {		
+					(Dictionary.combineAndEomiCheck('어', eomi)!=null)) {		
 				char[] chs = MorphRule.decompose(stem.charAt(stem.length()-1));				
 				result[0] = stem;
 				result[1] = "어"+eomi;
 			}else if((jasos[1]=='ㅘ'||jasos[1]=='ㅝ'||jasos[1]=='ㅕ'||jasos[1]=='ㅐ'||jasos[1]=='ㅒ')&&
-					(DictionaryUtil.combineAndEomiCheck('어', eomi)!=null)) {				
+					(Dictionary.combineAndEomiCheck('어', eomi)!=null)) {				
 				String end = "";				
 				if(jasos[1]=='ㅘ')
 					end=MorphRule.makeChar(stem.charAt(i-1), 8, 0)+"아";	
@@ -109,7 +109,7 @@ public class EomiRule {
 				result[1] = eomi;	
 				
 			}else if(efeature!=null&&efeature[SyllableRule.IDX_EOMI1]!='0'&&
-				DictionaryUtil.existEomi(eomi)) {
+				Dictionary.existEomi(eomi)) {
 				if(!(((jasos.length==2&&jasos[0]=='ㄹ')||(jasos.length==3&&jasos[2]=='ㄹ'))&&eomi.equals("러"))) { // ㄹ 불규칙은 예외
 					result[0] = stem;
 					result[1] = eomi;
@@ -219,7 +219,7 @@ public class EomiRule {
 
 		if(nChrs.length==2&&chrs[index]=='시'&&(chrs.length<=index+1||
 				(chrs.length>index+1&&chrs[index+1]!='셨'))) {
-			if(DictionaryUtil.getWord(results[0])!=null) return results;  //'시'가 포함된 단어가 있다. 성가시다/도시다/들쑤시다 
+			if(Dictionary.getWord(results[0])!=null) return results;  //'시'가 포함된 단어가 있다. 성가시다/도시다/들쑤시다 
 			pomi = chrs[index]+pomi;	
 			setPomiResult(results,stem.substring(0,index),pomi);			
 			if(--index==0||chrs[index]!='으') return results; // 다음이거나 선어말어미가 없다면...				
@@ -565,7 +565,7 @@ public class EomiRule {
 	 */
 	public static boolean IsNLMBSyl(char ech, char lch) throws MorphException {
 	
-		char[] features = SyllableRule.getFeature(ech);
+		char[] features = Dictionary.getSyllableFeature(ech);
 
 		switch(lch) {
 
@@ -608,20 +608,20 @@ public class EomiRule {
 
 		if((chrs.length==3)&&(chrs[2]=='ㄴ'||chrs[2]=='ㄹ'||chrs[2]=='ㅁ'||chrs[2]=='ㅂ')&&
 				EomiRule.IsNLMBSyl(estem,chrs[2])&&
-				DictionaryUtil.combineAndEomiCheck(chrs[2], end)!=null) {		
+				Dictionary.combineAndEomiCheck(chrs[2], end)!=null) {		
 			strs[1] = Character.toString(chrs[2]);
 			if(end.length()>0) strs[1] += end;
 			strs[0] = stem.substring(0,strlen-1) + MorphRule.makeChar(estem, 0);	
-		} else if(estem=='해'&&DictionaryUtil.existEomi("어"+end)) {			
+		} else if(estem=='해'&&Dictionary.existEomi("어"+end)) {			
 			strs[0] = stem.substring(0,strlen-1)+"하";
 			strs[1] = "어"+end;	
-		} else if(estem=='히'&&DictionaryUtil.existEomi("이"+end)) {			
+		} else if(estem=='히'&&Dictionary.existEomi("이"+end)) {			
 			strs[0] = stem.substring(0,strlen-1)+"하";
 			strs[1] = "이"+end;				
 		} else if(chrs[0]!='ㅇ'&&
 				(chrs[1]=='ㅏ'||chrs[1]=='ㅓ'||chrs[1]=='ㅔ'||chrs[1]=='ㅐ')&&
-				(chrs.length==2 || SyllableRule.getFeature(estem)[SyllableRule.IDX_YNPAH]=='1')&&
-				(DictionaryUtil.combineAndEomiCheck('어', end)!=null)) {		
+				(chrs.length==2 || Dictionary.getSyllableFeature(estem)[SyllableRule.IDX_YNPAH]=='1')&&
+				(Dictionary.combineAndEomiCheck('어', end)!=null)) {		
 		
 			strs[0] = stem;
 			if(chrs.length==2) strs[1] = "어"+end;	
@@ -630,7 +630,7 @@ public class EomiRule {
 			strs[0] = stem;
 			strs[1] = "어";	
 		}else if((chrs.length==2)&&(chrs[1]=='ㅘ'||chrs[1]=='ㅙ'||chrs[1]=='ㅝ'||chrs[1]=='ㅕ'||chrs[1]=='ㅐ'||chrs[1]=='ㅒ')&&
-				(DictionaryUtil.combineAndEomiCheck('어', end)!=null)) {		
+				(Dictionary.combineAndEomiCheck('어', end)!=null)) {		
 	
 			StringBuffer sb = new StringBuffer();
 			
@@ -657,7 +657,7 @@ public class EomiRule {
 			
 			strs[1] = end;		
 
-		}else if(!"".equals(end)&&DictionaryUtil.existEomi(end)) {		
+		}else if(!"".equals(end)&&Dictionary.existEomi(end)) {		
 			strs = new String[]{stem, end};
 		}
 
