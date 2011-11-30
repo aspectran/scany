@@ -41,6 +41,8 @@ public class DictionaryLoader {
 
 	public void loadSyllable(String dic, List<char[]> syllables) throws IOException {
 		Object value = dicProperties.get(dic);
+		logger.debug("{} - {}", dic, value);
+
 		DicFileReader reader = null;
 		Timer timer = new Timer();
 		
@@ -73,7 +75,6 @@ public class DictionaryLoader {
 	
 	public void loadWords(String dic, Trie<String, WordEntry> words) throws IOException {
 		Object value = dicProperties.get(dic);
-		
 		logger.debug("{} - {}", dic, value);
 		
 		DicFileReader reader = null;
@@ -112,6 +113,8 @@ public class DictionaryLoader {
 
 	public void loadCompounds(String dic, Trie<String, WordEntry> words) throws IOException {
 		Object value = dicProperties.get(dic);
+		logger.debug("{} - {}", dic, value);
+
 		DicFileReader reader = null;
 		Timer timer = new Timer();
 		
@@ -149,6 +152,8 @@ public class DictionaryLoader {
 	
 	public void loadUncompounds(String dic, Map<String, WordEntry> uncompounds) throws IOException {
 		Object value = dicProperties.get(dic);
+		logger.debug("{} - {}", dic, value);
+
 		DicFileReader reader = null;
 		Timer timer = new Timer();
 		
@@ -186,6 +191,8 @@ public class DictionaryLoader {
 	
 	public void loadMap(String dic, Map<String, String> map) throws IOException {
 		Object value = dicProperties.get(dic);
+		logger.debug("{} - {}", dic, value);
+
 		DicFileReader reader = null;
 		Timer timer = new Timer();
 		
@@ -221,6 +228,8 @@ public class DictionaryLoader {
 	
 	public void loadSet(String dic, Set<String> set) throws IOException {
 		Object value = dicProperties.get(dic);
+		logger.debug("{} - {}", dic, value);
+
 		DicFileReader reader = null;
 		Timer timer = new Timer();
 		

@@ -18,12 +18,8 @@ package org.jhlabs.scany.engine.analysis.kr.ma;
  */
 
 import java.util.ArrayList;
-
 import java.util.List;
 
-import org.jhlabs.scany.engine.analysis.kr.util.Utilities;
-
-import org.jhlabs.scany.engine.analysis.kr.ma.PatternConstants;
 import org.jhlabs.scany.engine.analysis.kr.ma.rule.MorphRule;
 
 public class AnalysisOutput implements Cloneable {
@@ -241,7 +237,71 @@ public class AnalysisOutput implements Cloneable {
 	}
 	
 	public String toString() {
-		return Utilities.buildOutputString(this);
+		StringBuilder sb = new StringBuilder();
+		sb.append(MorphRule.buildTypeString(getStem(), getPos()));
+		if(getNsfx() != null)
+			sb.append(",").append(MorphRule.buildTypeString(getNsfx(), PatternConstants.POS_SFX_N));
+
+		if(getPatn() == PatternConstants.PTN_NJ || getPatn() == PatternConstants.PTN_ADVJ) {
+			sb.append(",").append(MorphRule.buildTypeString(getJosa(), PatternConstants.POS_JOSA));
+		} else if(getPatn() == PatternConstants.PTN_NSM) {
+			sb.append(",").append(MorphRule.buildTypeString(getVsfx(), PatternConstants.POS_SFX_V));
+			if(getPomi() != null)
+				sb.append(",").append(MorphRule.buildTypeString(getPomi(), PatternConstants.POS_PEOMI));
+			sb.append(",").append(MorphRule.buildTypeString(getEomi(), PatternConstants.POS_EOMI));
+		} else if(getPatn() == PatternConstants.PTN_NSMJ) {
+			sb.append(",").append(MorphRule.buildTypeString(getVsfx(), PatternConstants.POS_SFX_V));
+			sb.append(",").append(MorphRule.buildTypeString(getElist().get(0), PatternConstants.POS_NEOMI));
+			sb.append(",").append(MorphRule.buildTypeString(getJosa(), PatternConstants.POS_JOSA));
+		} else if(getPatn() == PatternConstants.PTN_NSMXM) {
+			sb.append(",").append(MorphRule.buildTypeString(getVsfx(), PatternConstants.POS_SFX_V));
+			sb.append(",").append(MorphRule.buildTypeString(getElist().get(0), PatternConstants.POS_COPULA));
+			sb.append(",").append(MorphRule.buildTypeString(getXverb(), PatternConstants.POS_XVERB));
+			if(getPomi() != null)
+				sb.append(",").append(MorphRule.buildTypeString(getPomi(), PatternConstants.POS_PEOMI));
+			sb.append(",").append(MorphRule.buildTypeString(getEomi(), PatternConstants.POS_EOMI));
+		} else if(getPatn() == PatternConstants.PTN_NJCM) {
+			sb.append(",").append(MorphRule.buildTypeString(getJosa(), PatternConstants.POS_JOSA));
+			sb.append(",").append(MorphRule.buildTypeString(getElist().get(0), PatternConstants.POS_SFX_V));
+			if(getPomi() != null)
+				sb.append(",").append(MorphRule.buildTypeString(getPomi(), PatternConstants.POS_PEOMI));
+			sb.append(",").append(MorphRule.buildTypeString(getEomi(), PatternConstants.POS_EOMI));
+		} else if(getPatn() == PatternConstants.PTN_NSMXMJ) {
+			sb.append(",").append(MorphRule.buildTypeString(getVsfx(), PatternConstants.POS_SFX_V));
+			sb.append(",").append(MorphRule.buildTypeString(getElist().get(1), PatternConstants.POS_COPULA));
+			sb.append(",").append(MorphRule.buildTypeString(getXverb(), PatternConstants.POS_XVERB));
+			if(getPomi() != null)
+				sb.append(",").append(MorphRule.buildTypeString(getPomi(), PatternConstants.POS_PEOMI));
+			sb.append(",").append(MorphRule.buildTypeString(getElist().get(0), PatternConstants.POS_NEOMI));
+			sb.append(",").append(MorphRule.buildTypeString(getJosa(), PatternConstants.POS_JOSA));
+		} else if(getPatn() == PatternConstants.PTN_VM) {
+			if(getPomi() != null)
+				sb.append(",").append(MorphRule.buildTypeString(getPomi(), PatternConstants.POS_PEOMI));
+			sb.append(",").append(MorphRule.buildTypeString(getEomi(), PatternConstants.POS_EOMI));
+		} else if(getPatn() == PatternConstants.PTN_VMJ) {
+			sb.append(",").append(MorphRule.buildTypeString(getElist().get(0), PatternConstants.POS_NEOMI));
+			sb.append(",").append(MorphRule.buildTypeString(getJosa(), PatternConstants.POS_JOSA));
+		} else if(getPatn() == PatternConstants.PTN_VMCM) {
+			sb.append(",").append(MorphRule.buildTypeString(getElist().get(0), PatternConstants.POS_NEOMI));
+			sb.append(",").append(MorphRule.buildTypeString(getElist().get(1), PatternConstants.POS_SFX_N));
+			if(getPomi() != null)
+				sb.append(",").append(MorphRule.buildTypeString(getPomi(), PatternConstants.POS_PEOMI));
+			sb.append(",").append(MorphRule.buildTypeString(getEomi(), PatternConstants.POS_EOMI));
+		} else if(getPatn() == PatternConstants.PTN_VMXM) {
+			sb.append(",").append(MorphRule.buildTypeString(getElist().get(0), PatternConstants.POS_COPULA));
+			sb.append(",").append(MorphRule.buildTypeString(getXverb(), PatternConstants.POS_XVERB));
+			if(getPomi() != null)
+				sb.append(",").append(MorphRule.buildTypeString(getPomi(), PatternConstants.POS_PEOMI));
+			sb.append(",").append(MorphRule.buildTypeString(getEomi(), PatternConstants.POS_EOMI));
+		} else if(getPatn() == PatternConstants.PTN_VMXMJ) {
+			sb.append(",").append(MorphRule.buildTypeString(getElist().get(1), PatternConstants.POS_COPULA));
+			sb.append(",").append(MorphRule.buildTypeString(getXverb(), PatternConstants.POS_XVERB));
+			if(getPomi() != null)
+				sb.append(",").append(MorphRule.buildTypeString(getPomi(), PatternConstants.POS_PEOMI));
+			sb.append(",").append(MorphRule.buildTypeString(getElist().get(0), PatternConstants.POS_NEOMI));
+			sb.append(",").append(MorphRule.buildTypeString(getJosa(), PatternConstants.POS_JOSA));
+		}
+		return sb.toString();
 	}
 
 }
