@@ -4,9 +4,12 @@
 package org.jhlabs.scany.engine.analysis.kr.dic;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+
+import org.jhlabs.scany.util.Resources;
 
 /**
  *
@@ -17,19 +20,36 @@ import java.io.UnsupportedEncodingException;
  */
 public class DicFileReader {
 
-	BufferedReader br = null;
+	private static final String COMMENT = "//";
+	
+	private BufferedReader br = null;
 
-	public DicFileReader(String fileName) throws UnsupportedEncodingException {
-		this.br = new BufferedReader(new InputStreamReader(super.getClass().getResourceAsStream(fileName), "UTF-8"));
+	public DicFileReader(String resource, String encoding) throws IOException {
+		this.br = new BufferedReader(new InputStreamReader(Resources.getResourceAsStream(resource), encoding));
 	}
 
+	public DicFileReader(File file, String encoding) throws IOException {
+		this.br = new BufferedReader(new InputStreamReader(new FileInputStream(file), encoding));
+	}
+	
 	public String readLine() throws IOException {
-		return this.br.readLine();
+		String line = br.readLine();
+		
+		if(line == null)
+			return null;
+		
+		line = line.trim();
+		
+		if(line.length() == 0 || line.startsWith(COMMENT))
+			return readLine();
+		
+		return line;
 	}
 
-	public void cleanup() throws IOException {
-		if(this.br == null)
-			return;
-		this.br.close();
+	public void close() throws IOException {
+		if(br != null) {
+			br.close();
+			br = null;
+		}
 	}
 }

@@ -2,12 +2,10 @@ package org.jhlabs.scany.engine.analysis.kr.ma;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.jhlabs.scany.engine.analysis.kr.util.DictionaryUtil;
+import org.jhlabs.scany.engine.analysis.kr.dic.Dictionary;
 
 /**
  * 복합명사를 분해한다.
@@ -342,12 +340,12 @@ public class CompoundNounAnalyzer {
 		for(int i=pos;i<input.length();i++) {
 			
 			String text = before+input.substring(pos,i+1);		
-			if(DictionaryUtil.findWithPrefix(text).hasNext()) {
+			if(Dictionary.findWithPrefix(text).hasNext()) {
 				prev = text;
 				continue;
 			}
 			
-			if(prev!=null&&DictionaryUtil.getNoun(prev)!=null) return true;
+			if(prev!=null&&Dictionary.getNoun(prev)!=null) return true;
 			
 			break;
 		}
@@ -364,8 +362,8 @@ public class CompoundNounAnalyzer {
 //		
 //		if(words==null) return;
 //
-//		if(isFirst&&words[0]!=null&&words[0].length()==1&&!DictionaryUtil.existPrefix(words[0])) return;
-//		if(words[2]!=null&&words[2].length()==1&&!DictionaryUtil.existSuffix(words[2])) return;
+//		if(isFirst&&words[0]!=null&&words[0].length()==1&&!Dictionary.existPrefix(words[0])) return;
+//		if(words[2]!=null&&words[2].length()==1&&!Dictionary.existSuffix(words[2])) return;
 //	
 //		CompoundEntry e1 = null;
 //		List list1 = null;
@@ -443,7 +441,7 @@ public class CompoundNounAnalyzer {
 //		for(int i=2;i<=text.length();i++) {
 //			
 //			word = text.substring(0,i);
-//			Iterator prefix = DictionaryUtil.findWithPrefix(word);
+//			Iterator prefix = Dictionary.findWithPrefix(word);
 //			if(prefix.hasNext()) {
 //				prev = word;
 //				continue;
@@ -451,18 +449,18 @@ public class CompoundNounAnalyzer {
 //			
 //			if(prev==null) return null;
 //			
-//			WordEntry entry = DictionaryUtil.getWordExceptVerb(prev);
+//			WordEntry entry = Dictionary.getWordExceptVerb(prev);
 //			if(entry!=null) {
 //				String str = entry.getWord();	
 //				String suffix = text.substring(i-1,i);				
-//				if(ftry&&str.length()==2&&DictionaryUtil.existSuffix(suffix)) return null; // 2글자+접미어 결합이 많으므로	
+//				if(ftry&&str.length()==2&&Dictionary.existSuffix(suffix)) return null; // 2글자+접미어 결합이 많으므로	
 //				return str;
 //			}
 //			
 //			return null;
 //		}
 //		
-//		WordEntry entry = DictionaryUtil.getWordExceptVerb(text);
+//		WordEntry entry = Dictionary.getWordExceptVerb(text);
 //		if(entry!=null) return entry.getWord();
 //		
 //		return null;
@@ -518,7 +516,7 @@ public class CompoundNounAnalyzer {
 		char pos = PatternConstants.POS_NOUN;
 		if(input.length()==1) return  new CompoundEntry(input, 0, true,pos);
 		
-		WordEntry entry = DictionaryUtil.getWordExceptVerb(input);
+		WordEntry entry = Dictionary.getWordExceptVerb(input);
 		if(entry!=null) {
 			score = AnalysisOutput.SCORE_CORRECT;
 			if(entry.getFeature(WordEntry.IDX_NOUN)!='1') {
@@ -533,13 +531,13 @@ public class CompoundNounAnalyzer {
 	
 	private boolean validCompound(String before, String after, boolean isFirst, int pos) throws MorphException {
 
-		if(pos==1&&before.length()==1&&(!isFirst||!DictionaryUtil.existPrefix(before))) return false;		
+		if(pos==1&&before.length()==1&&(!isFirst||!Dictionary.existPrefix(before))) return false;		
 
-		if(after.length()==1&&!DictionaryUtil.existSuffix(after)) return false;
+		if(after.length()==1&&!Dictionary.existSuffix(after)) return false;
 
 		if(pos!=1&&before.length()==1) {
 			
-			WordEntry entry1 = DictionaryUtil.getUncompound(before+after);	
+			WordEntry entry1 = Dictionary.getUncompound(before+after);	
 			if(entry1!=null){
 				List<CompoundEntry> compounds = entry1.getCompounds();
 				if(before.equals(compounds.get(0).getWord())&&
@@ -548,7 +546,7 @@ public class CompoundNounAnalyzer {
 			
 		}
 
-		WordEntry entry2 = after.length()==1 ? null : DictionaryUtil.getUncompound(after);
+		WordEntry entry2 = after.length()==1 ? null : Dictionary.getUncompound(after);
 		if(entry2!=null){
 			List<CompoundEntry> compounds = entry2.getCompounds();			
 			if("*".equals(compounds.get(0).getWord())&&

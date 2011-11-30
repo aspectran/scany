@@ -32,17 +32,18 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
+import org.jhlabs.scany.engine.analysis.kr.dic.Dictionary;
 import org.jhlabs.scany.engine.analysis.kr.ma.AnalysisOutput;
 import org.jhlabs.scany.engine.analysis.kr.ma.CompoundEntry;
 import org.jhlabs.scany.engine.analysis.kr.ma.MorphAnalyzer;
 import org.jhlabs.scany.engine.analysis.kr.ma.MorphException;
 import org.jhlabs.scany.engine.analysis.kr.ma.PatternConstants;
 import org.jhlabs.scany.engine.analysis.kr.ma.WordSpaceAnalyzer;
-import org.jhlabs.scany.engine.analysis.kr.util.DictionaryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class KoreanFilter extends TokenFilter {
+
 	private static final Logger logger = LoggerFactory.getLogger(KoreanFilter.class);
 
 	private LinkedList<Token> koreanQueue;
@@ -329,7 +330,7 @@ public class KoreanFilter extends TokenFilter {
 		t.setPositionIncrement(posIncrAtt.getPositionIncrement() + skipinc);
 		cjQueue.add(t);
 
-		String kor = DictionaryUtil.getCJWord(input);
+		String kor = Dictionary.getCJWord(input);
 		if(kor != null) {
 			Token t1 = new Token(kor, 0, offsetAtt.endOffset(), KoreanTokenizer.TOKEN_TYPES[KoreanTokenizer.CJ]);
 			t1.setPositionIncrement(0);
@@ -338,22 +339,23 @@ public class KoreanFilter extends TokenFilter {
 
 		return (cjQueue.removeFirst() != null);
 	}
-/*
-	private boolean analysisEnglish() throws MorphException {
-		char termBuffer[] = termAtt.buffer();
-		final int length = termAtt.length();
-		stemmer.setCurrent(termBuffer, length);
-		stemmer.stem();
-		final char finalTerm[] = stemmer.getCurrentBuffer();
-		final int newLength = stemmer.getCurrentBufferLength();
-		if(finalTerm != termBuffer)
-			termAtt.copyBuffer(finalTerm, 0, newLength);
-		else
-			termAtt.setLength(newLength);
 
-		return true;
-	}
-*/
+	/*
+		private boolean analysisEnglish() throws MorphException {
+			char termBuffer[] = termAtt.buffer();
+			final int length = termAtt.length();
+			stemmer.setCurrent(termBuffer, length);
+			stemmer.stem();
+			final char finalTerm[] = stemmer.getCurrentBuffer();
+			final int newLength = stemmer.getCurrentBufferLength();
+			if(finalTerm != termBuffer)
+				termAtt.copyBuffer(finalTerm, 0, newLength);
+			else
+				termAtt.setLength(newLength);
+
+			return true;
+		}
+	*/
 	private boolean analysisETC() throws MorphException {
 		char[] buffer = termAtt.buffer();
 		final int bufferLength = termAtt.length();

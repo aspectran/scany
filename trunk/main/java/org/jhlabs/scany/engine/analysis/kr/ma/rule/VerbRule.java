@@ -21,11 +21,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jhlabs.scany.engine.analysis.kr.dic.Dictionary;
 import org.jhlabs.scany.engine.analysis.kr.ma.AnalysisOutput;
 import org.jhlabs.scany.engine.analysis.kr.ma.MorphException;
 import org.jhlabs.scany.engine.analysis.kr.ma.PatternConstants;
 import org.jhlabs.scany.engine.analysis.kr.ma.WordEntry;
-import org.jhlabs.scany.engine.analysis.kr.util.DictionaryUtil;
 
 public class VerbRule {
 
@@ -111,7 +111,7 @@ public class VerbRule {
 	   }
 	   if(!success) return false;
 
-	   if(success&&DictionaryUtil.getNoun(o.getStem())!=null) {
+	   if(success&&Dictionary.getNoun(o.getStem())!=null) {
 		   o.setScore(AnalysisOutput.SCORE_CORRECT);
 //	   }else {
 //			NounUtil.confirmCNoun(o);
@@ -142,10 +142,10 @@ public class VerbRule {
 		o.setPatn(PatternConstants.PTN_NSM);
 		o.setPos(PatternConstants.POS_NOUN);
 
-		WordEntry entry = DictionaryUtil.getWordExceptVerb(o.getStem());
+		WordEntry entry = Dictionary.getWordExceptVerb(o.getStem());
 
 //		if(entry==null&&NounUtil.confirmCNoun(o)&&o.getCNounList().size()>0)	{
-//			entry = DictionaryUtil.getNoun(o.getCNounList().get(o.getCNounList().size()-1).getWord());
+//			entry = Dictionary.getNoun(o.getCNounList().get(o.getCNounList().size()-1).getWord());
 //		}
 
 //		if(entry==null) return false;
@@ -194,9 +194,9 @@ public class VerbRule {
 		o.setStem(stomis[0].substring(0,idxVbSfix));
 		o.setPatn(PatternConstants.PTN_NSMXM);
 		o.setPos(PatternConstants.POS_NOUN);
-		WordEntry entry = DictionaryUtil.getNoun(o.getStem());
+		WordEntry entry = Dictionary.getNoun(o.getStem());
 //		if(entry==null&&NounUtil.confirmCNoun(o)&&o.getCNounList().size()>0)	{
-//			entry = DictionaryUtil.getNoun(o.getCNounList().get(o.getCNounList().size()-1));
+//			entry = Dictionary.getNoun(o.getCNounList().get(o.getCNounList().size()-1));
 //		}
 		if(entry==null) return false;
 
@@ -241,7 +241,7 @@ public class VerbRule {
 	   if(success) {
 
 		   o.addElist("이");
-			if(DictionaryUtil.getVerb(o.getStem())!=null) {
+			if(Dictionary.getVerb(o.getStem())!=null) {
 				o.setPos(PatternConstants.POS_VERB);
 				o.setPatn(PatternConstants.PTN_VMCM);
 				o.setScore(AnalysisOutput.SCORE_CORRECT);
@@ -291,7 +291,7 @@ public class VerbRule {
 			o.addElist(stomis[1]);
 		}
 
-		if(DictionaryUtil.getVerb(o.getStem())!=null) {
+		if(Dictionary.getVerb(o.getStem())!=null) {
 			o.setPos(PatternConstants.POS_VERB);
 			o.setPatn(PatternConstants.PTN_VMXM);
 			o.setScore(AnalysisOutput.SCORE_CORRECT);

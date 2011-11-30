@@ -18,16 +18,13 @@ package org.jhlabs.scany.engine.analysis.kr.ma.rule;
  */
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
+import org.jhlabs.scany.engine.analysis.kr.dic.Dictionary;
 import org.jhlabs.scany.engine.analysis.kr.ma.AnalysisOutput;
-import org.jhlabs.scany.engine.analysis.kr.ma.CompoundEntry;
-import org.jhlabs.scany.engine.analysis.kr.ma.CompoundNounAnalyzer;
 import org.jhlabs.scany.engine.analysis.kr.ma.MorphException;
 import org.jhlabs.scany.engine.analysis.kr.ma.PatternConstants;
 import org.jhlabs.scany.engine.analysis.kr.ma.WordEntry;
-import org.jhlabs.scany.engine.analysis.kr.util.DictionaryUtil;
 
 public class NounRule {
 
@@ -91,7 +88,7 @@ public class NounRule {
 			throw new MorphException(e.getMessage(), e);
 		}
 
-		if(DictionaryUtil.getVerb(o.getStem()) != null) {
+		if(Dictionary.getVerb(o.getStem()) != null) {
 			o.setPos(PatternConstants.POS_VERB);
 			o.setPatn(PatternConstants.PTN_VMJ);
 			o.setScore(AnalysisOutput.SCORE_CORRECT);
@@ -118,7 +115,7 @@ public class NounRule {
 			o.setElist(irrs[1], 0);
 		}
 
-		if(DictionaryUtil.getVerb(o.getStem()) != null) {
+		if(Dictionary.getVerb(o.getStem()) != null) {
 			o.setPatn(PatternConstants.PTN_VMJ);
 			o.setPos(PatternConstants.POS_VERB);
 			o.setScore(AnalysisOutput.SCORE_CORRECT);
@@ -162,7 +159,7 @@ public class NounRule {
 				o.addElist(stomis[1]);
 			}
 
-			if(DictionaryUtil.getVerb(o.getStem()) != null) {
+			if(Dictionary.getVerb(o.getStem()) != null) {
 
 				o.setPatn(PatternConstants.PTN_VMXMJ);
 				o.setPos(PatternConstants.POS_VERB);
@@ -191,7 +188,7 @@ public class NounRule {
 			o.setStem(o.getStem().substring(0, idxVbSfix));
 			o.setPatn(PatternConstants.PTN_NSMJ);
 			o.setPos(PatternConstants.POS_NOUN);
-			if(DictionaryUtil.getNoun(o.getStem()) != null) {
+			if(Dictionary.getNoun(o.getStem()) != null) {
 				o.setScore(AnalysisOutput.SCORE_CORRECT);
 				candidates.add(o);
 				return true;
@@ -219,7 +216,7 @@ public class NounRule {
 	//
 	//		   if(o.getStem().length()<3) return false;
 	//		   if(o.getPatn()==PatternConstants.PTN_N
-	//				   &&DictionaryUtil.existJosa(o.getStem().substring(o.getStem().length()-2))) return false;
+	//				   &&Dictionary.existJosa(o.getStem().substring(o.getStem().length()-2))) return false;
 	//		   
 	//			List<CompoundEntry> results = new ArrayList();
 	//			List<List> queue = new ArrayList();
@@ -232,7 +229,7 @@ public class NounRule {
 	//				List<WordEntry> nList = findNouns(o.getStem().substring(pos),queue.size(),o);
 	//				if(nList==null) return false;
 	//
-	//				if(pos==0&&DictionaryUtil.existPrefix(prefix)) nList.add(new WordEntry(prefix));
+	//				if(pos==0&&Dictionary.existPrefix(prefix)) nList.add(new WordEntry(prefix));
 	//
 	//				if(nList.size()==0) {
 	//					if(queue.size()==0) return false;
@@ -295,29 +292,29 @@ public class NounRule {
 
 		List<WordEntry> nList = new ArrayList();
 
-		if(str.length() == 2 && DictionaryUtil.existSuffix(str.substring(0, 1)) && DNouns.contains(str.substring(1))) {
+		if(str.length() == 2 && Dictionary.existSuffix(str.substring(0, 1)) && DNouns.contains(str.substring(1))) {
 			o.setStem(o.getStem().substring(0, o.getStem().length() - 1));
 			o.setNsfx(str.substring(1));
 			nList.add(new WordEntry(str.substring(0, 1)));
 			return nList;
-		} else if(str.length() == 2 && DictionaryUtil.existSuffix(str.substring(0, 1))
-				&& DictionaryUtil.existJosa(str.substring(1))) {
+		} else if(str.length() == 2 && Dictionary.existSuffix(str.substring(0, 1))
+				&& Dictionary.existJosa(str.substring(1))) {
 			return null;
 		}
 
-		if(pos >= 2 && DictionaryUtil.existJosa(str))
+		if(pos >= 2 && Dictionary.existJosa(str))
 			return null;
 
-		if(str.length() == 1 && (DictionaryUtil.existSuffix(str) || DNouns.contains(str))) {
+		if(str.length() == 1 && (Dictionary.existSuffix(str) || DNouns.contains(str))) {
 			nList.add(new WordEntry(str));
 			return nList;
 		}
 
 		for(int i = 1; i < str.length(); i++) {
 			String sub = str.substring(0, i + 1);
-			if(!DictionaryUtil.findWithPrefix(sub).hasNext())
+			if(!Dictionary.findWithPrefix(sub).hasNext())
 				break;
-			WordEntry entry = DictionaryUtil.getCNoun(sub);
+			WordEntry entry = Dictionary.getCNoun(sub);
 			if(entry != null) {
 				nList.add(entry);
 			}
@@ -340,7 +337,7 @@ public class NounRule {
 		output.setNsfx(d);
 		output.setStem(s);
 
-		WordEntry cnoun = DictionaryUtil.getCNoun(s);
+		WordEntry cnoun = Dictionary.getCNoun(s);
 		if(cnoun != null) {
 			if(cnoun.getFeature(WordEntry.IDX_NOUN) == '2')
 				output.setCNoun(cnoun.getCompounds());
@@ -367,8 +364,8 @@ public class NounRule {
 
 			String josa = input.substring(i);
 
-			char[] feature = SyllableRule.getFeature(josa.charAt(0));
-			if(josaFlag && DictionaryUtil.existJosa(josa))
+			char[] feature = Dictionary.getSyllableFeature(josa.charAt(0));
+			if(josaFlag && Dictionary.existJosa(josa))
 				return true;
 
 			if(josaFlag && feature[SyllableRule.IDX_JOSA2] == '0')
