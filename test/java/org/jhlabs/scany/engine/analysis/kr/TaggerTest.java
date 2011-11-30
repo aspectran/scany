@@ -6,7 +6,6 @@ import junit.framework.TestCase;
 
 import org.jhlabs.scany.engine.analysis.kr.ma.AnalysisOutput;
 import org.jhlabs.scany.engine.analysis.kr.ma.MorphAnalyzer;
-import org.jhlabs.scany.engine.analysis.kr.tagging.Tagger;
 
 public class TaggerTest extends TestCase {
 

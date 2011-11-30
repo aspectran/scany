@@ -11,6 +11,7 @@
 package org.jhlabs.scany.engine;
 
 import org.jhlabs.scany.ScanyServiceProviderFactory;
+import org.jhlabs.scany.engine.analysis.kr.dic.Dictionary;
 import org.jhlabs.scany.engine.entity.Record;
 import org.jhlabs.scany.engine.entity.RecordList;
 import org.jhlabs.scany.engine.index.AnyIndexer;
@@ -24,7 +25,12 @@ import org.junit.Test;
 
 public class LuceneIndexerTest {
 
-	@Test
+	//@Test
+	public void reloadTest() {
+		Dictionary.reload();
+	}
+	
+	//@Test
 	public void transactionTest() {
 		AnyService service = ScanyServiceProviderFactory.getService();
 		AnyTransaction tran = null;
@@ -42,7 +48,7 @@ public class LuceneIndexerTest {
 		}
 	}
 	
-	//@Test
+	@Test
 	public void indexerTest() throws AnyIndexerException {
 		AnyService service = ScanyServiceProviderFactory.getService();
 		AnyIndexer indexer = null;
@@ -78,7 +84,7 @@ public class LuceneIndexerTest {
 		}
 	}
 
-	@Test
+	//@Test
 	public void searchTest() throws AnySearcherException {
 		AnyService service = ScanyServiceProviderFactory.getService();
 		
