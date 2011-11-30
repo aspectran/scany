@@ -133,6 +133,7 @@ public class DictionaryInstance {
 		prefixs.clear();
 		suffixs.clear();
 		cjwords.clear();
+		logger.debug("Dictionary data has been cleared.");
 	}
 
 	private void loadDictionary() {

@@ -99,12 +99,12 @@ public final class KoreanAnalyzer extends Analyzer {
 	 * If true is set, the bigram index term is returned. If false is set, the bigram index term is not returned.
 	 * @param bigrammable
 	 */
-	public void setBigrammable(boolean bigrammable) {
-		this.bigrammable = bigrammable;
-	}
+	//public void setBigrammable(boolean bigrammable) {
+	//	this.bigrammable = bigrammable;
+	//}
 
 	public void setBigrammable(String bigrammable) {
-		setBigrammable(Boolean.valueOf(bigrammable));
+		this.bigrammable = Boolean.getBoolean(bigrammable);
 	}
 	
 	/**

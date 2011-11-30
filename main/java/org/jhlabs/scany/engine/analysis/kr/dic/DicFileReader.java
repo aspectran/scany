@@ -20,7 +20,7 @@ import org.jhlabs.scany.util.Resources;
  */
 public class DicFileReader {
 
-	private static final String COMMENT = "//";
+	private static final String COMMENT_SYMBOL = "//";
 	
 	private BufferedReader br = null;
 
@@ -40,7 +40,7 @@ public class DicFileReader {
 		
 		line = line.trim();
 		
-		if(line.length() == 0 || line.startsWith(COMMENT))
+		if(line.length() == 0 || line.startsWith(COMMENT_SYMBOL))
 			return readLine();
 		
 		return line;
