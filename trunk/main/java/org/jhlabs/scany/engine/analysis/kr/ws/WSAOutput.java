@@ -1,7 +1,10 @@
-package org.jhlabs.scany.engine.analysis.kr.ma;
+package org.jhlabs.scany.engine.analysis.kr.ws;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.jhlabs.scany.engine.analysis.kr.ma.AnalysisOutput;
+import org.jhlabs.scany.engine.analysis.kr.ma.PatternConstants;
 
 public class WSAOutput {
 

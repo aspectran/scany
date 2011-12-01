@@ -1,4 +1,4 @@
-package org.jhlabs.scany.engine.analysis.kr.ma;
+package org.jhlabs.scany.engine.analysis.kr.ws;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,6 +8,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.jhlabs.scany.engine.analysis.kr.dic.Dictionary;
+import org.jhlabs.scany.engine.analysis.kr.ma.AnalysisOutput;
+import org.jhlabs.scany.engine.analysis.kr.ma.CompoundEntry;
+import org.jhlabs.scany.engine.analysis.kr.ma.MorphAnalyzer;
+import org.jhlabs.scany.engine.analysis.kr.ma.MorphException;
+import org.jhlabs.scany.engine.analysis.kr.ma.PatternConstants;
+import org.jhlabs.scany.engine.analysis.kr.ma.WordEntry;
 import org.jhlabs.scany.engine.analysis.kr.ma.rule.MorphRule;
 import org.jhlabs.scany.engine.analysis.kr.ma.rule.SyllableRule;
 import org.jhlabs.scany.engine.analysis.kr.ma.rule.VerbRule;

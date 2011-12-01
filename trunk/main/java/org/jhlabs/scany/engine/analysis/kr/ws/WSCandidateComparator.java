@@ -1,7 +1,9 @@
-package org.jhlabs.scany.engine.analysis.kr.ma;
+package org.jhlabs.scany.engine.analysis.kr.ws;
 
 import java.util.Comparator;
 import java.util.List;
+
+import org.jhlabs.scany.engine.analysis.kr.ma.AnalysisOutput;
 
 public class WSCandidateComparator implements Comparator<WSOutput> {
 
