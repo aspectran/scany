@@ -6,9 +6,9 @@ import junit.framework.TestCase;
 
 import org.jhlabs.scany.engine.analysis.kr.ma.AnalysisOutput;
 import org.jhlabs.scany.engine.analysis.kr.ma.MorphException;
-import org.jhlabs.scany.engine.analysis.kr.ma.WordSpaceAnalyzer;
 import org.jhlabs.scany.engine.analysis.kr.ma.rule.SyllableRule;
 import org.jhlabs.scany.engine.analysis.kr.util.DictionaryUtil;
+import org.jhlabs.scany.engine.analysis.kr.ws.WordSpaceAnalyzer;
 
 public class SyllableTest extends TestCase {
 
