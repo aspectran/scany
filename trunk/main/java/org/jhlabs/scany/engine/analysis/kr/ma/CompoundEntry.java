@@ -6,67 +6,67 @@ package org.jhlabs.scany.engine.analysis.kr.ma;
  *
  */
 public class CompoundEntry {
-	
+
 	private String word;
-	
+
 	private int offset = -1;
-	
+
 	private boolean exist = true;
-	
+
 	private char pos = PatternConstants.POS_NOUN;
-	
+
 	public CompoundEntry() {
-		
+
 	}
-	
+
 	public CompoundEntry(String w) {
 		this.word = w;
 	}
-	
-	public CompoundEntry(String w,int o) {
+
+	public CompoundEntry(String w, int o) {
 		this(w);
-		this.offset = o;		
+		this.offset = o;
 	}
-	
-	public CompoundEntry(String w,int o, boolean is) {
-		this(w,o);
-		this.exist = is;		
+
+	public CompoundEntry(String w, int o, boolean is) {
+		this(w, o);
+		this.exist = is;
 	}
-	
-	public CompoundEntry(String w,int o, boolean is, char p) {
-		this(w,o,is);
+
+	public CompoundEntry(String w, int o, boolean is, char p) {
+		this(w, o, is);
 		this.pos = p;
 	}
-	
+
 	public void setWord(String w) {
 		this.word = w;
 	}
-	
+
 	public void setOffset(int o) {
 		this.offset = o;
 	}
-	
+
 	public String getWord() {
 		return this.word;
 	}
-	
+
 	public int getOffset() {
 		return this.offset;
 	}
-	
+
 	public boolean isExist() {
 		return exist;
 	}
-	
+
 	public void setExist(boolean is) {
 		this.exist = is;
 	}
-	
+
 	public char getPos() {
 		return pos;
 	}
 
 	public void setPos(char pos) {
 		this.pos = pos;
-	}	
+	}
 }

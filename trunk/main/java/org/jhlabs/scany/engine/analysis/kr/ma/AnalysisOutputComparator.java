@@ -19,26 +19,23 @@ package org.jhlabs.scany.engine.analysis.kr.ma;
 
 import java.util.Comparator;
 
-public class AnalysisOutputComparator implements Comparator {
-	public int compare(Object o1, Object o2) {
-		
-		AnalysisOutput out1 = (AnalysisOutput)o1;
-		AnalysisOutput out2 = (AnalysisOutput)o2;
-		
-		int score = out2.getScore()-out1.getScore();
-		int pattern = out2.getPatn()-out1.getPatn();
-		int len = out1.getStem().length()-out2.getStem().length();
-		
-		if(score!=0) return score;
-		
-		if(out2.getScore()==AnalysisOutput.SCORE_CORRECT &&
-				out1.getScore()==AnalysisOutput.SCORE_CORRECT) {
-			pattern = out1.getPatn()==PatternConstants.PTN_N || out1.getPatn()==PatternConstants.PTN_AID ? -1 : pattern;
-			pattern = out2.getPatn()==PatternConstants.PTN_N || out2.getPatn()==PatternConstants.PTN_AID ? 1 : pattern;
+public class AnalysisOutputComparator implements Comparator<AnalysisOutput> {
+	public int compare(AnalysisOutput o1, AnalysisOutput o2) {
+		int score = o2.getScore() - o1.getScore();
+		int pattern = o2.getPatn() - o1.getPatn();
+		int len = o1.getStem().length() - o2.getStem().length();
+
+		if(score != 0)
+			return score;
+
+		if(o2.getScore() == AnalysisOutput.SCORE_CORRECT && o1.getScore() == AnalysisOutput.SCORE_CORRECT) {
+			pattern = o1.getPatn() == PatternConstants.PTN_N || o1.getPatn() == PatternConstants.PTN_AID ? -1 : pattern;
+			pattern = o2.getPatn() == PatternConstants.PTN_N || o2.getPatn() == PatternConstants.PTN_AID ? 1 : pattern;
 		}
-		
-		if(pattern!=0) return pattern;
-		
+
+		if(pattern != 0)
+			return pattern;
+
 		return len;
 	}
 }
