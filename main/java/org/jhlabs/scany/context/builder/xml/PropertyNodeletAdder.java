@@ -53,7 +53,21 @@ public class PropertyNodeletAdder implements EasyNodeletAdder {
 				Object object = assistant.peekObject();
 
 				try {
-					BeanUtils.setObject(object, name, text);
+					Class<?> setterType = BeanUtils.getPropertyTypeForSetter(object, name);
+					
+					if(setterType ==  boolean.class || setterType ==  Boolean.class) {
+						BeanUtils.setObject(object, name, Boolean.valueOf(text));
+					} else if(setterType ==  int.class || setterType ==  Integer.class) {
+						BeanUtils.setObject(object, name, new Integer(text));
+					} else if(setterType ==  long.class || setterType ==  Long.class) {
+						BeanUtils.setObject(object, name, new Long(text));
+					} else if(setterType ==  float.class || setterType ==  Float.class) {
+						BeanUtils.setObject(object, name, new Float(text));
+					} else if(setterType ==  double.class || setterType ==  Double.class) {
+						BeanUtils.setObject(object, name, new Double(text));
+					} else {
+						BeanUtils.setObject(object, name, text);
+					}
 				} catch(Exception e) {
 					throw new RuntimeException("Could not set property.  Cause: " + e, e);
 				}
