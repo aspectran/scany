@@ -38,7 +38,7 @@ import org.jhlabs.scany.engine.analysis.kr.ma.CompoundEntry;
 import org.jhlabs.scany.engine.analysis.kr.ma.MorphAnalyzer;
 import org.jhlabs.scany.engine.analysis.kr.ma.MorphException;
 import org.jhlabs.scany.engine.analysis.kr.ma.PatternConstants;
-import org.jhlabs.scany.engine.analysis.kr.ma.WordSpaceAnalyzer;
+import org.jhlabs.scany.engine.analysis.kr.ws.WordSpaceAnalyzer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
