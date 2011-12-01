@@ -16,7 +16,7 @@ import org.jhlabs.scany.engine.transaction.AnyTransaction;
 import org.jhlabs.scany.engine.transaction.LuceneTransaction;
 import org.jhlabs.scany.service.AbstractService;
 import org.jhlabs.scany.service.AnyService;
-import org.jhlabs.scany.service.NotSuchRelationException;
+import org.jhlabs.scany.service.NoSuchRelationException;
 
 /**
  *
@@ -37,7 +37,7 @@ public class LocalService extends AbstractService implements AnyService {
 		Relation relation = localServiceRule.getSchema().getRelation(relationId);
 		
 		if(relation == null)
-			throw new NotSuchRelationException(relationId);
+			throw new NoSuchRelationException(relationId);
 
 		return new LuceneSearcher(relation);
 	}
@@ -46,7 +46,7 @@ public class LocalService extends AbstractService implements AnyService {
 		Relation relation = localServiceRule.getSchema().getRelation(relationId);
 		
 		if(relation == null)
-			throw new NotSuchRelationException(relationId);
+			throw new NoSuchRelationException(relationId);
 		
 		return new SearchModel(relation);
 	}
@@ -55,7 +55,7 @@ public class LocalService extends AbstractService implements AnyService {
 		Relation relation = localServiceRule.getSchema().getRelation(relationId);
 		
 		if(relation == null)
-			throw new NotSuchRelationException(relationId);
+			throw new NoSuchRelationException(relationId);
 		
 		return new LuceneTransaction(relation);
 	}
@@ -64,7 +64,7 @@ public class LocalService extends AbstractService implements AnyService {
 		Relation relation = localServiceRule.getSchema().getRelation(relationId);
 		
 		if(relation == null)
-			throw new NotSuchRelationException(relationId);
+			throw new NoSuchRelationException(relationId);
 		
 		return new LuceneIndexer(relation);
 	}
