@@ -6,27 +6,23 @@ import java.util.List;
 public class WSAOutput {
 
 	private String source;
-	
+
 	private List<AnalysisOutput> results;
-	
-	private int wds = 0;
-	
-	private int end = 0;
 
 	public WSAOutput() {
-		results = new ArrayList();
+		this(null);
 	}
-	
+
 	public WSAOutput(String src) {
 		source = src;
-		results = new ArrayList();
+		results = new ArrayList<AnalysisOutput>();
 	}
-	
-	public WSAOutput(String src, List list) {
-		source = src;		
+
+	public WSAOutput(String src, List<AnalysisOutput> list) {
+		source = src;
 		results = list;
 	}
-	
+
 	public String getSource() {
 		return source;
 	}
@@ -35,31 +31,32 @@ public class WSAOutput {
 		this.source = source;
 	}
 
-	public List getResults() {
+	public List<AnalysisOutput> getResults() {
 		return results;
 	}
 
-	public void setResults(List results) {
+	public void setResults(List<AnalysisOutput> results) {
 		this.results = results;
 	}
-		
-	public void addNounResults(String word) {		
-		addNounResults(word, null);		
+
+	public void addNounResults(String word) {
+		addNounResults(word, null);
 	}
-	
-	public void addNounResults(String word, String end) {		
-		addNounResults(word, end, AnalysisOutput.SCORE_ANALYSIS);		
+
+	public void addNounResults(String word, String end) {
+		addNounResults(word, end, AnalysisOutput.SCORE_ANALYSIS);
 	}
-	
-	public void addNounResults(String word, String end, int score) {	
-		
+
+	public void addNounResults(String word, String end, int score) {
 		AnalysisOutput output = new AnalysisOutput(word, end, null, PatternConstants.PTN_NJ);
-		if(end==null) output.setPatn(PatternConstants.PTN_N);
 		
+		if(end == null)
+			output.setPatn(PatternConstants.PTN_N);
+
 		output.setPos(PatternConstants.POS_NOUN);
 		output.setScore(score);
-		
-		this.results.add(output);	
-	}	
-	
+
+		this.results.add(output);
+	}
+
 }

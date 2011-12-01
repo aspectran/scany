@@ -3,15 +3,16 @@ package org.jhlabs.scany.engine.analysis.kr.ma;
 public class Status {
 
 	private int josaMaxStart = 0;
-	
+
 	private int eomiMaxStart = 0;
-	
+
 	private int maxStart = 0;
-	
+
 	public void apply(int num) {
-		if(maxStart<num) maxStart = num;
+		if(maxStart < num)
+			maxStart = num;
 	}
-	
+
 	public int getMaxStart() {
 		return maxStart;
 	}
@@ -28,7 +29,6 @@ public class Status {
 		this.josaMaxStart = josaMaxStart;
 	}
 
-
 	public int getEomiMaxStart() {
 		return eomiMaxStart;
 	}
@@ -36,5 +36,5 @@ public class Status {
 	public void setEomiMaxStart(int eomiMaxStart) {
 		this.eomiMaxStart = eomiMaxStart;
 	}
-	
+
 }
