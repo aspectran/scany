@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!ELEMENT scany (local?, client?, server?)>
+
+<!ELEMENT schema (#PCDATA)>
+<!ELEMENT directory (#PCDATA)>
+<!ELEMENT characterEncoding (#PCDATA)>
+
+<!ELEMENT local (directory, schema, characterEncoding?, spooling?)>
+
+<!ELEMENT spooling (directory? | ftp? | jdbc? | jndi?)>
+
+<!ELEMENT ftp (connection, user, directory)>
+<!ELEMENT user (id, password)>
+<!ELEMENT id (#PCDATA)>
+<!ELEMENT password (#PCDATA)>
+<!ATTLIST password
+encryption CDATA #IMPLIED
+>
+
+<!ELEMENT jdbc (#PCDATA)>
+<!ELEMENT jndi (#PCDATA)>
+
+<!ELEMENT client (local? | remote?)>
+<!ELEMENT remote (tcp? | http?)>
+
+<!ELEMENT tcp (connection, message?)>
+
+<!ELEMENT connection (host, timeout?)>
+<!ELEMENT host (#PCDATA)>
+<!ATTLIST host
+port CDATA #REQUIRED
+>
+<!ELEMENT timeout (#PCDATA)>
+
+<!ELEMENT message (keysign, body?)>
+<!ATTLIST message
+format (xml | json | binary) #IMPLIED
+encoding CDATA #IMPLIED
+>
+
+<!ELEMENT keysign (#PCDATA)>
+<!ATTLIST keysign
+encryption (true | false) #IMPLIED
+compressable (true | false) #IMPLIED
+>
+
+<!ELEMENT body EMPTY>
+<!ATTLIST body
+encryption (true | false) #IMPLIED
+compressable (true | false) #IMPLIED
+>
+
+<!ELEMENT http (url, timeout?, message)>
+<!ELEMENT url (#PCDATA)>
+
+<!ELEMENT server (remote, optimizing?)>
+<!ELEMENT optimizing (#PCDATA)>

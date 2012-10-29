@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!ELEMENT schema (analyzers?, summarizers?, queryTextParsers?, relation*)>
+
+<!ELEMENT analyzers (analyzer*)>
+<!ELEMENT analyzer (properties?)>
+<!ATTLIST analyzer
+id CDATA #REQUIRED
+class CDATA #REQUIRED
+>
+
+<!ELEMENT properties (property*)>
+<!ELEMENT property (#PCDATA)>
+<!ATTLIST property
+name CDATA #REQUIRED
+>
+
+<!ELEMENT summarizers (summarizer*)>
+<!ELEMENT summarizer (properties?)>
+<!ATTLIST summarizer
+id CDATA #REQUIRED
+class CDATA #REQUIRED
+>
+
+<!ELEMENT queryTextParsers (queryTextParser*)>
+<!ELEMENT queryTextParser (properties?)>
+<!ATTLIST queryTextParser
+id CDATA #REQUIRED
+class CDATA #REQUIRED
+>
+
+<!ELEMENT relation (description, directory, recordKey, attributes)>
+<!ATTLIST relation
+id CDATA #REQUIRED
+analyzer CDATA #REQUIRED
+queryTextParser CDATA #IMPLIED
+>
+
+<!ELEMENT description (#PCDATA)>
+
+<!ELEMENT directory (#PCDATA)>
+<!ATTLIST directory
+relative (true | false) #IMPLIED
+>
+
+<!ELEMENT recordKey (#PCDATA)>
+<!ATTLIST recordKey
+join CDATA #IMPLIED
+>
+
+<!ELEMENT attributes (attribute*)>
+
+<!ELEMENT attribute (#PCDATA)>
+<!ATTLIST attribute
+name CDATA #REQUIRED
+nullable (true | false) #IMPLIED
+storable (true | false) #IMPLIED
+indexable (true | false) #IMPLIED
+analyzable (true | false) #IMPLIED
+queryable (true | false) #IMPLIED
+termVector (no | yes | withPositions | withOffsets | withPositionsOffsets | all) #IMPLIED
+boost CDATA #IMPLIED
+analyzer CDATA #IMPLIED
+summarizer CDATA #IMPLIED
+>
+
